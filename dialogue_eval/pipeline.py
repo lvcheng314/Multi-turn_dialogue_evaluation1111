@@ -6,10 +6,8 @@ from uuid import uuid4
 from collections.abc import Callable
 
 from dialogue_eval.config import Settings, get_settings
-from dialogue_eval.models import MockAgent, OpenAICompatibleAgent
 from dialogue_eval.parser import load_task
 from dialogue_eval.report import render_html_report, render_markdown_report
-from dialogue_eval.runner import DialogueRunner
 from dialogue_eval.runner.deepseek_dialogue_generator import DeepSeekDialogueGenerator
 from dialogue_eval.scenarios import generate_scenarios
 from dialogue_eval.schemas import EvalResult, RunSummary, ScoringConfig
@@ -36,8 +34,7 @@ def run_evaluation(
     run_id = f"run_{uuid4().hex[:12]}"
 
     store = RunStore(settings.runs_dir)
-    agent = _build_agent(settings, model)
-    runner = _build_runner(settings, model, agent)
+    runner = _build_runner(settings, model)
     scorer = ScorerSkill()
     scoring_config = ScoringConfig(
         enable_llm_judge=settings.enable_llm_judge,
@@ -111,22 +108,9 @@ def run_evaluation(
     return summary
 
 
-def _build_agent(settings: Settings, model: str | None) -> object:
-    selected = (model or settings.model_provider).lower()
-    if selected in {"mock", "mock-agent"}:
-        return MockAgent()
-    return OpenAICompatibleAgent(settings)
-
-
-def _build_runner(settings: Settings, model: str | None, agent: object) -> object:
-    selected = (model or settings.model_provider).lower()
-    if selected in {"mock", "mock-agent"}:
-        return DialogueRunner(agent=agent)
+def _build_runner(settings: Settings, model: str | None) -> object:
     return DeepSeekDialogueGenerator(settings)
 
 
 def _archive_model_name(settings: Settings, model: str | None) -> str:
-    selected = (model or settings.model_provider).lower()
-    if selected in {"mock", "mock-agent"}:
-        return "mock-agent"
-    return settings.model_name
+    return str(model or settings.model_name)
