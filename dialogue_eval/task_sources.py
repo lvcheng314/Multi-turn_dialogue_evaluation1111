@@ -2,15 +2,17 @@ from __future__ import annotations
 
 from pathlib import Path
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
 
 TASK_SOURCES: dict[str, dict[str, str]] = {
     "fengmaotui_delivery_task": {
         "name": "示例1：飞毛腿骑手外呼",
-        "path": "examples/tasks/fengmaotui_delivery_task.json",
+        "path": str(PROJECT_ROOT / "examples" / "tasks" / "fengmaotui_delivery_task.json"),
     },
     "course_live_task": {
         "name": "示例2：课程直播选项通知",
-        "path": "examples/tasks/course_live_task.json",
+        "path": str(PROJECT_ROOT / "examples" / "tasks" / "course_live_task.json"),
     },
 }
 

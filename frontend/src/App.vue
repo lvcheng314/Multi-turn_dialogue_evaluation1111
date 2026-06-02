@@ -4,7 +4,7 @@
       <header class="chat-header">
         <div>
           <h1>Dialogue Eval Bot</h1>
-          <p>DeepSeek 多轮外呼任务评测</p>
+          <p>多轮外呼任务评测</p>
         </div>
         <button class="ghost" @click="loadArchives">归档</button>
       </header>
@@ -109,7 +109,7 @@ async function runTask(taskId: string, label: string) {
   user(`测试任务：${label}`)
   try {
     await streamRun(
-      { task_id: taskId, model: 'deepseek' },
+      { task_id: taskId },
       {
         onStage: (payload) => {
           statusText.value = String(payload.message || '')

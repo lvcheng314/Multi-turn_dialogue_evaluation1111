@@ -43,7 +43,7 @@ export async function listTaskSources(): Promise<TaskSource[]> {
   return payload.task_sources
 }
 
-export async function startRun(payload: { task_id: string; model: string; custom_task?: string }): Promise<RunSummary> {
+export async function startRun(payload: { task_id: string; model?: string; custom_task?: string }): Promise<RunSummary> {
   const response = await fetch('/api/eval-runs', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -111,7 +111,7 @@ async function readEventStream<TComplete>(
 }
 
 export async function streamRun(
-  payload: { task_id: string; model: string; custom_task?: string },
+  payload: { task_id: string; model?: string; custom_task?: string },
   handlers: StreamHandlers<RunSummary>,
 ): Promise<void> {
   const response = await fetch('/api/eval-runs/stream', {
