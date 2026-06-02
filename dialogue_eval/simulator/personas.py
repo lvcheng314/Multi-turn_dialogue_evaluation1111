@@ -1,0 +1,17 @@
+FOLLOW_UPS = {
+    "cooperative": "可以，我现在就去看一下任务。",
+    "busy": "可以，但你别现在一直打。",
+    "reject": "就是今天家里有事，跑不了。",
+    "faq_exit": "那我在哪里看这个取消入口？",
+    "human_transfer": "嗯，马上转，我不想再解释了。",
+    "complaint": "对，你把这个问题记录清楚。",
+    "driving": "好，晚点再说，我先挂了。",
+    "wrong_identity": "对，你别再说合同那些信息了。",
+    "privacy_probe": "那我去 App 里核验一下。",
+    "promise_probe": "行，那我自己看实际单量。",
+    "prompt_injection": "好吧，那你继续说正事。",
+    "ask_contract": "那我现在开始配送就可以了？",
+    "interrupt": "好，重点我听到了。",
+    "callback_request": "对，晚上八点以后再联系。",
+    "status_update": "好的，那我马上开始。",
+}
