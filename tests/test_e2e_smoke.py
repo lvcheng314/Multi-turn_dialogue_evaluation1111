@@ -49,5 +49,9 @@ def test_e2e_demo_smoke(tmp_path: Path) -> None:
     assert summary.completed_dialogues == 15
     assert (run_dir / "trace.jsonl").exists()
     assert (run_dir / "report.md").exists()
+    assert summary.report_markdown_path.endswith("-0001.md")
+    assert summary.report_html_path.endswith("-0001.html")
     assert (tmp_path / "eval_archive.sqlite3").exists()
-    assert "多轮对话评测报告" in (run_dir / "report.md").read_text(encoding="utf-8")
+    report_text = (run_dir / "report.md").read_text(encoding="utf-8")
+    assert "飞毛腿外呼测评报告" in report_text
+    assert "## 维度说明" in report_text

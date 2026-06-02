@@ -2,8 +2,21 @@ from __future__ import annotations
 
 from collections import Counter
 from statistics import mean
+from pathlib import Path
 
 from dialogue_eval.schemas import DialogueTrace, EvalResult, Evidence, ScenarioSpec, TaskSpec
+
+DIMENSION_META = {
+    "outcome": ("任务结果", "Outcome", "检查任务目标是否达成，以及关键流程是否覆盖完整。"),
+    "trace": ("工具轨迹", "Trace", "检查工具调用是否正确、参数是否匹配、顺序是否合理。"),
+    "safety": ("安全合规", "Safety", "检查是否存在隐私泄露、越权承诺、违规话术等风险。"),
+    "text": ("话术质量", "Text", "检查表达是否自然、简洁、礼貌，并符合电话沟通场景。"),
+}
+
+REPORT_SUBJECTS = {
+    "fengmaotui_delivery_task": "飞毛腿外呼",
+    "course_live_task": "课程直播选项通知",
+}
 
 
 def render_markdown_report(
@@ -11,6 +24,7 @@ def render_markdown_report(
     scenarios: list[ScenarioSpec],
     results: list[EvalResult],
     run_id: str,
+    report_title: str,
     traces: list[DialogueTrace] | None = None,
 ) -> str:
     avg_score = mean([result.total_score for result in results]) if results else 0.0
@@ -23,10 +37,11 @@ def render_markdown_report(
     weak_dimensions = _weak_dimension_counts(results)
 
     lines = [
-        f"# 多轮对话评测报告: {run_id}",
+        f"# {report_title}",
         "",
         "## 评审摘要",
         "",
+        f"- 报告名称: {report_title}",
         f"- 任务: {task.task}",
         f"- 角色: {task.role}",
         f"- 场景数: {len(scenarios)}",
@@ -34,15 +49,29 @@ def render_markdown_report(
         f"- 结论分布: pass {pass_count} / review {review_count} / fail {fail_count}",
         f"- 最薄弱维度: {_format_counter(weak_dimensions)}",
         "",
-        "## 主要扣分原因",
+        "## 维度说明",
         "",
     ]
+
+    for key in ["outcome", "trace", "safety", "text"]:
+        cn, en, desc = DIMENSION_META[key]
+        sample = _average_dimension_score(results, key)
+        lines.append(f"- {cn} {en}（平均 {sample:.2f} 分）: {desc}")
+
+    lines.extend(
+        [
+            "",
+        "## 主要扣分原因",
+        "",
+        ]
+    )
 
     if low_results:
         for result in low_results:
             weakest = min(result.dimension_scores.items(), key=lambda item: item[1])
+            weakest_label = _dimension_label(weakest[0], weakest[1])
             lines.append(
-                f"- {result.dialogue_id}: 总分 {result.total_score:.2f}，最低维度 {weakest[0]}={weakest[1]:.2f}。"
+                f"- {result.dialogue_id}: 总分 {result.total_score:.2f}，最低维度 {weakest_label}。"
             )
             for evidence in _negative_or_key_evidence(result.evidence)[:3]:
                 lines.append(f"  - {_evidence_line(evidence)}")
@@ -58,7 +87,7 @@ def render_markdown_report(
             "",
             "## 分项汇总",
             "",
-            "| Dialogue | Score | Decision | Outcome | Trace | Safety | Text |",
+            "| 对话ID | 总分 | 结论 | 任务结果 Outcome | 工具轨迹 Trace | 安全合规 Safety | 话术质量 Text |",
             "| --- | ---: | --- | ---: | ---: | ---: | ---: |",
         ]
     )
@@ -68,7 +97,7 @@ def render_markdown_report(
             "| {dialogue} | {score:.2f} | {decision} | {outcome:.2f} | {trace:.2f} | {safety:.2f} | {text:.2f} |".format(
                 dialogue=result.dialogue_id,
                 score=result.total_score,
-                decision=result.final_decision,
+                decision=_decision_label(result.final_decision),
                 outcome=result.dimension_scores.get("outcome", 0),
                 trace=result.dimension_scores.get("trace", 0),
                 safety=result.dimension_scores.get("safety", 0),
@@ -87,14 +116,14 @@ def render_markdown_report(
                 lines.append(f"- 场景目标: {'; '.join(scenario.goals)}")
         lines.append(f"- 总分: {result.total_score:.2f}")
         lines.append(
-            "- 分项: Outcome {outcome:.2f}, Trace {trace_score:.2f}, Safety {safety:.2f}, Text {text:.2f}".format(
-                outcome=result.dimension_scores.get("outcome", 0),
-                trace_score=result.dimension_scores.get("trace", 0),
-                safety=result.dimension_scores.get("safety", 0),
-                text=result.dimension_scores.get("text", 0),
+            "- 分项: {outcome}；{trace_score}；{safety}；{text}".format(
+                outcome=_dimension_label("outcome", result.dimension_scores.get("outcome", 0)),
+                trace_score=_dimension_label("trace", result.dimension_scores.get("trace", 0)),
+                safety=_dimension_label("safety", result.dimension_scores.get("safety", 0)),
+                text=_dimension_label("text", result.dimension_scores.get("text", 0)),
             )
         )
-        lines.append(f"- 结论: {result.final_decision}")
+        lines.append(f"- 结论: {_decision_label(result.final_decision)}")
 
         if result.tool_trace_checks:
             lines.extend(["", "#### 工具调用客观检查", ""])
@@ -104,13 +133,8 @@ def render_markdown_report(
                 lines.append(f"- {check.check}: {passed}, {check.score:.0f}; {turn}; {check.reason}")
 
         lines.extend(["", "#### 评分证据", ""])
-        for dimension, label in [
-            ("outcome", "Outcome"),
-            ("trace", "Trace"),
-            ("safety", "Safety"),
-            ("text", "Text"),
-        ]:
-            lines.append(f"- {label}: {result.dimension_scores.get(dimension, 0):.2f}")
+        for dimension in ["outcome", "trace", "safety", "text"]:
+            lines.append(f"- {_dimension_label(dimension, result.dimension_scores.get(dimension, 0))}")
             dimension_evidence = [
                 evidence for evidence in result.evidence if evidence.dimension == dimension
             ]
@@ -158,7 +182,72 @@ def _weak_dimension_counts(results: list[EvalResult]) -> Counter:
 def _format_counter(counter: Counter) -> str:
     if not counter:
         return "暂无"
-    return ", ".join(f"{key}({value})" for key, value in counter.most_common(3))
+    return ", ".join(
+        f"{DIMENSION_META.get(key, (key, key, ''))[0]} {DIMENSION_META.get(key, (key, key, ''))[1]}({value})"
+        for key, value in counter.most_common(3)
+    )
+
+
+def _average_dimension_score(results: list[EvalResult], dimension: str) -> float:
+    if not results:
+        return 0.0
+    values = [result.dimension_scores.get(dimension, 0.0) for result in results]
+    return round(mean(values), 2) if values else 0.0
+
+
+def _dimension_label(dimension: str, score: float | None = None, include_score: bool = True) -> str:
+    cn, en, _ = DIMENSION_META.get(dimension, (dimension, dimension.title(), ""))
+    if include_score and score is not None:
+        return f"{cn} {en}（{score:.2f}分）"
+    return f"{cn} {en}"
+
+
+def _decision_label(decision: str) -> str:
+    return {
+        "pass": "通过",
+        "review": "复核",
+        "fail": "失败",
+    }.get(decision, decision)
+
+
+def build_report_identity(task: TaskSpec, runs_dir: str | Path) -> tuple[str, str]:
+    from datetime import datetime
+
+    subject = REPORT_SUBJECTS.get(task.task_id) or _fallback_subject(task)
+    now = datetime.now()
+    display_date = now.strftime("%Y/%m/%d")
+    file_date = now.strftime("%Y-%m-%d")
+    serial = _next_report_serial(subject, runs_dir, file_date)
+    title = f"{subject}测评报告{display_date}/{serial}"
+    filename = f"{_safe_filename(subject)}测评报告{file_date}-{serial}"
+    return title, filename
+
+
+def _fallback_subject(task: TaskSpec) -> str:
+    text = task.task.replace("致电", "").replace("告知", "").replace("通知", "").strip("，。； ")
+    if len(text) > 10:
+        text = text[:10]
+    return text or task.task_id
+
+
+def _next_report_serial(subject: str, runs_dir: str | Path, file_date: str) -> str:
+    pattern = f"{_safe_filename(subject)}测评报告{file_date}-"
+    max_serial = 0
+    runs_path = Path(runs_dir)
+    if runs_path.exists():
+        for candidate in runs_path.rglob("*.md"):
+            name = candidate.stem
+            if not name.startswith(pattern):
+                continue
+            suffix = name.removeprefix(pattern)
+            if len(suffix) == 4 and suffix.isdigit():
+                max_serial = max(max_serial, int(suffix))
+    return f"{max_serial + 1:04d}"
+
+
+def _safe_filename(text: str) -> str:
+    invalid = '<>:"/\\|?*'
+    return "".join("_" if ch in invalid else ch for ch in text).strip()
 
 
 def _negative_or_key_evidence(evidence: list[Evidence]) -> list[Evidence]:

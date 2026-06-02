@@ -8,6 +8,7 @@ from collections.abc import Callable
 from dialogue_eval.config import Settings, get_settings
 from dialogue_eval.parser import load_task
 from dialogue_eval.report import render_html_report, render_markdown_report
+from dialogue_eval.report.markdown import build_report_identity
 from dialogue_eval.runner.deepseek_dialogue_generator import DeepSeekDialogueGenerator
 from dialogue_eval.scenarios import generate_scenarios
 from dialogue_eval.schemas import EvalResult, RunSummary, ScoringConfig
@@ -87,10 +88,22 @@ def run_evaluation(
     store.write_json(run_id, "results.json", results)
     if progress:
         progress("report_generation_started", {"run_id": run_id})
-    markdown = render_markdown_report(task, scenarios, results, run_id, traces)
+    report_title, report_file_stem = build_report_identity(task, settings.runs_dir)
+    markdown = render_markdown_report(task, scenarios, results, run_id, report_title, traces)
     html = render_html_report(markdown)
-    report_markdown_path = store.write_text(run_id, "report.md", markdown)
-    report_html_path = store.write_text(run_id, "report.html", html)
+    report_markdown_path = store.write_text(run_id, f"{report_file_stem}.md", markdown)
+    report_html_path = store.write_text(run_id, f"{report_file_stem}.html", html)
+    store.write_text(run_id, "report.md", markdown)
+    store.write_text(run_id, "report.html", html)
+    store.write_json(
+        run_id,
+        "report_meta.json",
+        {
+            "report_title": report_title,
+            "report_markdown_name": report_markdown_path.name,
+            "report_html_name": report_html_path.name,
+        },
+    )
 
     summary = RunSummary(
         run_id=run_id,

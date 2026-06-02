@@ -13,15 +13,15 @@ class Settings(BaseSettings):
 
     app_env: str = "local"
 
-    model_provider: str = "mock"
-    model_base_url: str = "http://localhost:11434/v1"
-    model_api_key: str = Field(default="local-placeholder", repr=False)
-    model_name: str = "mock-agent"
+    model_provider: str = "deepseek"
+    model_base_url: str = "https://api.deepseek.com/v1"
+    model_api_key: str = Field(default="", repr=False)
+    model_name: str = "deepseek-chat"
 
-    judge_model_provider: str = "mock"
-    judge_model_base_url: str = "http://localhost:11434/v1"
-    judge_model_api_key: str = Field(default="local-placeholder", repr=False)
-    judge_model_name: str = "mock-judge"
+    judge_model_provider: str = "deepseek"
+    judge_model_base_url: str = "https://api.deepseek.com/v1"
+    judge_model_api_key: str = Field(default="", repr=False)
+    judge_model_name: str = "deepseek-chat"
 
     deepseek_api_key: str = Field(default="", repr=False)
 
@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     @property
     def effective_model_api_key(self) -> str:
-        if self.model_api_key and self.model_api_key != "local-placeholder":
+        if self.model_api_key:
             return self.model_api_key
         return self.deepseek_api_key
 

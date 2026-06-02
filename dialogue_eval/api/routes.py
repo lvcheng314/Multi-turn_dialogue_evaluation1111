@@ -145,6 +145,7 @@ def get_eval_run(run_id: str) -> dict:
 @router.get("/eval-runs/{run_id}/report")
 def get_report(run_id: str) -> dict:
     run_dir = Path(get_settings().runs_dir) / run_id
+    report_meta_path = run_dir / "report_meta.json"
     report_path = run_dir / "report.md"
     if not report_path.exists() and not (run_dir / "results.json").exists():
         raise HTTPException(status_code=404, detail="report not found")
@@ -153,6 +154,11 @@ def get_report(run_id: str) -> dict:
     scenarios_path = run_dir / "scenarios.json"
     results_path = run_dir / "results.json"
     trace_path = run_dir / "trace.jsonl"
+    report_meta = {}
+    if report_meta_path.exists():
+        report_meta = json.loads(report_meta_path.read_text(encoding="utf-8"))
+    named_markdown_path = run_dir / str(report_meta.get("report_markdown_name") or "report.md")
+    named_html_path = run_dir / str(report_meta.get("report_html_name") or "report.html")
     if task_path.exists() and scenarios_path.exists() and results_path.exists() and trace_path.exists():
         task = TaskSpec.model_validate(json.loads(task_path.read_text(encoding="utf-8")))
         scenarios = [
@@ -168,22 +174,25 @@ def get_report(run_id: str) -> dict:
             for line in trace_path.read_text(encoding="utf-8").splitlines()
             if line.strip()
         ]
-        markdown = render_markdown_report(task, scenarios, results, run_id, traces)
+        report_title = str(report_meta.get("report_title") or report_path.stem)
+        markdown = render_markdown_report(task, scenarios, results, run_id, report_title, traces)
         html = render_html_report(markdown)
         report_path.write_text(markdown, encoding="utf-8")
         (run_dir / "report.html").write_text(html, encoding="utf-8")
+        named_markdown_path.write_text(markdown, encoding="utf-8")
+        named_html_path.write_text(html, encoding="utf-8")
         avg = sum(item.total_score for item in results) / len(results) if results else 0
     else:
         raw_results = json.loads(results_path.read_text(encoding="utf-8"))
         avg = sum(item["total_score"] for item in raw_results) / len(raw_results) if raw_results else 0
-        markdown = report_path.read_text(encoding="utf-8")
-        html = (run_dir / "report.html").read_text(encoding="utf-8")
+        markdown = named_markdown_path.read_text(encoding="utf-8") if named_markdown_path.exists() else report_path.read_text(encoding="utf-8")
+        html = named_html_path.read_text(encoding="utf-8") if named_html_path.exists() else (run_dir / "report.html").read_text(encoding="utf-8")
     return {
         "run_id": run_id,
         "total_score": round(avg, 2),
         "report_markdown": markdown,
         "report_html": html,
-        "report_html_path": str(run_dir / "report.html"),
+        "report_html_path": str(named_html_path if named_html_path.exists() else (run_dir / "report.html")),
     }
 
 

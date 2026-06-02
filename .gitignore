@@ -13,6 +13,9 @@ wheels/
 .uv-cache/
 runs/*
 !runs/.gitkeep
+build/
+dist/
+graphify-out/
 
 # Frontend
 node_modules/
