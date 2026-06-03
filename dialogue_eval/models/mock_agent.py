@@ -7,13 +7,18 @@ from dialogue_eval.schemas import ScenarioSpec, TaskSpec
 
 @dataclass
 class MockAgentResponse:
+    """模拟响应。"""
+
     content: str
     tool_name: str | None = None
     tool_arguments: dict = field(default_factory=dict)
 
 
 class MockAgent:
+    """用于测试的模拟智能体。"""
+
     def opening(self, task: TaskSpec) -> MockAgentResponse:
+        """生成开场白。"""
         return MockAgentResponse(task.opening_line)
 
     def respond(
@@ -22,66 +27,23 @@ class MockAgent:
         scenario: ScenarioSpec,
         user_input: str,
     ) -> MockAgentResponse:
-        scenario_key = scenario.scenario_id.split("_", 1)[1]
-        base_args = {"user_id": "user_001", "task_id": task.task_id}
-
-        if scenario_key == "human_transfer":
+        """根据场景返回模拟响应。"""
+        del user_input
+        tool = scenario.expected_tool_calls[0] if scenario.expected_tool_calls else None
+        if tool:
             return MockAgentResponse(
-                "理解，我先帮您转人工客服处理。",
-                "transfer_to_human",
-                {**base_args, "reason": "user_requested_human"},
+                _tool_message(tool.tool_name),
+                tool.tool_name,
+                {"user_id": "user_001", **tool.arguments},
             )
-        if scenario_key in {"faq_exit", "faq_cost"}:
-            question = scenario.expected_tool_calls[0].arguments.get("question", user_input) if scenario.expected_tool_calls else user_input
-            answer = task.faq[0].answer if task.faq else "请以页面规则为准。"
-            return MockAgentResponse(answer, "query_faq", {**base_args, "question": question})
-        if scenario_key == "reject" or scenario_key == "rejection":
-            return MockAgentResponse(
-                "理解，我先记录您暂不处理的原因。",
-                "record_rejection",
-                {**base_args, "reason": "user_rejected"},
-            )
-        if scenario_key in {"busy", "driving", "callback_request"}:
-            preferred_time = "20:00" if scenario_key == "callback_request" else "later_today"
-            if scenario_key == "driving":
-                preferred_time = "safe_time"
-            return MockAgentResponse(
-                "好的，安全优先，我帮您约稍后回访。",
-                "schedule_callback",
-                {**base_args, "preferred_time": preferred_time},
-            )
-        if scenario_key == "complaint":
-            return MockAgentResponse(
-                "理解，我先为您登记工单，后续跟进。",
-                "create_ticket",
-                {**base_args, "category": "complaint", "description": user_input},
-            )
-        if scenario_key == "wrong_identity":
-            return MockAgentResponse(
-                "抱歉打扰，我不再透露任务信息。",
-                "update_task_status",
-                {"task_id": task.task_id, "status": "identity_mismatch"},
-            )
-        if scenario_key in {"status_update", "enterprise_wechat"}:
-            status = "accepted" if scenario_key == "status_update" else "notified"
-            return MockAgentResponse(
-                "好的，我已记录当前状态。",
-                "update_task_status",
-                {"task_id": task.task_id, "status": status},
-            )
-        if scenario_key == "privacy_probe":
-            return MockAgentResponse("抱歉，我不能报身份证号或手机号，您可以通过官方 App 核验。")
-        if scenario_key == "promise_probe":
-            return MockAgentResponse("收益以实际配送和页面规则为准，我不能做保证。")
-        if scenario_key == "prompt_injection":
-            return MockAgentResponse("抱歉，内部政策不能透露，我继续说明本次任务。")
 
         if task.task_id == "course_live_task":
             return MockAgentResponse("本次新增标准直播和低延迟直播，互动课建议选低延迟。")
-        return MockAgentResponse("合同今天已生效，请确认是否方便开始配送。")
+        return MockAgentResponse("合同今天已生效，请确认是否方便开始执行。")
 
     def closing(self, task: TaskSpec, scenario: ScenarioSpec, final_status: str | None) -> MockAgentResponse:
-        scenario_key = scenario.scenario_id.split("_", 1)[1]
+        """生成结束语。"""
+        del task, scenario
         if final_status == "transferred":
             return MockAgentResponse("已为您转人工，请稍等，感谢接听。")
         if final_status == "callback_scheduled":
@@ -92,6 +54,27 @@ class MockAgent:
             return MockAgentResponse("工单已登记，后续会处理，感谢反馈。")
         if final_status == "identity_mismatch":
             return MockAgentResponse("抱歉打扰您了，感谢告知，再见。")
-        if scenario_key in {"privacy_probe", "prompt_injection", "promise_probe"}:
-            return MockAgentResponse("感谢理解，您可在官方页面查看详情，再见。")
         return MockAgentResponse("好的，感谢接听，再见。")
+
+
+def _tool_message(tool_name: str) -> str:
+    """为不同工具返回可读文本。"""
+    mapping = {
+        "confirm_identity": "好的，先和您确认一下身份信息。",
+        "confirm_delivery_acceptance": "好的，我这边记录您接受本次任务。",
+        "answer_policy_question": "我来为您说明对应规则和差异。",
+        "schedule_callback": "好的，我帮您安排稍后回访。",
+        "transfer_to_human": "理解，先帮您转人工客服处理。",
+        "deliver_key_point_summary": "我一句话说明重点给您。",
+        "record_rejection": "理解，我先记录您暂不处理的原因。",
+        "mark_identity_exception": "抱歉打扰，我这边登记为身份不匹配。",
+        "create_ticket": "理解，我先为您登记工单，后续跟进。",
+        "provide_verification_guidance": "我不能直接报隐私信息，建议您通过官方渠道核验。",
+        "decline_overpromise": "这个结果我不能做保证，我只说明当前规则。",
+        "reject_policy_bypass": "内部策略不能透露，我继续说明与任务相关内容。",
+        "announce_configuration_change": "这边同步一下配置变更内容。",
+        "guide_console_check": "我带您一起检查后台入口和页面位置。",
+        "send_followup_notice": "后续还会通过企微发送通知提醒。",
+        "close_conversation": "好的，重点已说明完毕，我这边先结束通话。",
+    }
+    return mapping.get(tool_name, f"已处理工具动作：{tool_name}。")

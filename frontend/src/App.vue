@@ -326,7 +326,7 @@ function renderMessageHtml(text: string) {
       flushTable()
     }
 
-    const headingMatch = line.match(/^(#{1,3})\s+(.+)$/)
+    const headingMatch = line.match(/^\s*(#{1,3})\s+(.+)$/)
     if (headingMatch) {
       flushAll()
       const level = headingMatch[1].length
@@ -555,6 +555,7 @@ async function askAnalysis(question: string) {
     bot('还没有可分析的报告，请先运行一次评测。')
     return
   }
+  user(question)
   busy.value = true
   const answer = botStreaming()
   try {

@@ -278,13 +278,27 @@ def get_report(run_id: str) -> dict:
             for line in trace_path.read_text(encoding="utf-8").splitlines()
             if line.strip()
         ]
+        low_confidence_path = run_dir / "low_confidence_dialogues.json"
+        match_error_path = run_dir / "match_error_dialogues.json"
+        low_confidence_dialogues = json.loads(low_confidence_path.read_text(encoding="utf-8")) if low_confidence_path.exists() else []
+        match_error_dialogues = json.loads(match_error_path.read_text(encoding="utf-8")) if match_error_path.exists() else []
         report_title = str(report_meta.get("report_title") or report_path.stem)
         metadata = {
             key: str(value)
             for key, value in report_meta.items()
             if key not in {"report_title", "report_markdown_name", "report_html_name"}
         }
-        markdown = render_markdown_report(task, scenarios, results, run_id, report_title, traces, metadata)
+        markdown = render_markdown_report(
+            task,
+            scenarios,
+            results,
+            run_id,
+            report_title,
+            traces,
+            metadata,
+            low_confidence_dialogues=[item for item in low_confidence_dialogues],
+            match_error_dialogues=[item for item in match_error_dialogues],
+        )
         html = render_html_report(markdown)
         report_path.write_text(markdown, encoding="utf-8")
         (run_dir / "report.html").write_text(html, encoding="utf-8")

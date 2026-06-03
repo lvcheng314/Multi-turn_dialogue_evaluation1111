@@ -6,17 +6,23 @@ from pydantic import BaseModel, Field
 
 
 class FlowStep(BaseModel):
+    """任务流程步骤定义。"""
+
     step_id: str
     description: str
     required: bool = True
 
 
 class FAQItem(BaseModel):
+    """FAQ 条目定义。"""
+
     question: str
     answer: str
 
 
 class TaskConstraints(BaseModel):
+    """任务约束定义。"""
+
     max_reply_chars: int = 40
     tone: str = "电话口语、礼貌、简短"
     forbidden_terms: list[str] = Field(default_factory=list)
@@ -24,6 +30,8 @@ class TaskConstraints(BaseModel):
 
 
 class TaskSpec(BaseModel):
+    """任务规格定义。"""
+
     task_id: str
     role: str
     task: str
@@ -35,20 +43,28 @@ class TaskSpec(BaseModel):
 
 
 class ExpectedToolCall(BaseModel):
+    """预期工具调用定义。"""
+
     tool_name: str
     required: bool = True
     arguments: dict[str, Any] = Field(default_factory=dict)
 
 
 class ScenarioSpec(BaseModel):
+    """场景规格定义。"""
+
     scenario_id: str
     task_id: str
+    category: str = ""
+    subtype: str = ""
     persona: str
     customer_personality: str = ""
     agent_personality: str = ""
     situation: str = ""
     conversation_length: Literal["short", "medium", "long"] = "medium"
     initial_user_input: str
+    utterance_variants: list[str] = Field(default_factory=list)
+    exclusive_signals: list[str] = Field(default_factory=list)
     goals: list[str] = Field(default_factory=list)
     expected_behaviors: list[str] = Field(default_factory=list)
     expected_tool_calls: list[ExpectedToolCall] = Field(default_factory=list)
@@ -57,6 +73,8 @@ class ScenarioSpec(BaseModel):
 
 
 class MCPToolSpec(BaseModel):
+    """MCP 工具规格定义。"""
+
     tool_name: str
     description: str
     required_arguments: list[str] = Field(default_factory=list)
@@ -66,12 +84,16 @@ class MCPToolSpec(BaseModel):
 
 
 class ChatMessage(BaseModel):
+    """对话消息。"""
+
     turn: int
     role: Literal["user", "agent", "system"]
     content: str
 
 
 class ToolCallTrace(BaseModel):
+    """工具调用轨迹。"""
+
     turn: int
     tool_name: str
     arguments: dict[str, Any] = Field(default_factory=dict)
@@ -81,6 +103,8 @@ class ToolCallTrace(BaseModel):
 
 
 class DialogueTrace(BaseModel):
+    """标准化对话轨迹。"""
+
     run_id: str
     dialogue_id: str
     task_id: str
@@ -91,6 +115,8 @@ class DialogueTrace(BaseModel):
 
 
 class ImportedDialogueTrace(BaseModel):
+    """导入的对话轨迹。"""
+
     run_id: str | None = None
     dialogue_id: str
     task_id: str | None = None
@@ -101,6 +127,8 @@ class ImportedDialogueTrace(BaseModel):
 
 
 class ToolTraceCheck(BaseModel):
+    """工具检查结果。"""
+
     check: str
     passed: bool
     score: float
@@ -109,6 +137,8 @@ class ToolTraceCheck(BaseModel):
 
 
 class Evidence(BaseModel):
+    """评分证据。"""
+
     type: str
     turn: int | None = None
     comment: str
@@ -118,6 +148,8 @@ class Evidence(BaseModel):
 
 
 class EvalResult(BaseModel):
+    """单条对话评分结果。"""
+
     run_id: str
     dialogue_id: str
     total_score: float
@@ -129,11 +161,15 @@ class EvalResult(BaseModel):
 
 
 class ScoringConfig(BaseModel):
+    """评分配置。"""
+
     enable_llm_judge: bool = False
     max_turns: int = 20
 
 
 class RunSummary(BaseModel):
+    """运行摘要。"""
+
     run_id: str
     task_id: str
     status: str
@@ -142,3 +178,30 @@ class RunSummary(BaseModel):
     total_score: float
     report_markdown_path: str
     report_html_path: str
+    total_dialogues: int = 0
+    scored_dialogues: int = 0
+    low_confidence_dialogues: int = 0
+    match_error_dialogues: int = 0
+
+
+class ScenarioMatchResult(BaseModel):
+    """场景识别结果。"""
+
+    dialogue_id: str
+    scenario_id: str | None = None
+    confidence: float | None = None
+    reason: str = ""
+    matched_by: Literal["llm"] = "llm"
+    status: Literal["matched", "low_confidence", "match_error"]
+    error_type: str | None = None
+
+
+class UnscorableDialogue(BaseModel):
+    """未进入量化评分的对话。"""
+
+    dialogue_id: str
+    status: Literal["low_confidence", "match_error"]
+    suggested_scenario_id: str | None = None
+    confidence: float | None = None
+    reason: str = ""
+    error_type: str | None = None

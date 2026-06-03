@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import json
 from collections.abc import Callable
 from pathlib import Path
 from statistics import mean
 from uuid import uuid4
+
+import httpx
 
 from dialogue_eval.config import Settings, get_settings
 from dialogue_eval.parser import load_task
@@ -11,7 +14,16 @@ from dialogue_eval.report import render_html_report, render_markdown_report
 from dialogue_eval.report.markdown import build_report_identity
 from dialogue_eval.runner.deepseek_dialogue_generator import DeepSeekDialogueGenerator
 from dialogue_eval.scenarios import generate_scenarios
-from dialogue_eval.schemas import DialogueTrace, EvalResult, ImportedDialogueTrace, RunSummary, ScoringConfig, ScenarioSpec
+from dialogue_eval.schemas import (
+    DialogueTrace,
+    EvalResult,
+    ImportedDialogueTrace,
+    RunSummary,
+    ScenarioMatchResult,
+    ScenarioSpec,
+    ScoringConfig,
+    UnscorableDialogue,
+)
 from dialogue_eval.scorer import ScorerSkill
 from dialogue_eval.storage import RunStore
 from dialogue_eval.storage.archive import archive_run
@@ -24,6 +36,7 @@ def run_evaluation(
     settings: Settings | None = None,
     progress: Callable[[str, dict | None], None] | None = None,
 ) -> RunSummary:
+    """执行模型生成对话评测。"""
     settings = settings or get_settings()
     task = load_task(task_path)
     scenario_count = scenarios_count or settings.scenario_count
@@ -52,21 +65,13 @@ def run_evaluation(
         if progress:
             progress(
                 "model_generation_started",
-                {
-                    "dialogue_id": dialogue_id,
-                    "index": index,
-                    "total": len(scenarios),
-                },
+                {"dialogue_id": dialogue_id, "index": index, "total": len(scenarios)},
             )
         trace = runner.run(run_id, dialogue_id, task, scenario, settings.max_turns)
         if progress:
             progress(
                 "scoring_started",
-                {
-                    "dialogue_id": dialogue_id,
-                    "index": index,
-                    "total": len(scenarios),
-                },
+                {"dialogue_id": dialogue_id, "index": index, "total": len(scenarios)},
             )
         result = scorer.score(task, scenario, trace, scoring_config)
         store.append_trace(run_id, trace)
@@ -94,8 +99,12 @@ def run_evaluation(
         settings=settings,
         model_name=_archive_model_name(settings, model),
         store=store,
-        report_metadata={"data_source": "澶фā鍨嬬敓鎴愭ā鎷?", "scenario_source": "鍦烘櫙鐢熸垚"},
+        report_metadata={"data_source": "大模型生成模拟", "scenario_source": "自动生成场景"},
         progress=progress,
+        total_dialogues=len(results),
+        scored_dialogues=len(results),
+        low_confidence_dialogues=[],
+        match_error_dialogues=[],
     )
 
 
@@ -106,6 +115,7 @@ def run_imported_evaluation(
     model_name: str | None = None,
     progress: Callable[[str, dict | None], None] | None = None,
 ) -> RunSummary:
+    """执行导入对话评测。"""
     settings = settings or get_settings()
     task = load_task(task_path)
     scenarios = generate_scenarios(task, settings.scenario_count)
@@ -117,10 +127,11 @@ def run_imported_evaluation(
         max_turns=settings.max_turns,
     )
     traces_input = trace_input if isinstance(trace_input, list) else [trace_input]
-    traces: list[DialogueTrace] = []
+    scored_traces: list[DialogueTrace] = []
     results: list[EvalResult] = []
-    fallback_count = 0
-    matched_scenarios: list[str] = []
+    low_confidence_dialogues: list[UnscorableDialogue] = []
+    match_error_dialogues: list[UnscorableDialogue] = []
+    matches: list[ScenarioMatchResult] = []
 
     if progress:
         progress("scenario_generation_started", {"scenario_count": len(scenarios)})
@@ -130,12 +141,25 @@ def run_imported_evaluation(
     store.write_json(run_id, "scenarios.json", scenarios)
 
     for index, imported_trace in enumerate(traces_input, start=1):
-        matched_scenario, matched_score, fallback_used = _match_scenario(imported_trace, scenarios)
-        trace = _normalize_imported_trace(run_id, task.task_id, imported_trace, matched_scenario.scenario_id)
-        if fallback_used:
-            fallback_count += 1
-        matched_scenarios.append(matched_scenario.scenario_id)
+        match = match_scenario_with_llm(imported_trace, task, scenarios, settings)
+        matches.append(match)
+        if match.status != "matched":
+            pending = UnscorableDialogue(
+                dialogue_id=imported_trace.dialogue_id,
+                status=match.status,
+                suggested_scenario_id=match.scenario_id,
+                confidence=match.confidence,
+                reason=match.reason,
+                error_type=match.error_type,
+            )
+            if match.status == "low_confidence":
+                low_confidence_dialogues.append(pending)
+            else:
+                match_error_dialogues.append(pending)
+            continue
 
+        scenario = next(item for item in scenarios if item.scenario_id == match.scenario_id)
+        trace = _normalize_imported_trace(run_id, task.task_id, imported_trace, scenario.scenario_id)
         if progress:
             progress(
                 "scoring_started",
@@ -143,34 +167,50 @@ def run_imported_evaluation(
                     "dialogue_id": trace.dialogue_id,
                     "index": index,
                     "total": len(traces_input),
-                    "scenario_id": matched_scenario.scenario_id,
-                    "matched_score": round(matched_score, 2),
+                    "scenario_id": scenario.scenario_id,
+                    "matched_confidence": match.confidence,
                 },
             )
-
-        result = scorer.score(task, matched_scenario, trace, scoring_config)
+        result = scorer.score(task, scenario, trace, scoring_config)
         store.append_trace(run_id, trace)
         store.write_json(run_id, f"{trace.dialogue_id}_trace.json", trace)
         store.write_json(run_id, f"{trace.dialogue_id}_result.json", result)
-        traces.append(trace)
+        scored_traces.append(trace)
         results.append(result)
+
+    store.write_json(run_id, "scenario_matches.json", matches)
+    store.write_json(run_id, "low_confidence_dialogues.json", low_confidence_dialogues)
+    store.write_json(run_id, "match_error_dialogues.json", match_error_dialogues)
+    total_dialogues = len(traces_input)
+    low_ratio = round(len(low_confidence_dialogues) / total_dialogues, 4) if total_dialogues else 0.0
+    error_ratio = round(len(match_error_dialogues) / total_dialogues, 4) if total_dialogues else 0.0
+    report_metadata = {
+        "data_source": "上传对话数据",
+        "scenario_source": "LLM 场景识别",
+        "total_dialogues": str(total_dialogues),
+        "scored_count": str(len(results)),
+        "low_confidence_count": str(len(low_confidence_dialogues)),
+        "low_confidence_ratio": f"{low_ratio:.2%}",
+        "match_error_count": str(len(match_error_dialogues)),
+        "match_error_ratio": f"{error_ratio:.2%}",
+        "scenario_match_threshold": f"{settings.scenario_match_confidence_threshold:.2f}",
+    }
 
     return _finalize_run(
         run_id=run_id,
         task=task,
         scenarios=scenarios,
-        traces=traces,
+        traces=scored_traces,
         results=results,
         settings=settings,
         model_name=model_name or "imported-trace",
         store=store,
-        report_metadata={
-            "data_source": "涓婁紶瀵硅瘽鏁版嵁",
-            "scenario_source": "鑷姩鍖归厤锛堥儴鍒嗗洖閫€鍒伴涓満鏅級" if fallback_count else "鑷姩鍖归厤",
-            "matched_scenario_id": ", ".join(matched_scenarios[:5]) + (" ..." if len(matched_scenarios) > 5 else ""),
-            "matched_scenario_score": f"fallback {fallback_count}/{len(traces_input)}",
-        },
+        report_metadata=report_metadata,
         progress=progress,
+        total_dialogues=total_dialogues,
+        scored_dialogues=len(results),
+        low_confidence_dialogues=low_confidence_dialogues,
+        match_error_dialogues=match_error_dialogues,
     )
 
 
@@ -186,12 +226,27 @@ def _finalize_run(
     store: RunStore,
     report_metadata: dict[str, str],
     progress: Callable[[str, dict | None], None] | None = None,
+    total_dialogues: int,
+    scored_dialogues: int,
+    low_confidence_dialogues: list[UnscorableDialogue],
+    match_error_dialogues: list[UnscorableDialogue],
 ) -> RunSummary:
+    """收尾并生成报告。"""
     store.write_json(run_id, "results.json", results)
     if progress:
         progress("report_generation_started", {"run_id": run_id})
     report_title, report_file_stem = build_report_identity(task, settings.runs_dir)
-    markdown = render_markdown_report(task, scenarios, results, run_id, report_title, traces, report_metadata)
+    markdown = render_markdown_report(
+        task,
+        scenarios,
+        results,
+        run_id,
+        report_title,
+        traces,
+        report_metadata,
+        low_confidence_dialogues=low_confidence_dialogues,
+        match_error_dialogues=match_error_dialogues,
+    )
     html = render_html_report(markdown)
     report_markdown_path = store.write_text(run_id, f"{report_file_stem}.md", markdown)
     report_html_path = store.write_text(run_id, f"{report_file_stem}.html", html)
@@ -213,10 +268,14 @@ def _finalize_run(
         task_id=task.task_id,
         status="completed",
         scenario_count=len(scenarios),
-        completed_dialogues=len(results),
+        completed_dialogues=scored_dialogues,
         total_score=round(mean([result.total_score for result in results]), 2) if results else 0.0,
         report_markdown_path=str(report_markdown_path),
         report_html_path=str(report_html_path),
+        total_dialogues=total_dialogues,
+        scored_dialogues=scored_dialogues,
+        low_confidence_dialogues=len(low_confidence_dialogues),
+        match_error_dialogues=len(match_error_dialogues),
     )
     archive_run(settings.archive_db_path, task, model_name, summary)
     if progress:
@@ -230,17 +289,12 @@ def _normalize_imported_trace(
     trace_input: ImportedDialogueTrace,
     scenario_id: str,
 ) -> DialogueTrace:
+    """标准化导入对话。"""
     transcript = sorted(trace_input.transcript, key=lambda message: message.turn)
-    state_trace = trace_input.state_trace or [
-        {
-            "turn": message.turn,
-            "task_status": "in_progress" if message.turn > 1 else "opened",
-            "identity_confirmed": message.turn > 1,
-        }
-        for message in transcript
-    ]
+    state_trace = trace_input.state_trace or _infer_state_trace_from_transcript(transcript)
     if state_trace:
-        state_trace[-1]["task_status"] = state_trace[-1].get("task_status", "completed") or "completed"
+        final_status = state_trace[-1].get("task_status")
+        state_trace[-1]["task_status"] = final_status or "completed"
     return DialogueTrace(
         run_id=run_id,
         dialogue_id=trace_input.dialogue_id,
@@ -252,36 +306,209 @@ def _normalize_imported_trace(
     )
 
 
-def _match_scenario(trace: DialogueTrace, scenarios: list[ScenarioSpec]) -> tuple[ScenarioSpec, float, bool]:
-    transcript_text = " ".join(message.content for message in trace.transcript).lower()
-    best = scenarios[0]
-    best_score = -1.0
+def match_scenario_with_llm(
+    trace: ImportedDialogueTrace,
+    task,
+    scenarios: list[ScenarioSpec],
+    settings: Settings,
+) -> ScenarioMatchResult:
+    """使用 LLM 为导入对话识别场景。"""
+    api_key = settings.effective_scenario_match_api_key
+    if not api_key:
+        return ScenarioMatchResult(
+            dialogue_id=trace.dialogue_id,
+            status="match_error",
+            reason="场景识别模型未配置 API Key",
+            error_type="missing_api_key",
+        )
+
+    prompt = _build_scenario_match_prompt(task, trace, scenarios, settings.scenario_match_confidence_threshold)
+    url = settings.scenario_match_model_base_url.rstrip("/") + "/chat/completions"
+    try:
+        with httpx.Client(timeout=45) as client:
+            response = client.post(
+                url,
+                headers={"Authorization": f"Bearer {api_key}"},
+                json={
+                    "model": settings.scenario_match_model_name,
+                    "messages": [{"role": "user", "content": prompt}],
+                    "temperature": 0,
+                    "max_tokens": 600,
+                    "response_format": {"type": "json_object"},
+                },
+            )
+            response.raise_for_status()
+            content = response.json()["choices"][0]["message"]["content"]
+    except httpx.TimeoutException:
+        return ScenarioMatchResult(
+            dialogue_id=trace.dialogue_id,
+            status="match_error",
+            reason="场景识别请求超时",
+            error_type="timeout",
+        )
+    except httpx.HTTPError as exc:
+        return ScenarioMatchResult(
+            dialogue_id=trace.dialogue_id,
+            status="match_error",
+            reason=f"场景识别请求失败: {exc}",
+            error_type="http_error",
+        )
+    except Exception as exc:
+        return ScenarioMatchResult(
+            dialogue_id=trace.dialogue_id,
+            status="match_error",
+            reason=f"场景识别发生异常: {exc}",
+            error_type="runtime_error",
+        )
+
+    try:
+        payload = json.loads(content)
+    except json.JSONDecodeError:
+        return ScenarioMatchResult(
+            dialogue_id=trace.dialogue_id,
+            status="match_error",
+            reason="场景识别模型返回了非 JSON 内容",
+            error_type="non_json_response",
+        )
+
+    scenario_id = payload.get("scenario_id")
+    reason = str(payload.get("reason") or "").strip()
+    confidence_raw = payload.get("confidence")
+    if not scenario_id or confidence_raw is None:
+        return ScenarioMatchResult(
+            dialogue_id=trace.dialogue_id,
+            status="match_error",
+            reason="场景识别模型返回缺少必要字段",
+            error_type="missing_fields",
+        )
+    if scenario_id not in {scenario.scenario_id for scenario in scenarios}:
+        return ScenarioMatchResult(
+            dialogue_id=trace.dialogue_id,
+            status="match_error",
+            scenario_id=str(scenario_id),
+            reason="场景识别模型返回了候选列表之外的场景",
+            error_type="invalid_scenario_id",
+        )
+    try:
+        confidence = float(confidence_raw)
+    except (TypeError, ValueError):
+        return ScenarioMatchResult(
+            dialogue_id=trace.dialogue_id,
+            status="match_error",
+            scenario_id=str(scenario_id),
+            reason="场景识别模型返回了非法置信度",
+            error_type="invalid_confidence",
+        )
+
+    if confidence >= settings.scenario_match_confidence_threshold:
+        return ScenarioMatchResult(
+            dialogue_id=trace.dialogue_id,
+            scenario_id=str(scenario_id),
+            confidence=confidence,
+            reason=reason or "场景识别成功",
+            status="matched",
+        )
+    return ScenarioMatchResult(
+        dialogue_id=trace.dialogue_id,
+        scenario_id=str(scenario_id),
+        confidence=confidence,
+        reason=reason or "置信度不足，未进入量化评分",
+        status="low_confidence",
+    )
+
+
+def _build_scenario_match_prompt(
+    task,
+    trace: ImportedDialogueTrace,
+    scenarios: list[ScenarioSpec],
+    threshold: float,
+) -> str:
+    """构造场景识别提示词。"""
+    transcript = "\n".join(f"{message.role}: {message.content}" for message in trace.transcript)
+    scenario_lines = []
     for scenario in scenarios:
-        parts = [
-            scenario.persona,
-            scenario.initial_user_input,
-            *scenario.goals,
-            *scenario.expected_behaviors,
-            *scenario.risk_points,
-        ]
-        score = 0.0
-        for token in _tokens(" ".join(parts)):
-            if token and token in transcript_text:
-                score += 1.0
-        if score > best_score:
-            best = scenario
-            best_score = score
-    return best, best_score, best_score <= 0
+        expected_tools = ", ".join(call.tool_name for call in scenario.expected_tool_calls) or "无"
+        variants = "；".join(scenario.utterance_variants or [scenario.initial_user_input])
+        scenario_lines.append(
+            "\n".join(
+                [
+                    f"- 场景ID: {scenario.scenario_id}",
+                    f"  分类: {scenario.category or '未分类'} / {scenario.subtype or '默认'}",
+                    f"  说明: {scenario.persona}",
+                    f"  常见表达: {variants}",
+                    f"  目标: {'；'.join(scenario.goals) or '无'}",
+                    f"  预期工具: {expected_tools}",
+                    f"  预期状态: {scenario.expected_final_state}",
+                    f"  风险点: {'；'.join(scenario.risk_points) or '无'}",
+                ]
+            )
+        )
+    return f"""
+你是对话评测系统的场景识别节点。你的任务是从候选场景中，为一段真实导入对话选择最匹配的一个场景。
+
+要求：
+1. 只能从候选场景中选择一个 scenario_id。
+2. 如果你不够确定，也必须返回你认为最接近的场景，但 confidence 要真实反映把握程度。
+3. 不要评分，不要输出 Markdown。
+4. 只返回 JSON 对象，格式严格为：
+{{"scenario_id":"...", "confidence":0.0, "reason":"..."}}
+5. confidence 取值范围 0 到 1。
+6. 若你判断该对话过于复杂、混合或歧义较大，也不要编造高分置信度。
+7. 系统会用 {threshold:.2f} 作为进入量化评分的阈值。
+
+任务信息：
+- task_id: {task.task_id}
+- role: {task.role}
+- task: {task.task}
+
+候选场景：
+{chr(10).join(scenario_lines)}
+
+对话内容：
+{transcript}
+""".strip()
 
 
-def _tokens(text: str) -> list[str]:
-    normalized = text.replace("锛?", " ").replace("銆?", " ").replace("銆?", " ").replace("锛?", " ").lower()
-    return [token for token in normalized.split() if len(token) >= 2]
+def _infer_state_trace_from_transcript(transcript) -> list[dict]:
+    """从对话内容推断状态轨迹。"""
+    state_trace: list[dict] = []
+    current_status = "opened"
+    identity_confirmed = False
+
+    for message in transcript:
+        content = message.content
+
+        if message.role == "user" and any(token in content for token in ["不是本人", "找错人"]):
+            current_status = "identity_mismatch"
+        elif any(token in content for token in ["转人工", "人工客服"]):
+            current_status = "transferred"
+        elif any(token in content for token in ["稍后回访", "晚点联系", "开车", "稍后再打"]):
+            current_status = "callback_scheduled"
+        elif any(token in content for token in ["不跑了", "别安排我", "拒绝", "不想"]):
+            current_status = "rejected"
+        elif any(token in content for token in ["怎么退出", "低延迟", "更贵", "区别"]):
+            current_status = "faq_answered"
+        elif message.role == "agent":
+            identity_confirmed = True
+            if current_status == "opened":
+                current_status = "in_progress"
+
+        state_trace.append(
+            {
+                "turn": message.turn,
+                "task_status": current_status,
+                "identity_confirmed": identity_confirmed,
+            }
+        )
+
+    return state_trace
 
 
 def _build_runner(settings: Settings, model: str | None) -> object:
+    """构建对话运行器。"""
     return DeepSeekDialogueGenerator(settings)
 
 
 def _archive_model_name(settings: Settings, model: str | None) -> str:
+    """返回归档模型名。"""
     return str(model or settings.model_name)
