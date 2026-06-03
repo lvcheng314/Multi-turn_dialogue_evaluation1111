@@ -5,7 +5,7 @@ from dialogue_eval.scorer.trace import TraceScorer
 
 
 def test_trace_scorer_passes_human_transfer() -> None:
-    task = load_task("examples/tasks/fengmaotui_delivery_task.json")
+    task = load_task("tasks/fengmaotui_delivery_task.json")
     scenario = generate_scenarios(task, 15)[4]
     trace = DialogueRunner().run("run_test", "dialogue_001", task, scenario)
     score, checks, evidence = TraceScorer().score(scenario, trace)

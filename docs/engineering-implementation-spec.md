@@ -1,70 +1,72 @@
-# 当前工程实现说明
+# 工程实现说明
 
-## 1. 执行链路
+## 1. 当前执行链路
 
-当前代码统一走真实模型链路：
-
-`任务解析 -> 场景生成 -> DeepSeekDialogueGenerator -> OpenAI-compatible API -> DialogueTrace -> ScorerSkill -> 报告生成 -> API/前端展示`
-
-不再保留按 `model=mock` 切到本地 `MockAgent` / `DialogueRunner` 的执行分支。
-
-## 2. 默认配置
-
-```env
-APP_ENV=local
-
-MODEL_PROVIDER=deepseek
-MODEL_BASE_URL=https://api.deepseek.com/v1
-MODEL_API_KEY=
-MODEL_NAME=deepseek-chat
-
-JUDGE_MODEL_PROVIDER=deepseek
-JUDGE_MODEL_BASE_URL=https://api.deepseek.com/v1
-JUDGE_MODEL_API_KEY=
-JUDGE_MODEL_NAME=deepseek-chat
-
-DEEPSEEK_API_KEY=
-
-RUNS_DIR=./runs
-ARCHIVE_DB_PATH=./runs/eval_archive.sqlite3
-ENABLE_LLM_JUDGE=false
-SCENARIO_COUNT=15
-MAX_TURNS=20
-```
-
-## 3. 目录说明
-
-核心目录：
-
-- `dialogue_eval/`: 后端、评测、报告生成
-- `frontend/`: Vue 前端
-- `examples/tasks/`: 内置任务
-- `runs/`: 本地运行结果
-- `scripts/start-deepseek-web.cmd`: 推荐启动入口
-
-## 4. 报告输出
-
-每次运行会产出：
-
-- 固定文件：`report.md`、`report.html`
-- 正式命名文件：`<主题>测评报告YYYY-MM-DD-0001.md/.html`
-- 元信息：`report_meta.json`
-
-报告标题示例：
+当前代码主链路如下：
 
 ```text
-飞毛腿外呼测评报告2026/06/02/0001
+任务解析 -> 场景生成 -> DeepSeekDialogueGenerator
+-> OpenAI-compatible API -> DialogueTrace
+-> ScorerSkill -> 报告生成 -> API / 前端展示
 ```
 
-## 5. API
+导入评测分支如下：
+
+```text
+上传 DialogueTrace JSON -> 自动匹配场景
+-> ScorerSkill -> 报告生成 -> API / 前端展示
+```
+
+## 2. 当前目录
+
+- `dialogue_eval/`
+  - `api/`：FastAPI 应用与路由
+  - `pipeline.py`：主评测流水线
+  - `task_sources.py`：统一任务库扫描、上传、判重
+  - `report/`：Markdown / HTML 报告生成与分析
+  - `scorer/`：四个维度评分逻辑
+  - `runner/deepseek_dialogue_generator.py`：真实模型对话生成
+- `frontend/`
+  - `src/App.vue`：主页交互
+  - `src/api/client.ts`：前端 API 客户端
+- `tasks/`
+  - 当前项目的统一任务库目录
+- `runs/`
+  - 每次运行的产物与归档数据库
+
+## 3. 当前任务库策略
+
+- 示例任务与用户上传任务统一保存在 `tasks/`
+- 上传前先做格式校验
+- 格式错误时不会写入 `tasks/`
+- 上传后按任务内容做重复检测
+- 若项目内已有重复任务，前端提示是否直接复用历史文件
+
+## 4. 当前前端交互
+
+首页包含以下功能：
+
+- 任务文件选择
+- 任务文件上传
+- 对话数据来源切换
+  - 大模型生成模拟
+  - 上传对话数据
+- 聊天式报告助手
+- 报告内嵌展示
+- 历史归档查看
+
+## 5. 当前 API
 
 ```text
 GET  /api/health
 GET  /api/task-sources
-POST /api/tasks                  (当前仅支持 source_type=json)
+POST /api/tasks
+POST /api/tasks/upload
 POST /api/tasks/{task_id}/scenarios
 POST /api/eval-runs
 POST /api/eval-runs/stream
+POST /api/eval-runs/import
+POST /api/eval-runs/import/stream
 GET  /api/eval-runs/{run_id}
 GET  /api/eval-runs/{run_id}/report
 GET  /api/eval-runs/{run_id}/report.html
@@ -77,30 +79,25 @@ POST /api/assistant/stream
 
 ## 6. 启动方式
 
-推荐：
+推荐入口：
 
 ```text
 scripts/start-deepseek-web.cmd
 ```
 
-手动方式：
+该脚本会：
 
-```powershell
-cd frontend
-npm.cmd run build
-cd ..
-uv run python desktop_app.py
-```
+- 校验 `.env`
+- 运行 `uv sync`
+- 安装前端依赖（首次）
+- 构建 `frontend/dist`
+- 启动 `desktop_app.py`
 
-## 7. 测试
+## 7. 测试重点
 
-```powershell
-uv run pytest
-```
+当前应重点关注：
 
-当前最小回归重点：
-
-- 任务源路径解析
-- 报告标题和命名
-- smoke test
-- 报告 Markdown 结构
+- 任务库路径与上传逻辑
+- 上传对话数据导入评测
+- 报告标题与 Markdown 结构
+- 启动脚本与前端构建

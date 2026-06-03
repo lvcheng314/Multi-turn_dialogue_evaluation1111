@@ -2,23 +2,32 @@ import json
 from pathlib import Path
 from queue import Empty, Queue
 from threading import Thread
+from typing import TypeAlias
 from uuid import uuid4
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
 
 from dialogue_eval.config import get_settings
 from dialogue_eval.models.openai_compatible import OpenAICompatibleAgent
 from dialogue_eval.parser import load_task
-from dialogue_eval.pipeline import run_evaluation
+from dialogue_eval.pipeline import run_evaluation, run_imported_evaluation
 from dialogue_eval.report import render_html_report, render_markdown_report
 from dialogue_eval.report.analysis import analyze_run, stream_analyze_run
 from dialogue_eval.scenarios import generate_scenarios
-from dialogue_eval.schemas import DialogueTrace, EvalResult, ScenarioSpec, TaskSpec
+from dialogue_eval.schemas import DialogueTrace, EvalResult, ImportedDialogueTrace, ScenarioSpec, TaskSpec
 from dialogue_eval.storage.archive import list_groups, list_runs
-from dialogue_eval.task_sources import TASK_SOURCES, resolve_task_path
+from dialogue_eval.task_sources import (
+    SUPPORTED_TASK_SUFFIXES,
+    inspect_uploaded_task,
+    list_task_sources,
+    load_uploaded_task_content,
+    resolve_task_path,
+    store_uploaded_task,
+)
 
 router = APIRouter()
+ImportedTracePayload: TypeAlias = ImportedDialogueTrace | list[ImportedDialogueTrace]
 
 
 def _sse(event: str, data: dict | str) -> str:
@@ -33,12 +42,7 @@ def health() -> dict[str, str]:
 
 @router.get("/task-sources")
 def task_sources() -> dict:
-    return {
-        "task_sources": [
-            {"id": key, "name": value["name"], "path": value["path"]}
-            for key, value in TASK_SOURCES.items()
-        ]
-    }
+    return {"task_sources": list_task_sources()}
 
 
 @router.post("/tasks")
@@ -49,6 +53,46 @@ def create_task(payload: dict) -> dict:
     task = TaskSpec.model_validate(payload.get("task_spec", {}))
     scenarios = generate_scenarios(task, get_settings().scenario_count)
     return {"task_id": task.task_id, "scenario_count": len(scenarios)}
+
+
+@router.post("/tasks/upload")
+async def upload_task(file: UploadFile = File(...)) -> dict:
+    suffix = Path(file.filename or "").suffix.lower()
+    if suffix not in SUPPORTED_TASK_SUFFIXES:
+        raise HTTPException(status_code=400, detail=f"Unsupported task file type: {suffix or 'unknown'}")
+    content = await file.read()
+    try:
+        task = load_uploaded_task_content(file.filename or f"task{suffix}", content)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Uploaded task file is invalid: {exc}") from exc
+
+    inspection = inspect_uploaded_task(file.filename or f"task{suffix}", content)
+    if inspection["status"] == "duplicate":
+        duplicate = inspection["duplicate_of"]
+        if duplicate is None:
+            raise HTTPException(status_code=500, detail="Duplicate task metadata is missing")
+        return {
+            "status": "duplicate",
+            "message": "项目内已有相同任务文件，是否继续使用历史文件？",
+            "task_id": duplicate["id"],
+            "task_name": duplicate["name"],
+            "file_name": duplicate["file_name"],
+            "path": duplicate["path"],
+            "scenario_count": None,
+            "duplicate_of": duplicate,
+        }
+
+    path = store_uploaded_task(file.filename or f"task{suffix}", content)
+    scenarios = generate_scenarios(task, get_settings().scenario_count)
+    return {
+        "status": "stored",
+        "task_id": task.task_id,
+        "task_name": task.task,
+        "file_name": path.name,
+        "path": str(path),
+        "scenario_count": len(scenarios),
+        "duplicate_of": None,
+    }
 
 
 @router.post("/tasks/{task_id}/scenarios")
@@ -83,7 +127,6 @@ def create_eval_run_stream(payload: dict):
                 task_path = _resolve_payload_task(payload)
                 scenario_count = int(payload.get("scenarios") or get_settings().scenario_count)
                 model = payload.get("model") or get_settings().model_provider
-
                 put("stage", {"stage": "scenario_generation_started", "message": "正在生成测试场景..."})
 
                 def progress(stage: str, data: dict | None = None) -> None:
@@ -97,6 +140,65 @@ def create_eval_run_stream(payload: dict):
                         put("stage", {"stage": stage, "message": messages[stage], **(data or {})})
 
                 summary = run_evaluation(task_path, scenarios_count=scenario_count, model=model, progress=progress)
+                put("complete", summary.model_dump(mode="json"))
+            except Exception as exc:
+                put("error", {"message": str(exc)})
+            finally:
+                queue.put(None)
+
+        Thread(target=worker, daemon=True).start()
+        while True:
+            try:
+                item = queue.get(timeout=15)
+            except Empty:
+                yield _sse("ping", {})
+                continue
+            if item is None:
+                break
+            yield item
+
+    return StreamingResponse(events(), media_type="text/event-stream")
+
+
+@router.post("/eval-runs/import")
+async def import_eval_run(
+    task_id: str = Form(...),
+    trace_file: UploadFile = File(...),
+) -> dict:
+    task_path = _resolve_payload_task({"task_id": task_id})
+    trace = await _load_dialogue_trace_upload(trace_file)
+    summary = run_imported_evaluation(task_path, trace, model_name="imported-trace")
+    return summary.model_dump(mode="json")
+
+
+@router.post("/eval-runs/import/stream")
+async def import_eval_run_stream(
+    task_id: str = Form(...),
+    trace_file: UploadFile = File(...),
+):
+    trace = await _load_dialogue_trace_upload(trace_file)
+
+    def events():
+        queue: Queue[str | None] = Queue()
+
+        def put(event: str, data: dict | str) -> None:
+            queue.put(_sse(event, data))
+
+        def worker() -> None:
+            try:
+                task_path = _resolve_payload_task({"task_id": task_id})
+                put("stage", {"stage": "scenario_generation_started", "message": "正在匹配最相近场景..."})
+
+                def progress(stage: str, data: dict | None = None) -> None:
+                    messages = {
+                        "scenario_generation_completed": "场景已生成，准备评分...",
+                        "scoring_started": "正在评分上传的对话数据...",
+                        "report_generation_started": "正在生成评测报告...",
+                    }
+                    if stage in messages:
+                        put("stage", {"stage": stage, "message": messages[stage], **(data or {})})
+
+                summary = run_imported_evaluation(task_path, trace, model_name="imported-trace", progress=progress)
                 put("complete", summary.model_dump(mode="json"))
             except Exception as exc:
                 put("error", {"message": str(exc)})
@@ -161,21 +263,20 @@ def get_report(run_id: str) -> dict:
     named_html_path = run_dir / str(report_meta.get("report_html_name") or "report.html")
     if task_path.exists() and scenarios_path.exists() and results_path.exists() and trace_path.exists():
         task = TaskSpec.model_validate(json.loads(task_path.read_text(encoding="utf-8")))
-        scenarios = [
-            ScenarioSpec.model_validate(item)
-            for item in json.loads(scenarios_path.read_text(encoding="utf-8"))
-        ]
-        results = [
-            EvalResult.model_validate(item)
-            for item in json.loads(results_path.read_text(encoding="utf-8"))
-        ]
+        scenarios = [ScenarioSpec.model_validate(item) for item in json.loads(scenarios_path.read_text(encoding="utf-8"))]
+        results = [EvalResult.model_validate(item) for item in json.loads(results_path.read_text(encoding="utf-8"))]
         traces = [
             DialogueTrace.model_validate(json.loads(line))
             for line in trace_path.read_text(encoding="utf-8").splitlines()
             if line.strip()
         ]
         report_title = str(report_meta.get("report_title") or report_path.stem)
-        markdown = render_markdown_report(task, scenarios, results, run_id, report_title, traces)
+        metadata = {
+            key: str(value)
+            for key, value in report_meta.items()
+            if key not in {"report_title", "report_markdown_name", "report_html_name"}
+        }
+        markdown = render_markdown_report(task, scenarios, results, run_id, report_title, traces, metadata)
         html = render_html_report(markdown)
         report_path.write_text(markdown, encoding="utf-8")
         (run_dir / "report.html").write_text(html, encoding="utf-8")
@@ -249,10 +350,7 @@ def assistant_stream(payload: dict):
                 base_url=settings.model_base_url,
                 api_key=settings.effective_model_api_key,
                 model=settings.model_name,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    *_normalize_assistant_messages(messages),
-                ],
+                messages=[{"role": "system", "content": system_prompt}, *_normalize_assistant_messages(messages)],
                 temperature=0.3,
                 max_tokens=1200,
             ):
@@ -268,11 +366,57 @@ def _resolve_payload_task(payload: dict) -> Path:
     custom_text = str(payload.get("custom_task") or "").strip()
     if custom_text:
         return _write_custom_task(custom_text)
-    task_id = payload.get("task_id") or payload.get("task_source_id") or "fengmaotui_delivery_task"
+    task_id = payload.get("task_id") or payload.get("task_source_id")
+    if not task_id:
+        raise HTTPException(status_code=400, detail="task_id is required")
     try:
         return resolve_task_path(task_id)
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+async def _load_dialogue_trace_upload(trace_file: UploadFile) -> ImportedTracePayload:
+    suffix = Path(trace_file.filename or "").suffix.lower()
+    if suffix != ".json":
+        raise HTTPException(status_code=400, detail="Only DialogueTrace JSON uploads are supported")
+    raw = await trace_file.read()
+    try:
+        payload = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=400, detail="Uploaded dialogue trace is not valid JSON") from exc
+    return _validate_imported_trace_payload(payload)
+
+
+def _validate_imported_trace_payload(payload: object) -> ImportedTracePayload:
+    if isinstance(payload, list):
+        if not payload:
+            raise HTTPException(status_code=400, detail="DialogueTrace JSON array must not be empty")
+        if len(payload) > 100:
+            raise HTTPException(status_code=400, detail="DialogueTrace JSON array supports up to 100 dialogues")
+        traces: list[ImportedDialogueTrace] = []
+        dialogue_ids: set[str] = set()
+        for item in payload:
+            try:
+                trace = ImportedDialogueTrace.model_validate(item)
+            except Exception as exc:
+                raise HTTPException(status_code=400, detail=f"Uploaded dialogue trace is invalid: {exc}") from exc
+            _validate_single_trace(trace)
+            if trace.dialogue_id in dialogue_ids:
+                raise HTTPException(status_code=400, detail=f"Duplicate dialogue_id: {trace.dialogue_id}")
+            dialogue_ids.add(trace.dialogue_id)
+            traces.append(trace)
+        return traces
+    try:
+        trace = ImportedDialogueTrace.model_validate(payload)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Uploaded dialogue trace is invalid: {exc}") from exc
+    _validate_single_trace(trace)
+    return trace
+
+
+def _validate_single_trace(trace: ImportedDialogueTrace) -> None:
+    if not trace.dialogue_id or not trace.transcript:
+        raise HTTPException(status_code=400, detail="DialogueTrace must include dialogue_id and transcript")
 
 
 def _normalize_assistant_messages(messages: list[dict]) -> list[dict]:
@@ -290,13 +434,13 @@ def _normalize_assistant_messages(messages: list[dict]) -> list[dict]:
 
 
 def _assistant_system_prompt(active_run_id: str) -> str:
-    task_list = "\n".join(f"- {key}: {value['name']}" for key, value in TASK_SOURCES.items())
+    task_list = "\n".join(f"- {item['id']}: {item['file_name']}" for item in list_task_sources())
     base = (
         "你是 Dialogue Eval Bot 的报告助手，服务对象是正在做多轮外呼任务评测的用户。\n"
-        "你可以帮助用户理解任务源、评测流程、报告、低分原因和任务指令优化建议。\n"
-        "前端已有任务按钮负责启动评测；如果用户想开始评测，提示他选择任务按钮或提供自定义任务。\n"
+        "你可以帮助用户理解任务文件、评测流程、报告、低分原因和任务指令优化建议。\n"
+        "前端已有任务选择和数据来源入口负责启动评测；如果用户想开始评测，提示他先选择任务文件和数据来源。\n"
         "不要声称自己已经点击按钮、启动任务或访问不存在的数据。回答要简洁、直接、可执行。\n"
-        f"当前可选任务源:\n{task_list}\n"
+        f"当前任务库文件:\n{task_list}\n"
     )
     if not active_run_id:
         return base + "当前还没有活跃评测报告。"
@@ -306,10 +450,7 @@ def _assistant_system_prompt(active_run_id: str) -> str:
     if not report_path.exists():
         return base + f"当前活跃 run_id 是 {active_run_id}，但报告文件暂不可读。"
     report = report_path.read_text(encoding="utf-8")[:12000]
-    return (
-        base
-        + f"当前活跃 run_id 是 {active_run_id}。以下是当前报告摘要，回答报告相关问题时必须基于它:\n\n{report}"
-    )
+    return base + f"当前活跃 run_id 是 {active_run_id}。以下是当前报告摘要，回答报告相关问题时必须基于它:\n\n{report}"
 
 
 def _write_custom_task(text: str) -> Path:

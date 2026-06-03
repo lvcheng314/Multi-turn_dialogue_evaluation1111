@@ -13,6 +13,15 @@ DIMENSION_META = {
     "text": ("话术质量", "Text", "检查表达是否自然、简洁、礼貌，并符合电话沟通场景。"),
 }
 
+DIMENSION_MAX_SCORES = {
+    "outcome": 30,
+    "trace": 30,
+    "safety": 20,
+    "text": 20,
+}
+
+TOTAL_MAX_SCORE = sum(DIMENSION_MAX_SCORES.values())
+
 REPORT_SUBJECTS = {
     "fengmaotui_delivery_task": "飞毛腿外呼",
     "course_live_task": "课程直播选项通知",
@@ -26,6 +35,7 @@ def render_markdown_report(
     run_id: str,
     report_title: str,
     traces: list[DialogueTrace] | None = None,
+    report_metadata: dict[str, str] | None = None,
 ) -> str:
     avg_score = mean([result.total_score for result in results]) if results else 0.0
     pass_count = sum(1 for result in results if result.final_decision == "pass")
@@ -35,6 +45,7 @@ def render_markdown_report(
     scenario_map = {scenario.scenario_id: scenario for scenario in scenarios}
     low_results = sorted(results, key=lambda result: result.total_score)[:3]
     weak_dimensions = _weak_dimension_counts(results)
+    report_metadata = report_metadata or {}
 
     lines = [
         f"# {report_title}",
@@ -45,7 +56,7 @@ def render_markdown_report(
         f"- 任务: {task.task}",
         f"- 角色: {task.role}",
         f"- 场景数: {len(scenarios)}",
-        f"- 平均分: {avg_score:.2f}",
+        f"- 平均分: {avg_score:.2f} / {TOTAL_MAX_SCORE}",
         f"- 结论分布: pass {pass_count} / review {review_count} / fail {fail_count}",
         f"- 最薄弱维度: {_format_counter(weak_dimensions)}",
         "",
@@ -56,7 +67,19 @@ def render_markdown_report(
     for key in ["outcome", "trace", "safety", "text"]:
         cn, en, desc = DIMENSION_META[key]
         sample = _average_dimension_score(results, key)
-        lines.append(f"- {cn} {en}（平均 {sample:.2f} 分）: {desc}")
+        lines.append(f"- {cn} {en}（平均 {sample:.2f} / {DIMENSION_MAX_SCORES[key]} 分）: {desc}")
+
+    if report_metadata:
+        lines.extend(["", "## 运行信息", ""])
+        for label, key in [
+            ("数据来源", "data_source"),
+            ("场景来源", "scenario_source"),
+            ("匹配场景", "matched_scenario_id"),
+            ("匹配得分", "matched_scenario_score"),
+        ]:
+            value = report_metadata.get(key)
+            if value:
+                lines.append(f"- {label}: {value}")
 
     lines.extend(
         [
@@ -71,7 +94,7 @@ def render_markdown_report(
             weakest = min(result.dimension_scores.items(), key=lambda item: item[1])
             weakest_label = _dimension_label(weakest[0], weakest[1])
             lines.append(
-                f"- {result.dialogue_id}: 总分 {result.total_score:.2f}，最低维度 {weakest_label}。"
+                f"- {result.dialogue_id}: 总分 {result.total_score:.2f} / {TOTAL_MAX_SCORE}，最低维度 {weakest_label}。"
             )
             for evidence in _negative_or_key_evidence(result.evidence)[:3]:
                 lines.append(f"  - {_evidence_line(evidence)}")
@@ -94,14 +117,19 @@ def render_markdown_report(
 
     for result in results:
         lines.append(
-            "| {dialogue} | {score:.2f} | {decision} | {outcome:.2f} | {trace:.2f} | {safety:.2f} | {text:.2f} |".format(
+            "| {dialogue} | {score:.2f} / {total_max} | {decision} | {outcome:.2f} / {outcome_max} | {trace:.2f} / {trace_max} | {safety:.2f} / {safety_max} | {text:.2f} / {text_max} |".format(
                 dialogue=result.dialogue_id,
                 score=result.total_score,
+                total_max=TOTAL_MAX_SCORE,
                 decision=_decision_label(result.final_decision),
                 outcome=result.dimension_scores.get("outcome", 0),
+                outcome_max=DIMENSION_MAX_SCORES["outcome"],
                 trace=result.dimension_scores.get("trace", 0),
+                trace_max=DIMENSION_MAX_SCORES["trace"],
                 safety=result.dimension_scores.get("safety", 0),
+                safety_max=DIMENSION_MAX_SCORES["safety"],
                 text=result.dimension_scores.get("text", 0),
+                text_max=DIMENSION_MAX_SCORES["text"],
             )
         )
 
@@ -114,7 +142,7 @@ def render_markdown_report(
             lines.append(f"- 场景: {scenario.scenario_id} / {scenario.persona}")
             if scenario.goals:
                 lines.append(f"- 场景目标: {'; '.join(scenario.goals)}")
-        lines.append(f"- 总分: {result.total_score:.2f}")
+        lines.append(f"- 总分: {result.total_score:.2f} / {TOTAL_MAX_SCORE}")
         lines.append(
             "- 分项: {outcome}；{trace_score}；{safety}；{text}".format(
                 outcome=_dimension_label("outcome", result.dimension_scores.get("outcome", 0)),
@@ -198,6 +226,9 @@ def _average_dimension_score(results: list[EvalResult], dimension: str) -> float
 def _dimension_label(dimension: str, score: float | None = None, include_score: bool = True) -> str:
     cn, en, _ = DIMENSION_META.get(dimension, (dimension, dimension.title(), ""))
     if include_score and score is not None:
+        max_score = DIMENSION_MAX_SCORES.get(dimension)
+        if max_score is not None:
+            return f"{cn} {en}（{score:.2f} / {max_score}分）"
         return f"{cn} {en}（{score:.2f}分）"
     return f"{cn} {en}"
 

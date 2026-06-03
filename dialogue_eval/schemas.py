@@ -90,6 +90,16 @@ class DialogueTrace(BaseModel):
     state_trace: list[dict[str, Any]] = Field(default_factory=list)
 
 
+class ImportedDialogueTrace(BaseModel):
+    run_id: str | None = None
+    dialogue_id: str
+    task_id: str | None = None
+    scenario_id: str | None = None
+    transcript: list[ChatMessage] = Field(default_factory=list)
+    tool_calls: list[ToolCallTrace] = Field(default_factory=list)
+    state_trace: list[dict[str, Any]] = Field(default_factory=list)
+
+
 class ToolTraceCheck(BaseModel):
     check: str
     passed: bool

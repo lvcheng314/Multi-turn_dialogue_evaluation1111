@@ -16,7 +16,7 @@ class CourseAwareAgent:
 
 
 def test_course_task_trace_does_not_use_delivery_script() -> None:
-    task = load_task("examples/tasks/course_live_task.json")
+    task = load_task("tasks/course_live_task.json")
     scenario = generate_scenarios(task, 1)[0]
     trace = DialogueRunner(agent=CourseAwareAgent()).run("run_test", "dialogue_001", task, scenario)
     text = "\n".join(message.content for message in trace.transcript if message.role == "agent")

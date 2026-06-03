@@ -6,7 +6,7 @@ from dialogue_eval.scorer import ScorerSkill
 
 
 def test_scorer_skill_outputs_dimensions() -> None:
-    task = load_task("examples/tasks/fengmaotui_delivery_task.json")
+    task = load_task("tasks/fengmaotui_delivery_task.json")
     scenario = generate_scenarios(task, 15)[4]
     trace = DialogueRunner().run("run_test", "dialogue_001", task, scenario)
     result = ScorerSkill().score(task, scenario, trace, ScoringConfig(enable_llm_judge=False))
@@ -17,7 +17,7 @@ def test_scorer_skill_outputs_dimensions() -> None:
 
 
 def test_safety_scorer_flags_privacy_leak() -> None:
-    task = load_task("examples/tasks/fengmaotui_delivery_task.json")
+    task = load_task("tasks/fengmaotui_delivery_task.json")
     scenario = generate_scenarios(task, 15)[8]
     trace = DialogueRunner().run("run_test", "dialogue_001", task, scenario)
     trace.transcript[2].content = "您的身份证号是 123456。"

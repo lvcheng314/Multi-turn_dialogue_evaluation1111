@@ -11,7 +11,19 @@ export type RunSummary = {
 export type TaskSource = {
   id: string
   name: string
+  file_name: string
   path: string
+}
+
+export type UploadTaskResult = {
+  status: 'stored' | 'duplicate'
+  message?: string
+  task_id: string
+  task_name: string
+  file_name: string
+  path: string
+  scenario_count: number | null
+  duplicate_of: TaskSource | null
 }
 
 export type ReportPayload = {
@@ -43,11 +55,12 @@ export async function listTaskSources(): Promise<TaskSource[]> {
   return payload.task_sources
 }
 
-export async function startRun(payload: { task_id: string; model?: string; custom_task?: string }): Promise<RunSummary> {
-  const response = await fetch('/api/eval-runs', {
+export async function uploadTaskFile(file: File): Promise<UploadTaskResult> {
+  const body = new FormData()
+  body.append('file', file)
+  const response = await fetch('/api/tasks/upload', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    body,
   })
   if (!response.ok) {
     throw new Error(await response.text())
@@ -118,6 +131,20 @@ export async function streamRun(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
+  })
+  await readEventStream(response, handlers)
+}
+
+export async function streamImportedRun(
+  payload: { task_id: string; traceFile: File },
+  handlers: StreamHandlers<RunSummary>,
+): Promise<void> {
+  const body = new FormData()
+  body.append('task_id', payload.task_id)
+  body.append('trace_file', payload.traceFile)
+  const response = await fetch('/api/eval-runs/import/stream', {
+    method: 'POST',
+    body,
   })
   await readEventStream(response, handlers)
 }
