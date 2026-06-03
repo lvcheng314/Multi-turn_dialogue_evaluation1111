@@ -6,7 +6,7 @@ from typing import TypeAlias
 from uuid import uuid4
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 
 from dialogue_eval.config import get_settings
 from dialogue_eval.models.openai_compatible import OpenAICompatibleAgent
@@ -93,6 +93,14 @@ async def upload_task(file: UploadFile = File(...)) -> dict:
         "scenario_count": len(scenarios),
         "duplicate_of": None,
     }
+
+
+@router.get("/tasks/template")
+def download_task_template():
+    template_path = Path("tasks") / "电商外呼任务.json"
+    if not template_path.exists():
+        raise HTTPException(status_code=404, detail="task template not found")
+    return FileResponse(template_path, media_type="application/json", filename="任务模板.json")
 
 
 @router.post("/tasks/{task_id}/scenarios")

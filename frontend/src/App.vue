@@ -27,6 +27,7 @@
               </select>
             </div>
             <button class="secondary-action" @click="openTaskPicker" :disabled="busy">上传任务文件</button>
+            <button class="secondary-action" @click="handleDownloadTemplate" :disabled="busy">下载 JSON 模板</button>
           </div>
           <div v-if="selectedTask" class="task-summary">
             <div class="task-summary-main">
@@ -137,6 +138,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from 'vue'
 import {
+  downloadTaskTemplate,
   getReport,
   listArchiveGroups,
   listTaskSources,
@@ -418,6 +420,15 @@ function openTaskPicker() {
   taskInput.value?.click()
 }
 
+async function handleDownloadTemplate() {
+  try {
+    await downloadTaskTemplate()
+    bot('已开始下载任务模板：任务模板.json')
+  } catch (err) {
+    bot(err instanceof Error ? err.message : String(err))
+  }
+}
+
 function openTracePicker() {
   traceInput.value?.click()
 }
@@ -451,7 +462,7 @@ function onTracePicked(event: Event) {
 async function handleUploadedTask(originalFileName: string, uploaded: UploadTaskResult) {
   if (uploaded.status === 'duplicate') {
     const confirmed = window.confirm(
-      `${uploaded.message || '项目内已有相同任务文件。'}\n已有文件：${uploaded.file_name}\n点击“确定”将直接使用项目内历史任务文件。`,
+      `${uploaded.message || '项目内已存在相同任务文件。'}\n已有文件：${uploaded.file_name}\n点击“确定”将直接使用项目内历史任务文件。`,
     )
     if (!confirmed) {
       bot(`未复用历史任务文件：${originalFileName}`)
