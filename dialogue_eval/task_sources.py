@@ -20,7 +20,6 @@ class TaskSourceEntry(TypedDict):
     file_name: str
     path: str
 
-
 class UploadedTaskResult(TypedDict):
     status: str
     file_name: str
