@@ -2,6 +2,7 @@ from pathlib import Path
 import sys
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -19,7 +20,20 @@ def _resolve_frontend_dist() -> Path:
 
 def create_app() -> FastAPI:
     app = FastAPI(title="Multi-turn Dialogue Evaluation")
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     app.include_router(router, prefix="/api")
+
+    # Direct fallback for /api/task-sources (bypasses router)
+    @app.get("/api/task-sources")
+    def _task_sources_fallback():
+        from dialogue_eval.task_sources import list_task_sources
+        return {"task_sources": list_task_sources()}
 
     frontend_dist = _resolve_frontend_dist()
     if frontend_dist.exists():

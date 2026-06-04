@@ -139,6 +139,37 @@ async function readEventStream<TComplete>(
   }
 }
 
+
+
+export type ChooseRunPayload = {
+  task_id: string
+  scenario_mode: 'generate' | 'upload'
+  dialogue_mode: 'generate' | 'import'
+  scenarioFile?: File
+  traceFile?: File
+}
+
+export async function streamChooseRun(
+  payload: ChooseRunPayload,
+  handlers: StreamHandlers<RunSummary>,
+): Promise<void> {
+  const body = new FormData()
+  body.append('task_id', payload.task_id)
+  body.append('scenario_mode', payload.scenario_mode)
+  body.append('dialogue_mode', payload.dialogue_mode)
+  if (payload.scenarioFile) {
+    body.append('scenario_file', payload.scenarioFile)
+  }
+  if (payload.traceFile) {
+    body.append('trace_file', payload.traceFile)
+  }
+  const response = await fetch('/api/eval-runs/choose/stream', {
+    method: 'POST',
+    body,
+  })
+  await readEventStream(response, handlers)
+}
+
 export async function streamRun(
   payload: { task_id: string; model?: string; custom_task?: string },
   handlers: StreamHandlers<RunSummary>,

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -70,6 +70,31 @@ class ScenarioSpec(BaseModel):
     expected_tool_calls: list[ExpectedToolCall] = Field(default_factory=list)
     expected_final_state: dict[str, Any] = Field(default_factory=dict)
     risk_points: list[str] = Field(default_factory=list)
+
+
+class ImportedScenarioSpec(BaseModel):
+    """导入的场景规格定义（用于上传已有场景 JSON 文件，所有字段可选/可缺省）。"""
+
+    scenario_id: str
+    task_id: str | None = None
+    category: str = ""
+    subtype: str = ""
+    persona: str = ""
+    customer_personality: str = ""
+    agent_personality: str = ""
+    situation: str = ""
+    conversation_length: str = "medium"
+    initial_user_input: str = ""
+    utterance_variants: list[str] = Field(default_factory=list)
+    exclusive_signals: list[str] = Field(default_factory=list)
+    goals: list[str] = Field(default_factory=list)
+    expected_behaviors: list[str] = Field(default_factory=list)
+    expected_tool_calls: list[ExpectedToolCall] = Field(default_factory=list)
+    expected_final_state: dict[str, Any] = Field(default_factory=dict)
+    risk_points: list[str] = Field(default_factory=list)
+
+
+
 
 
 class MCPToolSpec(BaseModel):

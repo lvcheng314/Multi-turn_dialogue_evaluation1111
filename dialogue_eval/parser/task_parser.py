@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-import pandas as pd
+
 
 from dialogue_eval.schemas import FAQItem, FlowStep, TaskConstraints, TaskSpec
 
@@ -23,6 +23,7 @@ def load_task(path: str | Path) -> TaskSpec:
 
 
 def _load_excel(path: Path) -> TaskSpec:
+    import pandas as pd
     frame = pd.read_excel(path).fillna("")
     rows = _rows_to_mapping(frame)
 
@@ -50,7 +51,7 @@ def _load_excel(path: Path) -> TaskSpec:
     )
 
 
-def _rows_to_mapping(frame: pd.DataFrame) -> dict[str, Any]:
+def _rows_to_mapping(frame) -> dict[str, Any]:
     if frame.shape[1] >= 2 and set(frame.columns[:2]) != {"Role", "Task"}:
         return {
             str(row.iloc[0]).strip(): row.iloc[1]

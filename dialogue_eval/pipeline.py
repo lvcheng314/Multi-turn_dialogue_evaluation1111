@@ -18,6 +18,7 @@ from dialogue_eval.schemas import (
     DialogueTrace,
     EvalResult,
     ImportedDialogueTrace,
+    ImportedScenarioSpec,
     RunSummary,
     ScenarioMatchResult,
     ScenarioSpec,
@@ -211,6 +212,199 @@ def run_imported_evaluation(
         scored_dialogues=len(results),
         low_confidence_dialogues=low_confidence_dialogues,
         match_error_dialogues=match_error_dialogues,
+    )
+
+
+
+
+def run_choose_evaluation(
+    task_path: str | Path,
+    scenario_mode: str = "generate",
+    dialogue_mode: str = "generate",
+    scenario_input: list[ImportedScenarioSpec] | None = None,
+    trace_input: ImportedDialogueTrace | list[ImportedDialogueTrace] | None = None,
+    scenarios_count: int | None = None,
+    model: str | None = None,
+    settings: Settings | None = None,
+    progress: Callable[[str, dict | None], None] | None = None,
+) -> RunSummary:
+    """2×2×2 统一评测入口。
+
+    scenario_mode:
+      - "generate": 从模板自动生成场景
+      - "upload":   使用上传的场景数据
+    dialogue_mode:
+      - "generate": 用大模型逐次模拟对话
+      - "import":   使用上传的对话数据
+    """
+    settings = settings or get_settings()
+    task = load_task(task_path)
+    scenario_count = scenarios_count or settings.scenario_count
+
+    if progress:
+        progress("scenario_generation_started", {"scenario_count": scenario_count})
+
+    # --- 获取场景 ---
+    if scenario_mode == "upload" and scenario_input:
+        scenarios = [
+            _imported_scenario_to_spec(s, task.task_id) for s in
+            (scenario_input if isinstance(scenario_input, list) else [scenario_input])
+        ]
+    else:
+        scenarios = generate_scenarios(task, scenario_count)
+    if progress:
+        progress("scenario_generation_completed", {"scenario_count": len(scenarios)})
+
+    run_id = f"run_{uuid4().hex[:12]}"
+    store = RunStore(settings.runs_dir)
+    scorer = ScorerSkill()
+    scoring_config = ScoringConfig(
+        enable_llm_judge=settings.enable_llm_judge,
+        max_turns=settings.max_turns,
+    )
+    store.write_json(run_id, "task.json", task)
+    store.write_json(run_id, "scenarios.json", scenarios)
+
+    results: list[EvalResult] = []
+    scored_traces: list[DialogueTrace] = []
+    low_confidence_dialogues: list[UnscorableDialogue] = []
+    match_error_dialogues: list[UnscorableDialogue] = []
+    total_dialogues = 0
+    scored_dialogues = 0
+
+    # --- 对话模式: generate (LLM 模拟) ---
+    if dialogue_mode == "generate":
+        runner = _build_runner(settings, model)
+        for index, scenario in enumerate(scenarios, start=1):
+            dialogue_id = f"dialogue_{index:03d}"
+            if progress:
+                progress("model_generation_started",
+                         {"dialogue_id": dialogue_id, "index": index, "total": len(scenarios)})
+            trace = runner.run(run_id, dialogue_id, task, scenario, settings.max_turns)
+            if progress:
+                progress("scoring_started",
+                         {"dialogue_id": dialogue_id, "index": index, "total": len(scenarios)})
+            result = scorer.score(task, scenario, trace, scoring_config)
+            store.append_trace(run_id, trace)
+            store.write_json(run_id, f"{dialogue_id}_trace.json", trace)
+            store.write_json(run_id, f"{dialogue_id}_result.json", result)
+            scored_traces.append(trace)
+            results.append(result)
+            if progress:
+                progress("dialogue_completed",
+                         {"dialogue_id": dialogue_id, "index": index, "total": len(scenarios),
+                          "score": result.total_score})
+        total_dialogues = len(scenarios)
+        scored_dialogues = len(scored_traces)
+
+    # --- 对话模式: import (使用已有对话数据) ---
+    else:
+        traces_input = trace_input if isinstance(trace_input, list) else [trace_input] if trace_input else []
+        total_dialogues = len(traces_input)
+        for index, imported_trace in enumerate(traces_input, start=1):
+            # 上传场景 + 已有对话：按 scenario_id 直接匹配
+            if scenario_mode == "upload" and imported_trace.scenario_id:
+                matched = [s for s in scenarios if s.scenario_id == imported_trace.scenario_id]
+                if not matched:
+                    match_error_dialogues.append(UnscorableDialogue(
+                        dialogue_id=imported_trace.dialogue_id,
+                        status="match_error",
+                        reason=f"上传的场景中未找到 scenario_id={imported_trace.scenario_id}",
+                        error_type="scenario_not_found",
+                    ))
+                    continue
+                scenario = matched[0]
+            # 自动生成场景 + 已有对话：LLM 匹配
+            else:
+                match = match_scenario_with_llm(imported_trace, task, scenarios, settings)
+                if match.status != "matched":
+                    pending = UnscorableDialogue(
+                        dialogue_id=imported_trace.dialogue_id,
+                        status=match.status,
+                        suggested_scenario_id=match.scenario_id,
+                        confidence=match.confidence,
+                        reason=match.reason,
+                        error_type=match.error_type,
+                    )
+                    if match.status == "low_confidence":
+                        low_confidence_dialogues.append(pending)
+                    else:
+                        match_error_dialogues.append(pending)
+                    continue
+                scenario = next(item for item in scenarios if item.scenario_id == match.scenario_id)
+
+            trace = _normalize_imported_trace(run_id, task.task_id, imported_trace, scenario.scenario_id)
+            if progress:
+                progress("scoring_started",
+                         {"dialogue_id": trace.dialogue_id, "index": index, "total": len(traces_input)})
+            result = scorer.score(task, scenario, trace, scoring_config)
+            store.append_trace(run_id, trace)
+            store.write_json(run_id, f"{trace.dialogue_id}_trace.json", trace)
+            store.write_json(run_id, f"{trace.dialogue_id}_result.json", result)
+            scored_traces.append(trace)
+            results.append(result)
+        scored_dialogues = len(scored_traces)
+
+    store.write_json(run_id, "results.json", results)
+    store.write_json(run_id, "low_confidence_dialogues.json", low_confidence_dialogues)
+    store.write_json(run_id, "match_error_dialogues.json", match_error_dialogues)
+
+    model_name = str(model or settings.model_name) if dialogue_mode == "generate" else "imported-trace"
+    report_metadata = {
+        "data_source": "大模型生成模拟" if dialogue_mode == "generate" else "上传对话数据",
+        "scenario_source": "自动生成场景" if scenario_mode == "generate" else "上传场景文件",
+        "total_dialogues": str(total_dialogues),
+        "scored_count": str(scored_dialogues),
+        "low_confidence_count": str(len(low_confidence_dialogues)),
+        "match_error_count": str(len(match_error_dialogues)),
+    }
+    if dialogue_mode == "import":
+        low_ratio = round(len(low_confidence_dialogues) / total_dialogues, 4) if total_dialogues else 0.0
+        error_ratio = round(len(match_error_dialogues) / total_dialogues, 4) if total_dialogues else 0.0
+        report_metadata.update({
+            "low_confidence_ratio": f"{low_ratio:.2%}",
+            "match_error_ratio": f"{error_ratio:.2%}",
+            "scenario_match_threshold": f"{settings.scenario_match_confidence_threshold:.2f}",
+        })
+
+    return _finalize_run(
+        run_id=run_id,
+        task=task,
+        scenarios=scenarios,
+        traces=scored_traces,
+        results=results,
+        settings=settings,
+        model_name=model_name,
+        store=store,
+        report_metadata=report_metadata,
+        progress=progress,
+        total_dialogues=total_dialogues,
+        scored_dialogues=scored_dialogues,
+        low_confidence_dialogues=low_confidence_dialogues,
+        match_error_dialogues=match_error_dialogues,
+    )
+
+
+def _imported_scenario_to_spec(imported: ImportedScenarioSpec, task_id: str) -> ScenarioSpec:
+    """将上传的场景数据转为标准的 ScenarioSpec。"""
+    return ScenarioSpec(
+        scenario_id=imported.scenario_id,
+        task_id=task_id,
+        category=imported.category,
+        subtype=imported.subtype,
+        persona=imported.persona,
+        customer_personality=imported.customer_personality,
+        agent_personality=imported.agent_personality,
+        situation=imported.situation,
+        conversation_length=imported.conversation_length if imported.conversation_length in {"short", "medium", "long"} else "medium",
+        initial_user_input=imported.initial_user_input,
+        utterance_variants=imported.utterance_variants,
+        exclusive_signals=imported.exclusive_signals,
+        goals=imported.goals,
+        expected_behaviors=imported.expected_behaviors,
+        expected_tool_calls=imported.expected_tool_calls,
+        expected_final_state=imported.expected_final_state,
+        risk_points=imported.risk_points,
     )
 
 

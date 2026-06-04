@@ -11,11 +11,11 @@ from fastapi.responses import FileResponse, StreamingResponse
 from dialogue_eval.config import get_settings
 from dialogue_eval.models.openai_compatible import OpenAICompatibleAgent
 from dialogue_eval.parser import load_task
-from dialogue_eval.pipeline import run_evaluation, run_imported_evaluation
+from dialogue_eval.pipeline import run_evaluation, run_imported_evaluation, run_choose_evaluation
 from dialogue_eval.report import render_html_report, render_markdown_report
 from dialogue_eval.report.analysis import analyze_run, stream_analyze_run
 from dialogue_eval.scenarios import generate_scenarios
-from dialogue_eval.schemas import DialogueTrace, EvalResult, ImportedDialogueTrace, ScenarioSpec, TaskSpec
+from dialogue_eval.schemas import DialogueTrace, EvalResult, ImportedDialogueTrace, ImportedScenarioSpec, ScenarioSpec, TaskSpec
 from dialogue_eval.storage.archive import list_groups, list_runs
 from dialogue_eval.task_sources import (
     SUPPORTED_TASK_SUFFIXES,
@@ -97,7 +97,7 @@ async def upload_task(file: UploadFile = File(...)) -> dict:
 
 @router.get("/tasks/template")
 def download_task_template():
-    template_path = Path("tasks") / "电商外呼任务.json"
+    template_path = Path(get_settings().runs_dir) / "tasks" / "电商外呼任务.json"
     if not template_path.exists():
         raise HTTPException(status_code=404, detail="task template not found")
     return FileResponse(template_path, media_type="application/json", filename="任务模板.json")
@@ -384,6 +384,36 @@ def assistant_stream(payload: dict):
     return StreamingResponse(events(), media_type="text/event-stream")
 
 
+
+
+@router.post("/scenarios/upload")
+async def upload_scenarios(file: UploadFile = File(...)):
+    """上传场景 JSON 文件（单个场景或场景数组）。"""
+    suffix = Path(file.filename or "").suffix.lower()
+    if suffix != ".json":
+        raise HTTPException(status_code=400, detail="Only JSON scenario files are supported")
+    raw = await file.read()
+    try:
+        payload = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=400, detail="Uploaded scenario file is not valid JSON") from exc
+    if isinstance(payload, list):
+        if not payload:
+            raise HTTPException(status_code=400, detail="Scenario JSON array must not be empty")
+        if len(payload) > 100:
+            raise HTTPException(status_code=400, detail="Scenario JSON array supports up to 100 scenarios")
+        try:
+            scenarios = [ImportedScenarioSpec.model_validate(item) for item in payload]
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=f"Uploaded scenario item is invalid: {exc}") from exc
+        return {"count": len(scenarios), "scenarios": [s.model_dump(mode="json") for s in scenarios]}
+    try:
+        scenario = ImportedScenarioSpec.model_validate(payload)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Uploaded scenario is invalid: {exc}") from exc
+    return {"count": 1, "scenarios": [scenario.model_dump(mode="json")]}
+
+
 def _resolve_payload_task(payload: dict) -> Path:
     custom_text = str(payload.get("custom_task") or "").strip()
     if custom_text:
@@ -397,16 +427,91 @@ def _resolve_payload_task(payload: dict) -> Path:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
-async def _load_dialogue_trace_upload(trace_file: UploadFile) -> ImportedTracePayload:
-    suffix = Path(trace_file.filename or "").suffix.lower()
-    if suffix != ".json":
-        raise HTTPException(status_code=400, detail="Only DialogueTrace JSON uploads are supported")
-    raw = await trace_file.read()
-    try:
+
+@router.post("/eval-runs/choose/stream")
+async def create_eval_run_choose_stream(
+    task_id: str = Form(...),
+    scenario_mode: str = Form("generate"),
+    dialogue_mode: str = Form("generate"),
+    scenario_file: UploadFile | None = File(default=None),
+    trace_file: UploadFile | None = File(default=None),
+):
+    """2x2x2 unified evaluation entry point."""
+
+    # Parse uploaded files (outside the closure, where await is valid)
+    scenario_input = None
+    if scenario_mode == "upload":
+        if not scenario_file:
+            err = _sse("error", {"message": "scenario_mode=upload requires scenario_file"})
+            return StreamingResponse(iter([err]), media_type="text/event-stream")
+        raw = await scenario_file.read()
         payload = json.loads(raw.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise HTTPException(status_code=400, detail="Uploaded dialogue trace is not valid JSON") from exc
-    return _validate_imported_trace_payload(payload)
+        items = payload if isinstance(payload, list) else [payload]
+        scenario_input = [ImportedScenarioSpec.model_validate(item) for item in items]
+
+    trace_input = None
+    if dialogue_mode == "import":
+        if not trace_file:
+            err = _sse("error", {"message": "dialogue_mode=import requires trace_file"})
+            return StreamingResponse(iter([err]), media_type="text/event-stream")
+        raw = await trace_file.read()
+        payload = json.loads(raw.decode("utf-8"))
+        trace_input = _validate_imported_trace_payload(payload)
+
+    def events():
+        queue: Queue[str | None] = Queue()
+
+        def put(event: str, data: dict | str) -> None:
+            queue.put(_sse(event, data))
+
+        def worker() -> None:
+            try:
+                put("stage", {"stage": "evaluation_started", "message": "\u6b63\u5728\u6267\u884c\u8bc4\u6d4b..."})
+
+                def progress(stage: str, data: dict | None = None) -> None:
+                    messages = {
+                        "scenario_generation_completed": "\u573a\u666f\u5df2\u5c31\u7eea",
+                        "model_generation_started": "\u6b63\u5728\u751f\u6210\u5bf9\u8bdd...",
+                        "scoring_started": "\u6b63\u5728\u8bc4\u5206...",
+                        "report_generation_started": "\u6b63\u5728\u751f\u6210\u62a5\u544a...",
+                    }
+                    if stage in messages:
+                        put("stage", {"stage": stage, "message": messages[stage], **(data or {})})
+
+                summary = run_choose_evaluation(
+                    task_path=_resolve_payload_task({"task_id": task_id}),
+                    scenario_mode=scenario_mode,
+                    dialogue_mode=dialogue_mode,
+                    scenario_input=scenario_input,
+                    trace_input=trace_input,
+                    progress=progress,
+                )
+                put("complete", summary.model_dump(mode="json"))
+            except Exception as exc:
+                put("error", {"message": str(exc)})
+            finally:
+                queue.put(None)
+
+        Thread(target=worker, daemon=True).start()
+        while True:
+            try:
+                item = queue.get(timeout=15)
+            except Empty:
+                yield _sse("ping", {})
+                continue
+            if item is None:
+                break
+            yield item
+
+    return StreamingResponse(events(), media_type="text/event-stream")
+
+
+
+
+def _validate_single_trace(trace: ImportedDialogueTrace) -> None:
+    if not trace.dialogue_id or not trace.transcript:
+        raise HTTPException(status_code=400, detail="DialogueTrace must include dialogue_id and transcript")
+
 
 
 def _validate_imported_trace_payload(payload: object) -> ImportedTracePayload:
@@ -436,9 +541,18 @@ def _validate_imported_trace_payload(payload: object) -> ImportedTracePayload:
     return trace
 
 
-def _validate_single_trace(trace: ImportedDialogueTrace) -> None:
-    if not trace.dialogue_id or not trace.transcript:
-        raise HTTPException(status_code=400, detail="DialogueTrace must include dialogue_id and transcript")
+
+async def _load_dialogue_trace_upload(trace_file: UploadFile) -> ImportedTracePayload:
+    suffix = Path(trace_file.filename or "").suffix.lower()
+    if suffix != ".json":
+        raise HTTPException(status_code=400, detail="Only DialogueTrace JSON uploads are supported")
+    raw = await trace_file.read()
+    try:
+        payload = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=400, detail="Uploaded dialogue trace is not valid JSON") from exc
+    return _validate_imported_trace_payload(payload)
+
 
 
 def _normalize_assistant_messages(messages: list[dict]) -> list[dict]:

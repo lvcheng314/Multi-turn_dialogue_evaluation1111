@@ -9,7 +9,7 @@ from typing import TypedDict
 from dialogue_eval.parser import load_task
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-TASK_LIBRARY_DIR = PROJECT_ROOT / "tasks"
+TASK_LIBRARY_DIR = PROJECT_ROOT / "database" / "tasks"
 TASK_LIBRARY_DIR.mkdir(parents=True, exist_ok=True)
 SUPPORTED_TASK_SUFFIXES = {".json", ".xlsx", ".xls"}
 

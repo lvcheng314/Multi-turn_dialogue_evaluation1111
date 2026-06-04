@@ -47,40 +47,69 @@
           </div>
         </div>
 
-        <div class="workspace-card workspace-card-mode">
+                <div class="workspace-card workspace-card-scenario">
           <div class="workspace-heading">
-            <span class="workspace-kicker">Conversation Source</span>
-            <h2>对话数据模块</h2>
-            <p>选择由大模型生成模拟对话，或直接上传真实 `DialogueTrace JSON` 做导入评测。</p>
+            <span class="workspace-kicker">Simulation Panel</span>
+            <h2>模拟场景板块</h2>
+            <p>按 2x2x2 模式选择：先定任务源，再选场景来源，最后选对话数据来源。</p>
           </div>
-          <div class="mode-grid">
-            <label class="mode-option" :class="{ active: dataMode === 'generated' }">
-              <div class="mode-option-top">
-                <input v-model="dataMode" type="radio" value="generated" :disabled="busy" />
-                <span class="mode-title">大模型生成模拟</span>
-              </div>
-              <small class="mode-copy">保持现有完整评测流程，自动生成场景对话并出报告。</small>
-            </label>
-            <label class="mode-option" :class="{ active: dataMode === 'uploaded' }">
-              <div class="mode-option-top">
-                <input v-model="dataMode" type="radio" value="uploaded" :disabled="busy" />
-                <span class="mode-title">上传对话数据</span>
-              </div>
-              <small class="mode-copy">导入已有 `DialogueTrace JSON`，直接评分并生成评测报告。</small>
-            </label>
-          </div>
-          <div v-if="dataMode === 'uploaded'" class="upload-panel">
-            <div class="upload-copy">
-              <span class="upload-label">对话数据文件</span>
-              <span class="hint">{{ traceFile ? traceFile.name : '未选择 DialogueTrace JSON（单条或 100 条以内数组）' }}</span>
+          <div class="subsection">
+            <h3 class="subsection-title">01 场景来源</h3>
+            <div class="mode-row">
+              <label class="mode-card" :class="{ active: scenarioMode === 'generate' }">
+                <input v-model="scenarioMode" type="radio" value="generate" :disabled="busy" />
+                <div class="mode-card-body">
+                  <span class="mode-title">自动生成场景</span>
+                  <small class="mode-copy">从模板自动生成测试场景</small>
+                </div>
+              </label>
+              <label class="mode-card" :class="{ active: scenarioMode === 'upload' }">
+                <input v-model="scenarioMode" type="radio" value="upload" :disabled="busy" />
+                <div class="mode-card-body">
+                  <span class="mode-title">上传场景文件</span>
+                  <small class="mode-copy">使用已有场景 JSON</small>
+                </div>
+              </label>
             </div>
-            <button class="secondary-action" @click="openTracePicker" :disabled="busy">选择对话文件</button>
+            <div v-if="scenarioMode === 'upload'" class="upload-panel">
+              <div class="upload-copy">
+                <span class="upload-label">场景文件</span>
+                <span class="hint">{{ scenarioFile ? scenarioFile.name : '未选择场景 JSON' }}</span>
+              </div>
+              <button class="secondary-action" @click="openScenarioPicker" :disabled="busy">选择场景文件</button>
+            </div>
+          </div>
+          <div class="subsection">
+            <h3 class="subsection-title">02 对话数据来源</h3>
+            <div class="mode-row">
+              <label class="mode-card" :class="{ active: dialogueMode === 'generate' }">
+                <input v-model="dialogueMode" type="radio" value="generate" :disabled="busy" />
+                <div class="mode-card-body">
+                  <span class="mode-title">LLM 模拟</span>
+                  <small class="mode-copy">大模型逐次生成模拟对话</small>
+                </div>
+              </label>
+              <label class="mode-card" :class="{ active: dialogueMode === 'import' }">
+                <input v-model="dialogueMode" type="radio" value="import" :disabled="busy" />
+                <div class="mode-card-body">
+                  <span class="mode-title">已有对话数据</span>
+                  <small class="mode-copy">上传 DialogueTrace JSON</small>
+                </div>
+              </label>
+            </div>
+            <div v-if="dialogueMode === 'import'" class="upload-panel">
+              <div class="upload-copy">
+                <span class="upload-label">对话数据文件</span>
+                <span class="hint">{{ traceFile ? traceFile.name : '未选择对话数据 JSON' }}</span>
+              </div>
+              <button class="secondary-action" @click="openTracePicker" :disabled="busy">选择对话文件</button>
+            </div>
           </div>
           <div class="action-bar">
             <button class="primary" @click="startEvaluation" :disabled="busy || !canRun">
-              {{ busy ? '处理中' : (dataMode === 'generated' ? '开始模拟评测' : '开始导入评测') }}
+              {{ busy ? '处理中...' : '开始评测' }}
             </button>
-            <span class="action-hint">{{ dataMode === 'generated' ? '将调用 DeepSeek 生成模拟对话' : '将直接评分你上传的对话数据' }}</span>
+            <span class="action-hint">{{ runHint }}</span>
           </div>
         </div>
       </section>
@@ -131,10 +160,10 @@
       </form>
     </section>
     <input ref="taskInput" type="file" accept=".json,.xlsx,.xls" hidden @change="onTaskPicked" />
+    <input ref="scenarioInput" type="file" accept=".json" hidden @change="onScenarioPicked" />
     <input ref="traceInput" type="file" accept=".json" hidden @change="onTracePicked" />
   </main>
 </template>
-
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from 'vue'
 import {
@@ -144,6 +173,7 @@ import {
   listTaskSources,
   streamAnalyzeRun,
   streamAssistant,
+  streamChooseRun,
   streamImportedRun,
   streamRun,
   uploadTaskFile,
@@ -162,13 +192,16 @@ type Message = {
 const messages = ref<Message[]>([])
 const taskSources = ref<TaskSource[]>([])
 const selectedTaskId = ref('')
-const dataMode = ref<'generated' | 'uploaded'>('generated')
+const scenarioMode = ref<'generate' | 'upload'>('generate')
+const dialogueMode = ref<'generate' | 'import'>('generate')
+const scenarioFile = ref<File | null>(null)
 const traceFile = ref<File | null>(null)
 const customText = ref('')
 const busy = ref(false)
 const activeRunId = ref('')
 const statusText = ref('')
 const taskInput = ref<HTMLInputElement | null>(null)
+const scenarioInput = ref<HTMLInputElement | null>(null)
 const traceInput = ref<HTMLInputElement | null>(null)
 const messagesContainer = ref<HTMLElement | null>(null)
 let nextId = 1
@@ -176,8 +209,19 @@ let nextId = 1
 const selectedTask = computed(() => taskSources.value.find((item) => item.id === selectedTaskId.value) || null)
 const canRun = computed(() => {
   if (!selectedTaskId.value) return false
-  if (dataMode.value === 'uploaded') return Boolean(traceFile.value)
+  if (scenarioMode.value === 'upload' && !scenarioFile.value) return false
+  if (dialogueMode.value === 'import' && !traceFile.value) return false
   return true
+})
+
+const runHint = computed(() => {
+  const combos: Record<string, string> = {
+    'generate_generate': '自动场景 + LLM 模拟对话',
+    'generate_import': '自动场景 + 已有对话数据',
+    'upload_generate': '上传场景 + LLM 模拟对话',
+    'upload_import': '上传场景 + 已有对话数据',
+  }
+  return combos[`${scenarioMode.value}_${dialogueMode.value}`] || ''
 })
 
 function escapeHtml(text: string) {
@@ -449,6 +493,20 @@ async function onTaskPicked(event: Event) {
   }
 }
 
+function onScenarioPicked(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0] || null
+  scenarioFile.value = file
+  if (file) {
+    bot(`已选择场景文件：${file.name}`)
+  }
+  input.value = ''
+}
+
+function openScenarioPicker() {
+  scenarioInput.value?.click()
+}
+
 function onTracePicked(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0] || null
@@ -480,12 +538,16 @@ async function handleUploadedTask(originalFileName: string, uploaded: UploadTask
 
 async function startEvaluation() {
   if (!selectedTask.value || busy.value) return
-  if (dataMode.value === 'uploaded' && !traceFile.value) return
-  if (dataMode.value === 'generated') {
+  if (scenarioMode.value === 'upload' && !scenarioFile.value) return
+  if (dialogueMode.value === 'import' && !traceFile.value) return
+
+  if (scenarioMode.value === 'generate' && dialogueMode.value === 'generate') {
     await runGenerated()
-    return
+  } else if (scenarioMode.value === 'generate' && dialogueMode.value === 'import') {
+    await runImported()
+  } else {
+    await runChoose()
   }
-  await runImported()
 }
 
 async function runGenerated() {
@@ -574,6 +636,41 @@ async function askAnalysis(question: string) {
   } catch (err) {
     statusText.value = ''
     answer.text = err instanceof Error ? err.message : String(err)
+  } finally {
+    statusText.value = ''
+    busy.value = false
+  }
+}
+
+async function runChoose() {
+  if (!selectedTask.value) return
+  busy.value = true
+  const scenarioLabel = scenarioFile.value ? `场景：${scenarioFile.value.name}` : '上传场景'
+  const dialogueLabel = traceFile.value ? `对话：${traceFile.value.name}` : 'LLM 模拟'
+  user(`开始评测（2x2x2）：${selectedTask.value.file_name}\n${scenarioLabel}\n${dialogueLabel}`)
+  try {
+    await streamChooseRun(
+      {
+        task_id: selectedTask.value.id,
+        scenario_mode: scenarioMode.value,
+        dialogue_mode: dialogueMode.value,
+        scenarioFile: scenarioFile.value || undefined,
+        traceFile: traceFile.value || undefined,
+      },
+      {
+        onStage: (payload) => {
+          statusText.value = String(payload.message || '')
+        },
+        onComplete: async (summary) => {
+          activeRunId.value = summary.run_id
+          statusText.value = '正在加载评测报告...'
+          await showReport(summary)
+        },
+      },
+    )
+  } catch (err) {
+    statusText.value = ''
+    bot(err instanceof Error ? err.message : String(err))
   } finally {
     statusText.value = ''
     busy.value = false

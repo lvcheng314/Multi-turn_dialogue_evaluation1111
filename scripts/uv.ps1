@@ -3,6 +3,7 @@ param(
     [string[]] $UvArgs
 )
 
+$OutputEncoding = [System.Text.UTF8Encoding]::new()
 $ErrorActionPreference = "Stop"
 
 $projectRoot = Split-Path -Parent $PSScriptRoot

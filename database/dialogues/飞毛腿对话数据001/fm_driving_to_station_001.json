@@ -1,0 +1,74 @@
+{
+  "dialogue_id": "fm_driving_to_station_001",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "fm_driving_to_station",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "你好，请问是张师傅吗？我是站长。看到你已报名飞毛腿，今天合同已生效，午晚高峰需要上线配送。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "我在去站点路上，不方便接。"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "好的，骑车注意安全。我稍后再联系您，简单说一下合同已生效的事。"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "行，到了再说。"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "好的稍后回呼。注意安全，再见。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 3,
+      "tool_name": "schedule_callback",
+      "arguments": {
+        "preferred_time": "later_today",
+        "task_id": "fengmaotui_delivery_task"
+      },
+      "result": {
+        "status": "ok"
+      },
+      "latency_ms": 80,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "callback_scheduled",
+      "identity_confirmed": true
+    }
+  ]
+}

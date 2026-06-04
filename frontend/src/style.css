@@ -234,6 +234,90 @@ textarea {
   margin: 0;
 }
 
+
+
+/* --- 2x2x2 simulation panel --- */
+.workspace-card-scenario::before {
+  background: linear-gradient(90deg, #7c3aed 0%, #a78bfa 100%);
+}
+
+.subsection {
+  margin-bottom: 18px;
+  padding: 0 2px;
+}
+
+.subsection:last-of-type {
+  margin-bottom: 0;
+}
+
+.subsection-title {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+  letter-spacing: 0.02em;
+}
+
+.mode-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.mode-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid #d5e0eb;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #f8fbfe 0%, #f2f7fb 100%);
+  transition: 160ms ease, transform 160ms ease;
+  cursor: pointer;
+}
+
+.mode-card:hover {
+  transform: translateY(-1px);
+}
+
+.mode-card input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.mode-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mode-card .mode-title {
+  display: block;
+  font-weight: 700;
+  font-size: 15px;
+  color: #16314d;
+}
+
+.mode-card .mode-copy {
+  display: block;
+  color: #607187;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.mode-card.active {
+  border-color: #7c3aed;
+  background: linear-gradient(180deg, #f5f0ff 0%, #ede6ff 100%);
+  box-shadow: 0 10px 24px rgba(124, 58, 237, 0.12);
+}
+
+@media (max-width: 720px) {
+  .mode-row {
+    grid-template-columns: 1fr;
+  }
+}
 .mode-option.active {
   border-color: #7ab6ff;
   background: linear-gradient(180deg, #f4f9ff 0%, #eef6ff 100%);
@@ -328,7 +412,7 @@ textarea {
 
 .message {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 10px;
 }
 

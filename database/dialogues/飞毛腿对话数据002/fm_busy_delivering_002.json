@@ -1,0 +1,94 @@
+{
+  "dialogue_id": "fm_busy_delivering_002",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "fm_busy_delivering",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "你好，请问是张师傅吗？我是站长。看到你已报名飞毛腿，今天合同已生效，午晚高峰需要上线配送。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "我在跑单呢，有什么事快说。"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "理解您正在忙。简单说，飞毛腿合同今天生效了，午晚高峰需要上线配送。如果未完成配送，合同和派单都可能受影响。"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "行我知道了，但现在没空细说配送要求。"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "好的，那我先记录一下，稍后再给您回呼详细说明配送要求和名额分配规则。您看今天晚些时候方便吗？"
+    },
+    {
+      "turn": 6,
+      "role": "user",
+      "content": "可以，晚点打吧。"
+    },
+    {
+      "turn": 7,
+      "role": "agent",
+      "content": "好的稍后回呼。那您先忙配送，注意安全。再见。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 5,
+      "tool_name": "schedule_callback",
+      "arguments": {
+        "preferred_time": "later_today",
+        "task_id": "fengmaotui_delivery_task"
+      },
+      "result": {
+        "status": "ok"
+      },
+      "latency_ms": 80,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "callback_scheduled",
+      "identity_confirmed": true
+    }
+  ]
+}

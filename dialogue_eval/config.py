@@ -31,8 +31,8 @@ class Settings(BaseSettings):
     scenario_match_model_name: str = "deepseek-chat"
     scenario_match_confidence_threshold: float = 0.70
 
-    runs_dir: str = "./runs"
-    archive_db_path: str = "./runs/eval_archive.sqlite3"
+    runs_dir: str = "./database"
+    archive_db_path: str = "./database/eval_archive.sqlite3"
     enable_llm_judge: bool = False
     scenario_count: int = 15
     max_turns: int = 20

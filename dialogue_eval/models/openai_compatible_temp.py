@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from dataclasses import dataclass, field
 import json
@@ -116,7 +116,7 @@ class OpenAICompatibleAgent:
         }
         if response_format:
             payload["response_format"] = response_format
-        with httpx.Client(timeout=30, trust_env=False) as client:
+        with httpx.Client(timeout=30) as client:
             response = client.post(
                 url,
                 headers={"Authorization": f"Bearer {api_key}"},
@@ -145,38 +145,25 @@ class OpenAICompatibleAgent:
             "max_tokens": max_tokens,
             "stream": True,
         }
-        with httpx.Client(timeout=60, trust_env=False) as client:
-            try:
-                with client.stream(
-                    "POST",
-                    url,
-                    headers={"Authorization": f"Bearer {api_key}"},
-                    json=payload,
-                ) as response:
-                    response.raise_for_status()
-                    for line in response.iter_lines():
-                        if not line or not line.startswith("data:"):
-                            continue
-                        data_str = line.removeprefix("data:").strip()
-                        if data_str == "[DONE]":
-                            break
-                        try:
-                            chunk = json.loads(data_str)
-                        except json.JSONDecodeError:
-                            continue
-                        delta = chunk.get("choices", [{}])[0].get("delta", {})
-                        c = delta.get("content")
-                        if c:
-                            yield c
-            except httpx.HTTPStatusError:
-                payload.pop("stream", None)
-                result = OpenAICompatibleAgent._chat_with_options(
-                    base_url=base_url,
-                    api_key=api_key,
-                    model=model,
-                    messages=messages,
-                    temperature=temperature,
-                    max_tokens=max_tokens,
-                )
-                yield result
-
+        with httpx.Client(timeout=60) as client:
+            with client.stream(
+                "POST",
+                url,
+                headers={"Authorization": f"Bearer {api_key}"},
+                json=payload,
+            ) as response:
+                response.raise_for_status()
+                for line in response.iter_lines():
+                    if not line or not line.startswith("data:"):
+                        continue
+                    data = line.removeprefix("data:").strip()
+                    if data == "[DONE]":
+                        break
+                    try:
+                        payload = json.loads(data)
+                    except json.JSONDecodeError:
+                        continue
+                    delta = payload.get("choices", [{}])[0].get("delta", {})
+                    content = delta.get("content")
+                    if content:
+                        yield content

@@ -1,0 +1,46 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.uv-cache/
+.uv-python/
+
+# Node
+node_modules/
+
+# Build artifacts
+frontend/dist/
+
+# Environment
+.env
+.env.example
+
+# Logs
+*.log
+server*.log
+
+# Temp files
+*.tmp
+fix_*.py
+App_original.vue
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Run data (moved to database/)
+runs/
+
+# Database (runtime data)
+database/*.sqlite3
+database/*.sqlite3-wal
+database/*.sqlite3-shm
+database/run_*/
+database/custom_tasks/
