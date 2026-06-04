@@ -1,0 +1,31 @@
+{
+  "run_id": "run_b8413ff7a121",
+  "dialogue_id": "dialogue_001",
+  "task_id": "delivery_task",
+  "scenario_id": "s01_cooperative",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "user",
+      "content": "我是本人，你说吧。"
+    },
+    {
+      "turn": 2,
+      "role": "agent",
+      "content": "您好，合同已生效，请问现在方便开始配送吗？"
+    }
+  ],
+  "tool_calls": [],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "started",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "accepted",
+      "identity_confirmed": true
+    }
+  ]
+}

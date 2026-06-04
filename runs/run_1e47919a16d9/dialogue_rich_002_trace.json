@@ -1,0 +1,83 @@
+{
+  "run_id": "run_1e47919a16d9",
+  "dialogue_id": "dialogue_rich_002",
+  "task_id": "sample_upload_task",
+  "scenario_id": "s01_cooperative_confirm",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "您好，现在方便吗？这边通知您新版发票开具入口已经上线。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "方便。你直接告诉我入口在哪。"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "您登录商家后台后，在财务中心的发票管理页面就能看到新版入口。"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "是在原来那个页面里，还是单独新加的？"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "是在原有发票管理相关位置里更清晰地展示出来，不用额外找很久。"
+    },
+    {
+      "turn": 6,
+      "role": "user",
+      "content": "好，那我回头上后台确认一下。"
+    },
+    {
+      "turn": 7,
+      "role": "agent",
+      "content": "好的，如果后面找不到，也可以先看帮助中心说明。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 3,
+      "tool_name": "query_faq",
+      "arguments": {
+        "task_id": "sample_upload_task",
+        "question": "新版入口在哪里？",
+        "note": "用户询问新版入口所在位置"
+      },
+      "result": {
+        "status": "answered",
+        "answer": "您登录商家后台后，在财务中心的发票管理页面即可看到新版入口。",
+        "source": "task_faq"
+      },
+      "latency_ms": 33,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "user_intent": "receive_notice"
+    },
+    {
+      "turn": 3,
+      "task_status": "explained",
+      "user_intent": "ask_location"
+    },
+    {
+      "turn": 5,
+      "task_status": "guided",
+      "user_intent": "clarify_page"
+    },
+    {
+      "turn": 7,
+      "task_status": "completed",
+      "user_intent": "self_check"
+    }
+  ]
+}

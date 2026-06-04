@@ -1,0 +1,111 @@
+{
+  "run_id": "run_0f13faba9e42",
+  "dialogue_id": "dialogue_012",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "s12_ask_contract",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "你好，请问是${rider_name}吗？我是站长。我看到你已报名飞毛腿。请记住，午餐和晚餐高峰期需要上线。单日合同每天至少完成 X 单，多日合同每天至少完成 Y 单。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "合同到底什么时候生效？"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "今天合同已经生效了，你现在可以开始配送吗？"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "那我现在开始配送就可以了？"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "对的，今天就可以开始配送了。记得按要求完成单量，注意安全哦！"
+    },
+    {
+      "turn": 6,
+      "role": "user",
+      "content": "那我现在开始配送就可以了？"
+    },
+    {
+      "turn": 7,
+      "role": "agent",
+      "content": "对的，现在就可以开始配送了。加油，注意安全！"
+    },
+    {
+      "turn": 8,
+      "role": "user",
+      "content": "那我现在开始配送就可以了？"
+    },
+    {
+      "turn": 9,
+      "role": "agent",
+      "content": "对的，现在就可以开始配送了。加油，注意安全！"
+    },
+    {
+      "turn": 10,
+      "role": "agent",
+      "content": "好的，那您先忙，祝您配送顺利！"
+    }
+  ],
+  "tool_calls": [],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "started",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "started",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "started",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 8,
+      "task_status": "started",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 9,
+      "task_status": "accepted",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 10,
+      "task_status": "accepted",
+      "identity_confirmed": true
+    }
+  ]
+}

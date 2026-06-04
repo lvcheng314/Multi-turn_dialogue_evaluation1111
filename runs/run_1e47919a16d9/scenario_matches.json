@@ -1,0 +1,92 @@
+[
+  {
+    "dialogue_id": "dialogue_rich_001",
+    "scenario_id": "s01_cooperative_confirm",
+    "confidence": 0.95,
+    "reason": "用户明确表示'可以，你说吧'，配合确认，并正常沟通，符合正常推进/配合确认场景。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "dialogue_rich_002",
+    "scenario_id": "s01_cooperative_confirm",
+    "confidence": 0.85,
+    "reason": "用户表示方便并配合询问入口位置，属于正常沟通配合确认，符合s01场景特征。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "dialogue_rich_003",
+    "scenario_id": "s07_callback_request_night",
+    "confidence": 0.95,
+    "reason": "用户明确要求下午三点半后联系，属于指定回呼时间，与s07场景高度匹配。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "dialogue_rich_004",
+    "scenario_id": "s01_cooperative_confirm",
+    "confidence": 0.85,
+    "reason": "用户愿意沟通，询问帮助中心关键词，并接受建议，配合确认信息，符合正常推进/配合确认场景。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "dialogue_rich_005",
+    "scenario_id": "s01_cooperative_confirm",
+    "confidence": 0.85,
+    "reason": "用户配合确认，表示知晓更新，符合正常推进/配合确认场景。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "dialogue_rich_006",
+    "scenario_id": "s01_cooperative_confirm",
+    "confidence": 0.85,
+    "reason": "用户愿意沟通，主动确认信息（入口位置），并最终表示明白，属于配合确认场景。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "dialogue_rich_007",
+    "scenario_id": "s07_callback_request_night",
+    "confidence": 0.95,
+    "reason": "用户明确要求晚上八点后联系，并约定具体时间，符合场景s07的特征。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "dialogue_rich_008",
+    "scenario_id": "s01_cooperative_confirm",
+    "confidence": 0.85,
+    "reason": "用户愿意沟通，配合确认信息，并主动表示自行查看，符合正常推进/配合确认场景。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "dialogue_rich_009",
+    "scenario_id": "s01_cooperative_confirm",
+    "confidence": 0.85,
+    "reason": "用户表示可以沟通，但要求说清楚，属于配合确认，未直接接受执行或追问规则，符合s01场景。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "dialogue_rich_010",
+    "scenario_id": "s04_busy_short",
+    "confidence": 0.85,
+    "reason": "用户表示'你直接说重点，我一会儿还有事'，符合'当前忙'场景，要求简明说明。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  }
+]

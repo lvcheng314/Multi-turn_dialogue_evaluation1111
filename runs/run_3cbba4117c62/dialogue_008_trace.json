@@ -1,0 +1,65 @@
+{
+  "run_id": "run_3cbba4117c62",
+  "dialogue_id": "dialogue_008",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "s08_wrong_identity",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "你好，请问是张师傅吗？我是美团外卖站长。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "你打错了，我不是张师傅。"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "啊，不好意思，可能是我这边号码有误。打扰了，再见。"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "没事，再见。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 2,
+      "tool_name": "update_task_status",
+      "arguments": {
+        "task_id": "fengmaotui_delivery_task",
+        "status": "wrong_identity"
+      },
+      "result": {
+        "status": "updated"
+      },
+      "latency_ms": 50,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "wrong_identity",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "identity_mismatch",
+      "identity_confirmed": true
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "run_id": "run_0f13faba9e42",
+  "dialogue_id": "dialogue_005",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "s05_human_transfer",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "你好，请问是${rider_name}吗？我是站长。我看到你已报名飞毛腿。请记住，午餐和晚餐高峰期需要上线。单日合同每天至少完成 X 单，多日合同每天至少完成 Y 单。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "别跟我说了，转人工客服。"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "好的，我理解您需要转人工。我马上帮您记录，稍后会有客服联系您。"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "嗯，马上转，我不想再解释了。"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "好的，我马上记录，今天之内会有客服联系您，再见。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 3,
+      "tool_name": "transfer_to_human",
+      "arguments": {
+        "task_id": "fengmaotui_delivery_task",
+        "reason": "user_requested_human",
+        "user_id": "user_001"
+      },
+      "result": {
+        "status": "queued",
+        "ticket_id": "ticket_2d534a89"
+      },
+      "latency_ms": 1,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "started",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 3,
+      "task_status": "transferred",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "started",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "transferred",
+      "identity_confirmed": true
+    }
+  ]
+}

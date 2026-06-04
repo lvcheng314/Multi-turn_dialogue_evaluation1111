@@ -1,0 +1,81 @@
+{
+  "run_id": "run_ba6f69ac5988",
+  "dialogue_id": "dialogue_013",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "s13_interrupt",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "你好，请问是张强吗？我是站长。你已报名飞毛腿，今天合同生效了，能开始配送吗？"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "嗯，什么事？说重点。"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "今天合同已签，午餐和晚餐高峰必须上线。单日合同今天至少完成5单，多日合同每天至少3单。"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "知道了，我会上的。还有事吗？"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "注意减少拒单、取消和超时，恶劣天气单多更容易保住资格。连续完成多日合同有额外奖励。"
+    },
+    {
+      "turn": 6,
+      "role": "user",
+      "content": "行，我明白了。挂了。"
+    },
+    {
+      "turn": 7,
+      "role": "agent",
+      "content": "好的，注意安全，加油！"
+    }
+  ],
+  "tool_calls": [],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "accepted",
+      "identity_confirmed": true
+    }
+  ]
+}

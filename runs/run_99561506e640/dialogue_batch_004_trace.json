@@ -1,0 +1,51 @@
+{
+  "run_id": "run_99561506e640",
+  "dialogue_id": "dialogue_batch_004",
+  "task_id": "sample_upload_task",
+  "scenario_id": "s01_cooperative_confirm",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "您好，这边通知您新版发票开具入口已上线。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "如果我后面忘了，去哪里看说明？"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "您可以直接查看帮助中心，里面有入口位置和操作说明。"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "行，那我自己看。"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "好的，那我这边先不打扰您了。"
+    }
+  ],
+  "tool_calls": [],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "user_intent": "receive_notice"
+    },
+    {
+      "turn": 3,
+      "task_status": "guided",
+      "user_intent": "ask_for_help"
+    },
+    {
+      "turn": 5,
+      "task_status": "completed",
+      "user_intent": "self_service"
+    }
+  ]
+}

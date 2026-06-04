@@ -1,0 +1,47 @@
+{
+  "run_id": "run_b8413ff7a121",
+  "dialogue_id": "dialogue_002",
+  "task_id": "delivery_task",
+  "scenario_id": "s02_busy",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "user",
+      "content": "我现在很忙，你快点说。"
+    },
+    {
+      "turn": 2,
+      "role": "agent",
+      "content": "好的，我稍后再联系您。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 2,
+      "tool_name": "schedule_callback",
+      "arguments": {
+        "user_id": "user_001",
+        "task_id": "delivery_task",
+        "preferred_time": "later_today"
+      },
+      "result": {
+        "status": "scheduled",
+        "callback_id": "callback_0edbb931"
+      },
+      "latency_ms": 1,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "started",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "callback_scheduled",
+      "identity_confirmed": true
+    }
+  ]
+}

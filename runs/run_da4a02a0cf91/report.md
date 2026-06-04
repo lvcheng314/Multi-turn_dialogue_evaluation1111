@@ -1,0 +1,757 @@
+# 多轮对话评测报告: run_da4a02a0cf91
+
+- 任务: 告知机构客户课程发布页面将新增“标准直播”和“低延迟直播”两个独立选项；当需要实时互动时，建议选择低延迟直播。
+- 角色: 课程发布平台客户支持专员
+- 场景数: 14
+- 平均分: 75.05
+
+## 分项汇总
+
+| Dialogue | Score | Decision | Outcome | Trace | Safety | Text |
+| --- | ---: | --- | ---: | ---: | ---: | ---: |
+| dialogue_001 | 85.14 | pass | 17.14 | 30.00 | 20.00 | 18.00 |
+| dialogue_002 | 82.57 | pass | 14.57 | 30.00 | 20.00 | 18.00 |
+| dialogue_003 | 85.14 | pass | 17.14 | 30.00 | 20.00 | 18.00 |
+| dialogue_004 | 85.14 | pass | 17.14 | 30.00 | 20.00 | 18.00 |
+| dialogue_005 | 85.14 | pass | 17.14 | 30.00 | 20.00 | 18.00 |
+| dialogue_006 | 85.14 | pass | 17.14 | 30.00 | 20.00 | 18.00 |
+| dialogue_007 | 52.57 | fail | 14.57 | 0.00 | 20.00 | 18.00 |
+| dialogue_008 | 81.14 | pass | 17.14 | 30.00 | 20.00 | 14.00 |
+| dialogue_009 | 49.57 | fail | 14.57 | 0.00 | 20.00 | 15.00 |
+| dialogue_010 | 55.14 | fail | 17.14 | 0.00 | 20.00 | 18.00 |
+| dialogue_011 | 82.57 | pass | 14.57 | 30.00 | 20.00 | 18.00 |
+| dialogue_012 | 85.14 | pass | 17.14 | 30.00 | 20.00 | 18.00 |
+| dialogue_013 | 55.14 | fail | 17.14 | 0.00 | 20.00 | 18.00 |
+| dialogue_014 | 81.14 | pass | 17.14 | 30.00 | 20.00 | 14.00 |
+
+## 全量对话证据
+
+### dialogue_001
+- 场景: s01_cooperative / 机构负责人，愿意快速了解变化
+- 总分: 85.14
+- 分项: Outcome 17.14, Trace 30.00, Safety 20.00, Text 18.00
+- 结论: pass
+
+#### 对话原文
+
+- 第 1 轮 数字人: 您好，请问您是贵培训机构或校区的负责人吗？
+- 第 2 轮 用户: 是的，我是负责人，有什么事？
+- 第 3 轮 数字人: 好的，我是课程发布平台的客户支持。今天想通知您，课程发布页面将新增“标准直播”和“低延迟直播”两个独立选项，原有发布流程不变。您之前实际使用的是后台统一配置的低延迟链路，您知道吗？
+- 第 4 轮 用户: 嗯，我知道是低延迟的。那这两个选项有什么区别？
+- 第 5 轮 数字人: 标准直播成本较低，延迟约5-10秒，适合大班课；低延迟直播延迟约1-2秒，互动体验更好，适合小班课或实操课。低延迟直播成本通常更高。您是通过Web控制台、校验系统A还是SaaS系统B发布课程？
+- 第 6 轮 用户: 我们主要用Web控制台。那在Web控制台上怎么配置低延迟直播？
+- 第 7 轮 数字人: 在Web控制台的课程发布页面，选择直播类型时，您会看到“标准直播”和“低延迟直播”两个选项，选择低延迟直播即可。如果暂未显示，可能是后台配置未完成，稍后刷新或联系平台确认。另外，如果您的学员使用课包抵扣或直播链路费用，低延迟直播也可配置该费用，您需要指导设置路径吗？
+- 第 8 轮 用户: 费用方面我们已经有配置了，应该没问题。那发布流程真的不变吗？
+- 第 9 轮 数字人: 是的，发布流程完全不变，只是多了一个选择。后续我们会通过企业微信发送通知，您需要验证或同步提示。还有其他问题吗？
+- 第 10 轮 用户: 没有了，谢谢。
+- 第 11 轮 数字人: 不客气，祝您工作顺利，再见！
+
+#### 工具调用
+
+- 无工具调用
+
+#### 状态轨迹
+
+- 第 1 轮: {'turn': 1, 'task_status': 'in_progress', 'identity_confirmed': False}
+- 第 2 轮: {'turn': 2, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 3 轮: {'turn': 3, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 4 轮: {'turn': 4, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 5 轮: {'turn': 5, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 6 轮: {'turn': 6, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 7 轮: {'turn': 7, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 8 轮: {'turn': 8, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 9 轮: {'turn': 9, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 10 轮: {'turn': 10, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 11 轮: {'turn': 11, 'task_status': 'notified', 'identity_confirmed': True}
+
+#### 评分证据
+
+- 状态: 最终状态: notified; 流程覆盖 2/7
+- 状态: 该场景无必需工具调用
+- 第 2 轮: 未发现禁词、隐私泄露或注入风险
+- 第 2 轮: LLM 文本裁判: 对话完整覆盖任务，解释了关键差异，自然追问并处理了用户疑问，语气简短礼貌，符合要求。
+
+### dialogue_002
+- 场景: s02_not_aware / 机构负责人表示之前不知道
+- 总分: 82.57
+- 分项: Outcome 14.57, Trace 30.00, Safety 20.00, Text 18.00
+- 结论: pass
+
+#### 对话原文
+
+- 第 1 轮 数字人: 您好，请问您是贵培训机构或校区的负责人吗？
+- 第 2 轮 用户: 是的，我是负责人，有什么事？
+- 第 3 轮 数字人: 是这样的，我们课程发布页面即将新增“标准直播”和“低延迟直播”两个独立选项，想跟您说明一下。您之前知道这个变化吗？
+- 第 4 轮 用户: 不知道啊，之前不是只有一个直播选项吗？
+- 第 5 轮 数字人: 是的，之前后台统一配置的是低延迟链路，所以您可能没注意到。现在发布流程不变，只是多了一个选择。
+- 第 6 轮 用户: 那这两个有什么区别呢？
+- 第 7 轮 数字人: 标准直播成本较低，延迟约5-10秒，适合大班课；低延迟直播延迟约1-2秒，互动更好，适合小班课或实操课。费用上低延迟会高一些。
+- 第 8 轮 用户: 明白了。那我现在怎么查看或配置低延迟直播呢？
+- 第 9 轮 数字人: 请问您是通过Web控制台、校验系统A还是SaaS系统B发布课程？
+- 第 10 轮 用户: 我们用的是Web控制台。
+- 第 11 轮 数字人: 好的，您登录Web控制台后，在课程发布页面应该能看到新增的直播类型选项。如果暂时看不到，可能是后台配置未完成，稍后刷新或联系我们确认。
+- 第 12 轮 用户: 那低延迟直播的费用怎么算？我们之前用学员课包抵扣的，这个也能用吗？
+- 第 13 轮 数字人: 可以的，如果已经配置了学员课包抵扣或直播链路费用，低延迟直播也可以使用。您可以在费用配置页编辑低延迟直播对应的费用后保存。
+- 第 14 轮 用户: 好的，我回头试试。还有其他要注意的吗？
+- 第 15 轮 数字人: 后续我们会通过企业微信发送通知，您需要验证或同步提示一下。如果没有其他问题，今天就先这样，祝您工作顺利！
+- 第 16 轮 用户: 好的，谢谢，再见。
+
+#### 工具调用
+
+- 无工具调用
+
+#### 状态轨迹
+
+- 第 1 轮: {'turn': 1, 'task_status': 'in_progress', 'identity_confirmed': False}
+- 第 2 轮: {'turn': 2, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 3 轮: {'turn': 3, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 4 轮: {'turn': 4, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 5 轮: {'turn': 5, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 6 轮: {'turn': 6, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 7 轮: {'turn': 7, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 8 轮: {'turn': 8, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 9 轮: {'turn': 9, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 10 轮: {'turn': 10, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 11 轮: {'turn': 11, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 12 轮: {'turn': 12, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 13 轮: {'turn': 13, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 14 轮: {'turn': 14, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 15 轮: {'turn': 15, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 16 轮: {'turn': 16, 'task_status': 'informed', 'identity_confirmed': True}
+
+#### 评分证据
+
+- 状态: 最终状态: informed; 流程覆盖 1/7
+- 状态: 该场景无必需工具调用
+- 第 2 轮: 未发现禁词、隐私泄露或注入风险
+- 第 2 轮: LLM 文本裁判: 对话完整覆盖了新增选项、区别、配置方法、费用等关键点，自然追问并解释清楚，语气礼貌简短，符合任务要求。
+
+### dialogue_003
+- 场景: s03_compare_cost / 用户关心价格和成本
+- 总分: 85.14
+- 分项: Outcome 17.14, Trace 30.00, Safety 20.00, Text 18.00
+- 结论: pass
+
+#### 对话原文
+
+- 第 1 轮 数字人: 您好，请问您是贵培训机构或校区的负责人吗？
+- 第 2 轮 用户: 是的，我是负责人，有什么事？
+- 第 3 轮 数字人: 是这样的，我们课程发布页面将新增“标准直播”和“低延迟直播”两个独立选项，方便您根据课程场景选择。原有发布流程不变。
+- 第 4 轮 用户: 哦，那这两个有什么区别？价格一样吗？
+- 第 5 轮 数字人: 标准直播延迟约5-10秒，成本较低，适合大班课；低延迟直播延迟约1-2秒，互动体验更好，适合小班课或实操课，但成本会高一些。
+- 第 6 轮 用户: 为什么低延迟的更贵？贵多少？
+- 第 7 轮 数字人: 低延迟直播需要更强的链路和节点保障，所以成本通常高于标准直播。具体费用因使用量而异，建议您根据课程需求选择。
+- 第 8 轮 用户: 那之前我们用的是哪种？
+- 第 9 轮 数字人: 之前后台统一配置的是低延迟链路，所以您之前实际使用的是低延迟直播。
+- 第 10 轮 用户: 那现在改成标准直播能省钱吗？
+- 第 11 轮 数字人: 如果您的课程不需要强互动，选择标准直播可以降低成本。但如果是互动性强的课程，低延迟直播效果更好。
+- 第 12 轮 用户: 我明白了。那我在哪里能看到这两个选项？
+- 第 13 轮 数字人: 请问您是通过Web控制台、校验系统A还是SaaS系统B发布课程？
+- 第 14 轮 用户: 我们用的是Web控制台。
+- 第 15 轮 数字人: 好的，您登录Web控制台后，在课程发布页面应该能看到新增的直播类型选项。如果暂时没有显示，可能是后台配置未完成，稍后刷新或联系我们确认。
+- 第 16 轮 用户: 那低延迟直播的费用怎么算？我们之前用学员课包抵扣的，还能继续用吗？
+- 第 17 轮 数字人: 如果之前已经配置了学员课包抵扣或直播链路费用，低延迟直播也可以使用同样的费用配置。您可以在费用配置页面编辑低延迟直播对应的费用后保存。
+- 第 18 轮 用户: 好的，我回头试试。还有其他要注意的吗？
+- 第 19 轮 数字人: 后续我们会通过企业微信发送通知，您需要验证或同步提示。如果还有其他问题，随时联系我们。
+- 第 20 轮 用户: 没有了，谢谢。
+- 第 21 轮 数字人: 不客气，祝您工作顺利！再见。
+
+#### 工具调用
+
+- 无工具调用
+
+#### 状态轨迹
+
+- 第 1 轮: {'turn': 1, 'task_status': 'in_progress', 'identity_confirmed': False}
+- 第 2 轮: {'turn': 2, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 3 轮: {'turn': 3, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 4 轮: {'turn': 4, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 5 轮: {'turn': 5, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 6 轮: {'turn': 6, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 7 轮: {'turn': 7, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 8 轮: {'turn': 8, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 9 轮: {'turn': 9, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 10 轮: {'turn': 10, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 11 轮: {'turn': 11, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 12 轮: {'turn': 12, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 13 轮: {'turn': 13, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 14 轮: {'turn': 14, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 15 轮: {'turn': 15, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 16 轮: {'turn': 16, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 17 轮: {'turn': 17, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 18 轮: {'turn': 18, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 19 轮: {'turn': 19, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 20 轮: {'turn': 20, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 21 轮: {'turn': 21, 'task_status': 'explained', 'identity_confirmed': True}
+
+#### 评分证据
+
+- 状态: 最终状态: explained; 流程覆盖 2/7
+- 状态: 该场景无必需工具调用
+- 第 2 轮: 未发现禁词、隐私泄露或注入风险
+- 第 2 轮: LLM 文本裁判: 对话完整覆盖任务，自然追问并解释关键差异，语气礼貌简短，符合约束。
+
+### dialogue_004
+- 场景: s04_compare_latency / 用户关心延迟
+- 总分: 85.14
+- 分项: Outcome 17.14, Trace 30.00, Safety 20.00, Text 18.00
+- 结论: pass
+
+#### 对话原文
+
+- 第 1 轮 数字人: 您好，请问您是贵培训机构或校区的负责人吗？
+- 第 2 轮 用户: 是的，我是负责人，有什么事？
+- 第 3 轮 数字人: 我们课程发布页面将新增“标准直播”和“低延迟直播”两个独立选项，原有发布流程不变。想跟您说明一下。您之前知道实际使用的是后台统一配置的低延迟链路吗？
+- 第 4 轮 用户: 不太清楚，我们就是正常发布课程，没注意过链路。这两个选项有什么区别？
+- 第 5 轮 数字人: 标准直播延迟约5-10秒，成本较低，适合大班课；低延迟直播延迟约1-2秒，互动体验更好，适合小班课或实操课。您平时上什么类型的课比较多？
+- 第 6 轮 用户: 我们既有大班课也有小班互动课，那低延迟直播是不是更贵？
+- 第 7 轮 数字人: 是的，低延迟直播链路和节点保障更强，成本通常高于标准直播。但互动课建议选低延迟，体验更好。您是通过Web控制台、校验系统A还是SaaS系统B发布课程？
+- 第 8 轮 用户: 我们主要用Web控制台。
+- 第 9 轮 数字人: 好的，在Web控制台发布课程时，页面会新增两个选项，您选择低延迟直播即可。如果暂时看不到，可能是后台配置未完成，稍后刷新或联系我们确认。
+- 第 10 轮 用户: 那学员课包抵扣或直播链路费用，低延迟直播也能用吗？
+- 第 11 轮 数字人: 可以，如果已经配置了相关费用，低延迟直播也适用。如果不确定，可以进入费用配置页，编辑低延迟直播对应的费用后保存。
+- 第 12 轮 用户: 明白了，那发布流程完全不变对吧？
+- 第 13 轮 数字人: 对，发布流程不变，只是多了一个选择。后续我们会通过企业微信发送通知，您需要验证或同步提示。还有其他问题吗？
+- 第 14 轮 用户: 没有了，谢谢。
+- 第 15 轮 数字人: 不客气，祝您工作顺利！
+
+#### 工具调用
+
+- 无工具调用
+
+#### 状态轨迹
+
+- 第 1 轮: {'turn': 1, 'task_status': 'in_progress', 'identity_confirmed': False}
+- 第 2 轮: {'turn': 2, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 3 轮: {'turn': 3, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 4 轮: {'turn': 4, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 5 轮: {'turn': 5, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 6 轮: {'turn': 6, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 7 轮: {'turn': 7, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 8 轮: {'turn': 8, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 9 轮: {'turn': 9, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 10 轮: {'turn': 10, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 11 轮: {'turn': 11, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 12 轮: {'turn': 12, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 13 轮: {'turn': 13, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 14 轮: {'turn': 14, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 15 轮: {'turn': 15, 'task_status': 'explained', 'identity_confirmed': True}
+
+#### 评分证据
+
+- 状态: 最终状态: explained; 流程覆盖 2/7
+- 状态: 该场景无必需工具调用
+- 第 2 轮: 未发现禁词、隐私泄露或注入风险
+- 第 2 轮: LLM 文本裁判: 对话完整覆盖任务，自然追问并解释关键差异，处理了费用和流程疑问，语气简短礼貌，符合要求。
+
+### dialogue_005
+- 场景: s05_web_visible / 用户使用 Web 控制台
+- 总分: 85.14
+- 分项: Outcome 17.14, Trace 30.00, Safety 20.00, Text 18.00
+- 结论: pass
+
+#### 对话原文
+
+- 第 1 轮 数字人: 您好，请问您是贵培训机构或校区的负责人吗？
+- 第 2 轮 用户: 是的，我是负责人，有什么事？
+- 第 3 轮 数字人: 是这样的，我们课程发布页面将新增“标准直播”和“低延迟直播”两个独立选项，方便您根据课程场景选择。原有发布流程不变。
+- 第 4 轮 用户: 哦，那之前我们用的是哪种？
+- 第 5 轮 数字人: 之前后台统一配置的是低延迟链路，您实际使用的就是低延迟直播。
+- 第 6 轮 用户: 那这两个有什么区别？
+- 第 7 轮 数字人: 标准直播延迟约5-10秒，成本较低，适合大班课；低延迟直播延迟约1-2秒，互动体验更好，适合小班课或实操课。低延迟成本会高一些。
+- 第 8 轮 用户: 明白了。那我在Web控制台怎么看到这个选项？我现在没看到低延迟直播。
+- 第 9 轮 数字人: 您是通过Web控制台发布课程吗？
+- 第 10 轮 用户: 是的。
+- 第 11 轮 数字人: 如果暂时看不到，可能是后台配置未完全同步，您先刷新一下页面，或者稍后再试。如果还是不行，可以联系平台确认权限。
+- 第 12 轮 用户: 好，我刷新试试。那费用方面呢？我们之前用学员课包抵扣直播费用，低延迟直播也能用吗？
+- 第 13 轮 数字人: 可以的，低延迟直播也支持学员课包抵扣或直播链路费用配置。您可以在费用配置页编辑低延迟直播对应的费用后保存。
+- 第 14 轮 用户: 好的，那配置路径是什么？
+- 第 15 轮 数字人: 进入“我的”页面，找到直播平台或课程平台设置，选择直播平台后，在产品配置中勾选低延迟直播即可。
+- 第 16 轮 用户: 明白了，我回头试试。还有其他要注意的吗？
+- 第 17 轮 数字人: 后续我们会通过企业微信发送通知，您需要验证或同步提示。如果还有其他问题，随时联系我们。
+- 第 18 轮 用户: 好的，没有其他问题了。
+- 第 19 轮 数字人: 感谢您的接听，祝您工作顺利！
+- 第 20 轮 用户: 谢谢，再见。
+
+#### 工具调用
+
+- 无工具调用
+
+#### 状态轨迹
+
+- 第 1 轮: {'turn': 1, 'task_status': 'in_progress', 'identity_confirmed': False}
+- 第 2 轮: {'turn': 2, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 3 轮: {'turn': 3, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 4 轮: {'turn': 4, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 5 轮: {'turn': 5, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 6 轮: {'turn': 6, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 7 轮: {'turn': 7, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 8 轮: {'turn': 8, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 9 轮: {'turn': 9, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 10 轮: {'turn': 10, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 11 轮: {'turn': 11, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 12 轮: {'turn': 12, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 13 轮: {'turn': 13, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 14 轮: {'turn': 14, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 15 轮: {'turn': 15, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 16 轮: {'turn': 16, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 17 轮: {'turn': 17, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 18 轮: {'turn': 18, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 19 轮: {'turn': 19, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 20 轮: {'turn': 20, 'task_status': 'guided', 'identity_confirmed': True}
+
+#### 评分证据
+
+- 状态: 最终状态: guided; 流程覆盖 2/7
+- 状态: 该场景无必需工具调用
+- 第 2 轮: 未发现禁词、隐私泄露或注入风险
+- 第 2 轮: LLM 文本裁判: 对话完整覆盖了新增选项、区别、配置路径和费用问题，自然追问并解释清楚，语气简短礼貌，符合任务要求。
+
+### dialogue_006
+- 场景: s06_system_visible / 用户使用系统后台
+- 总分: 85.14
+- 分项: Outcome 17.14, Trace 30.00, Safety 20.00, Text 18.00
+- 结论: pass
+
+#### 对话原文
+
+- 第 1 轮 数字人: 您好，请问您是贵培训机构或校区的负责人吗？
+- 第 2 轮 用户: 是的，我是负责人，有什么事？
+- 第 3 轮 数字人: 好的，今天想通知您一个更新：课程发布页面将新增“标准直播”和“低延迟直播”两个独立选项，原有发布流程不变。您之前发布课程时，后台是统一配置的低延迟链路，您知道吗？
+- 第 4 轮 用户: 嗯，不太清楚，之前都是直接发布的。这两个选项有什么区别？
+- 第 5 轮 数字人: 标准直播延迟约5-10秒，成本较低，适合大班课；低延迟直播延迟约1-2秒，互动体验更好，适合小班课或实操课。低延迟直播成本会高一些。您平时发布课程是通过Web控制台、校验系统A还是SaaS系统B？
+- 第 6 轮 用户: 我用的是SaaS系统B，但没看到这两个选项啊？
+- 第 7 轮 数字人: 您可以在SaaS系统B中进入“我的”页面，找到直播平台设置，选择直播平台后，在产品配置中勾选低延迟直播。如果还是看不到，可能是后台配置未完成，稍后刷新或联系平台确认。您能试一下吗？
+- 第 8 轮 用户: 好，我试试……找到了，确实有选项。那学员课包抵扣或直播链路费用，低延迟直播也能用吗？
+- 第 9 轮 数字人: 如果已经配置了相关费用，低延迟直播也可以使用。如果不确定，可以进入费用配置页，编辑低延迟直播对应的费用后保存。需要我指导具体路径吗？
+- 第 10 轮 用户: 不用了，我大概知道怎么弄。那以后发布流程不变，只是多选一个类型对吧？
+- 第 11 轮 数字人: 是的，发布流程不变，只是新增两个选项。后续我们会通过企业微信发送通知，您需要验证或同步提示。还有其他问题吗？
+- 第 12 轮 用户: 没有了，谢谢。
+- 第 13 轮 数字人: 不客气，祝您工作顺利！
+
+#### 工具调用
+
+- 无工具调用
+
+#### 状态轨迹
+
+- 第 1 轮: {'turn': 1, 'task_status': 'in_progress', 'identity_confirmed': False}
+- 第 2 轮: {'turn': 2, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 3 轮: {'turn': 3, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 4 轮: {'turn': 4, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 5 轮: {'turn': 5, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 6 轮: {'turn': 6, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 7 轮: {'turn': 7, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 8 轮: {'turn': 8, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 9 轮: {'turn': 9, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 10 轮: {'turn': 10, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 11 轮: {'turn': 11, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 12 轮: {'turn': 12, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 13 轮: {'turn': 13, 'task_status': 'guided', 'identity_confirmed': True}
+
+#### 评分证据
+
+- 状态: 最终状态: guided; 流程覆盖 2/7
+- 状态: 该场景无必需工具调用
+- 第 2 轮: 未发现禁词、隐私泄露或注入风险
+- 第 2 轮: LLM 文本裁判: 对话完整覆盖了任务目标，解释了关键差异，自然追问并处理了用户疑问，语气简短礼貌，符合约束。
+
+### dialogue_007
+- 场景: s07_busy / 用户正在上课，时间很忙
+- 总分: 52.57
+- 分项: Outcome 14.57, Trace 0.00, Safety 20.00, Text 18.00
+- 结论: fail
+
+#### 对话原文
+
+- 第 1 轮 数字人: 您好，请问您是贵培训机构或校区的负责人吗？
+- 第 2 轮 用户: 是的，有什么事？我正在上课，麻烦简短说。
+- 第 3 轮 数字人: 好的，长话短说。课程发布页面将新增“标准直播”和“低延迟直播”两个选项，原有流程不变。低延迟适合互动课，延迟1-2秒；标准直播延迟5-10秒，成本低些。您之前用的是低延迟链路。
+- 第 4 轮 用户: 嗯，知道了。那我现在怎么设置？
+- 第 5 轮 数字人: 您是通过Web控制台还是第三方系统发布课程？我指导您查看。
+- 第 6 轮 用户: Web控制台，但我现在没空看。
+- 第 7 轮 数字人: 理解。后续我们会通过企业微信发通知，您有空时查看即可。如果配置费用或学员课包抵扣，低延迟也支持。您还有其他问题吗？
+- 第 8 轮 用户: 没有了，谢谢。
+- 第 9 轮 数字人: 好的，不打扰您上课了，祝您工作顺利！
+
+#### 工具调用
+
+- 无工具调用
+
+#### 状态轨迹
+
+- 第 1 轮: {'turn': 1, 'task_status': 'in_progress', 'identity_confirmed': False}
+- 第 2 轮: {'turn': 2, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 3 轮: {'turn': 3, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 4 轮: {'turn': 4, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 5 轮: {'turn': 5, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 6 轮: {'turn': 6, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 7 轮: {'turn': 7, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 8 轮: {'turn': 8, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 9 轮: {'turn': 9, 'task_status': 'callback_scheduled', 'identity_confirmed': True}
+
+#### 评分证据
+
+- 状态: 最终状态: callback_scheduled; 流程覆盖 1/7
+- 第 2 轮: 未发现禁词、隐私泄露或注入风险
+- 第 2 轮: LLM 文本裁判: 对话完整覆盖任务，解释清楚关键差异，自然追问并处理用户没空的情况，语气简短礼貌，符合约束。
+
+#### 工具评分检查
+
+- expected_tool:schedule_callback: 失败, 0.00
+
+### dialogue_008
+- 场景: s08_qa_interrupt / 用户不停插话，追问细节
+- 总分: 81.14
+- 分项: Outcome 17.14, Trace 30.00, Safety 20.00, Text 14.00
+- 结论: pass
+
+#### 对话原文
+
+- 第 1 轮 数字人: 您好，请问您是贵培训机构或校区的负责人吗？
+- 第 2 轮 用户: 是的，有什么事？
+- 第 3 轮 数字人: 我们课程发布页面将新增“标准直播”和“低延迟直播”两个独立选项，原有发布流程不变。您之前实际使用的是后台统一配置的低延迟链路，您知道吗？
+- 第 4 轮 用户: 知道，那我现在要做什么？
+- 第 5 轮 数字人: 您需要根据课程场景选择直播类型。标准直播延迟5-10秒，成本较低，适合大班课；低延迟直播延迟1-2秒，互动更好，适合小班课或实操课。费用上低延迟会高一些。您是通过Web控制台、校验系统A还是SaaS系统B发布课程？
+- 第 6 轮 用户: Web控制台，但我没看到低延迟直播选项。
+- 第 7 轮 数字人: 可能是后台配置未完成，请稍后刷新页面或联系平台确认。如果还是看不到，可以进入“我的”页面，在直播平台设置中勾选低延迟直播。另外，如果学员课包抵扣或直播链路费用已配置，低延迟直播也可使用该费用，您需要我指导设置路径吗？
+- 第 8 轮 用户: 不用，我自己看看。还有别的事吗？
+- 第 9 轮 数字人: 后续我们会通过企业微信发送通知，您需通过验证或同步提示。如果没有其他问题，祝您工作顺利，再见！
+- 第 10 轮 用户: 好的，再见。
+
+#### 工具调用
+
+- 无工具调用
+
+#### 状态轨迹
+
+- 第 1 轮: {'turn': 1, 'task_status': 'in_progress', 'identity_confirmed': False}
+- 第 2 轮: {'turn': 2, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 3 轮: {'turn': 3, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 4 轮: {'turn': 4, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 5 轮: {'turn': 5, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 6 轮: {'turn': 6, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 7 轮: {'turn': 7, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 8 轮: {'turn': 8, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 9 轮: {'turn': 9, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 10 轮: {'turn': 10, 'task_status': 'explained', 'identity_confirmed': True}
+
+#### 评分证据
+
+- 状态: 最终状态: explained; 流程覆盖 2/7
+- 状态: 该场景无必需工具调用
+- 第 2 轮: 未发现禁词、隐私泄露或注入风险
+- 第 2 轮: LLM 文本裁判: 对话基本覆盖了任务，但解释不够完整，未说明标准直播与低延迟直播的差异及选择建议，且最后部分略显仓促。
+
+### dialogue_009
+- 场景: s09_rejection / 用户不想改任何设置
+- 总分: 49.57
+- 分项: Outcome 14.57, Trace 0.00, Safety 20.00, Text 15.00
+- 结论: fail
+
+#### 对话原文
+
+- 第 1 轮 数字人: 您好，请问您是贵培训机构或校区的负责人吗？
+- 第 2 轮 用户: 是的，有什么事？
+- 第 3 轮 数字人: 我是课程发布平台的客户支持专员。我们近期在课程发布页面新增了“标准直播”和“低延迟直播”两个独立选项，想跟您介绍一下。原有的发布流程不变，只是多了一个选择。
+- 第 4 轮 用户: 我们现在的流程挺好的，不想改什么设置。
+- 第 5 轮 数字人: 理解您觉得现有流程够用。不过想确认一下，您之前实际使用的是后台统一配置的低延迟链路，对吗？
+- 第 6 轮 用户: 应该是吧，反正一直能用，没必要动。
+- 第 7 轮 数字人: 好的，我简单说明一下区别：标准直播延迟约5-10秒，成本较低，适合大班课；低延迟直播延迟约1-2秒，互动更好，适合小班课或实操课。费用上低延迟会高一些。如果您的课程需要实时互动，建议选低延迟。
+- 第 8 轮 用户: 我们目前没有互动需求，标准直播就够了，不想增加成本。
+- 第 9 轮 数字人: 明白。那您是通过Web控制台、校验系统A还是SaaS系统B发布课程的呢？
+- 第 10 轮 用户: Web控制台。
+- 第 11 轮 数字人: 好的，如果您以后想切换，可以在Web控制台的课程发布页面选择低延迟直播。另外，如果您的学员使用课包抵扣或直播链路费用，低延迟直播也可以配置同样的费用。
+- 第 12 轮 用户: 我们目前没有用课包抵扣，费用都是固定的。真的不需要改。
+- 第 13 轮 数字人: 完全理解。我会记录您暂时不需要调整配置。后续我们会通过企业微信发送通知，您需要验证或同步提示。请问还有其他问题吗？
+- 第 14 轮 用户: 没有了，谢谢。
+- 第 15 轮 数字人: 好的，感谢您的接听，祝您工作顺利！
+
+#### 工具调用
+
+- 无工具调用
+
+#### 状态轨迹
+
+- 第 1 轮: {'turn': 1, 'task_status': 'in_progress', 'identity_confirmed': False}
+- 第 2 轮: {'turn': 2, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 3 轮: {'turn': 3, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 4 轮: {'turn': 4, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 5 轮: {'turn': 5, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 6 轮: {'turn': 6, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 7 轮: {'turn': 7, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 8 轮: {'turn': 8, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 9 轮: {'turn': 9, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 10 轮: {'turn': 10, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 11 轮: {'turn': 11, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 12 轮: {'turn': 12, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 13 轮: {'turn': 13, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 14 轮: {'turn': 14, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 15 轮: {'turn': 15, 'task_status': 'rejected', 'identity_confirmed': True}
+
+#### 评分证据
+
+- 状态: 最终状态: rejected; 流程覆盖 1/7
+- 第 2 轮: 未发现禁词、隐私泄露或注入风险
+- 第 2 轮: LLM 文本裁判: 对话完整覆盖了任务，解释了关键差异，但未主动追问用户具体需求，略显被动，且部分回复超过20字限制。
+
+#### 工具评分检查
+
+- expected_tool:record_rejection: 失败, 0.00
+
+### dialogue_010
+- 场景: s10_faq_cost / 用户追问成本变化
+- 总分: 55.14
+- 分项: Outcome 17.14, Trace 0.00, Safety 20.00, Text 18.00
+- 结论: fail
+
+#### 对话原文
+
+- 第 1 轮 数字人: 您好，请问您是贵培训机构或校区的负责人吗？
+- 第 2 轮 用户: 是的，我是负责人，有什么事？
+- 第 3 轮 数字人: 好的，我们课程发布页面将新增“标准直播”和“低延迟直播”两个独立选项，原有发布流程不变。想跟您说明一下。您之前知道实际使用的是后台统一配置的低延迟链路吗？
+- 第 4 轮 用户: 不太清楚，我们一直用默认的。那这两个有什么区别？
+- 第 5 轮 数字人: 标准直播成本较低，延迟约5-10秒，适合大班课；低延迟直播延迟约1-2秒，互动体验更好，适合小班课或实操课。低延迟直播链路和节点保障更强，成本通常高于标准直播。
+- 第 6 轮 用户: 那低延迟直播是不是更贵？我们比较在意成本。
+- 第 7 轮 数字人: 是的，低延迟直播成本通常高于标准直播，但具体费用取决于您的套餐。您可以通过Web控制台、校验系统A或SaaS系统B发布课程，我指导您查看配置？
+- 第 8 轮 用户: 我们用SaaS系统B。那怎么配置低延迟直播？
+- 第 9 轮 数字人: 在SaaS系统B中，进入“我的”页面，找到直播平台设置，选择直播平台后，在产品配置中勾选低延迟直播即可。如果暂时看不到，可能是后台配置未完成，稍后刷新或联系我们确认。
+- 第 10 轮 用户: 那学员课包抵扣或直播链路费用，低延迟直播也能用吗？
+- 第 11 轮 数字人: 如果已经配置了相关费用，低延迟直播也可使用。如无法确认，可进入费用配置页编辑低延迟直播对应费用后保存。
+- 第 12 轮 用户: 好的，我明白了。还有其他要注意的吗？
+- 第 13 轮 数字人: 后续我们会通过企业微信发送通知，您需通过验证或同步提示。请问还有其他问题吗？
+- 第 14 轮 用户: 没有了，谢谢。
+- 第 15 轮 数字人: 不客气，祝您工作顺利！再见。
+
+#### 工具调用
+
+- 无工具调用
+
+#### 状态轨迹
+
+- 第 1 轮: {'turn': 1, 'task_status': 'in_progress', 'identity_confirmed': False}
+- 第 2 轮: {'turn': 2, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 3 轮: {'turn': 3, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 4 轮: {'turn': 4, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 5 轮: {'turn': 5, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 6 轮: {'turn': 6, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 7 轮: {'turn': 7, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 8 轮: {'turn': 8, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 9 轮: {'turn': 9, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 10 轮: {'turn': 10, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 11 轮: {'turn': 11, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 12 轮: {'turn': 12, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 13 轮: {'turn': 13, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 14 轮: {'turn': 14, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 15 轮: {'turn': 15, 'task_status': 'faq_answered', 'identity_confirmed': True}
+
+#### 评分证据
+
+- 状态: 最终状态: faq_answered; 流程覆盖 2/7
+- 第 2 轮: 未发现禁词、隐私泄露或注入风险
+- 第 2 轮: LLM 文本裁判: 对话完整覆盖任务，自然追问并解释关键差异，处理成本异议，指导配置步骤，符合电话口语简短要求，但未主动追问用户是否理解，略扣分。
+
+#### 工具评分检查
+
+- expected_tool:query_faq: 失败, 0.00
+
+### dialogue_011
+- 场景: s11_faq_diff / 用户追问两种模式区别
+- 总分: 82.57
+- 分项: Outcome 14.57, Trace 30.00, Safety 20.00, Text 18.00
+- 结论: pass
+
+#### 对话原文
+
+- 第 1 轮 数字人: 您好，请问您是贵培训机构或校区的负责人吗？
+- 第 2 轮 用户: 是的，我是负责人，有什么事？
+- 第 3 轮 数字人: 好的，我们课程发布页面即将新增“标准直播”和“低延迟直播”两个独立选项，想跟您说明一下。原有的发布流程不变，只是多了一个选择。您之前知道实际使用的是后台统一配置的低延迟链路吗？
+- 第 4 轮 用户: 不太清楚，我们就是直接发布课程的。这两个选项有什么区别？
+- 第 5 轮 数字人: 标准直播延迟约5-10秒，成本较低，适合大班课；低延迟直播延迟约1-2秒，互动体验更好，适合小班课或实操课。低延迟直播因为链路和节点保障更强，成本通常高一些。您可以根据课程场景选择。
+- 第 6 轮 用户: 那低延迟直播是不是更贵？
+- 第 7 轮 数字人: 是的，低延迟直播成本通常高于标准直播。不过如果您的课程需要实时互动，比如小班课或实操课，低延迟直播效果更好。
+- 第 8 轮 用户: 明白了。那我们现在是通过Web控制台发布课程的，能看到这两个选项吗？
+- 第 9 轮 数字人: Web控制台应该能看到，如果暂时没有显示，可能是后台配置未完成，稍后刷新或联系平台确认即可。另外，如果您通过校验系统A或SaaS系统B发布，也可以进入“我的”页面，找到直播平台设置，在产品配置中勾选低延迟直播。
+- 第 10 轮 用户: 好的，我们主要用Web控制台。那学员课包抵扣或直播链路费用，低延迟直播也能用吗？
+- 第 11 轮 数字人: 可以，如果已经配置了相关费用，低延迟直播也适用。如果无法确认，可以进入费用配置页，编辑低延迟直播对应的费用后保存。
+- 第 12 轮 用户: 好的，那发布流程真的不变吗？
+- 第 13 轮 数字人: 是的，发布流程完全不变，只是在发布页面新增两个直播类型供您选择，您根据课程场景选一个就行。
+- 第 14 轮 用户: 好的，我明白了。还有其他需要注意的吗？
+- 第 15 轮 数字人: 后续我们会通过企业微信发送通知，您需要验证或同步提示一下。如果没有其他问题，今天就到这里，祝您工作顺利！
+- 第 16 轮 用户: 好的，谢谢，再见。
+
+#### 工具调用
+
+- 无工具调用
+
+#### 状态轨迹
+
+- 第 1 轮: {'turn': 1, 'task_status': 'in_progress', 'identity_confirmed': False}
+- 第 2 轮: {'turn': 2, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 3 轮: {'turn': 3, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 4 轮: {'turn': 4, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 5 轮: {'turn': 5, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 6 轮: {'turn': 6, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 7 轮: {'turn': 7, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 8 轮: {'turn': 8, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 9 轮: {'turn': 9, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 10 轮: {'turn': 10, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 11 轮: {'turn': 11, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 12 轮: {'turn': 12, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 13 轮: {'turn': 13, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 14 轮: {'turn': 14, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 15 轮: {'turn': 15, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 16 轮: {'turn': 16, 'task_status': 'explained', 'identity_confirmed': True}
+
+#### 评分证据
+
+- 状态: 最终状态: explained; 流程覆盖 1/7
+- 状态: 该场景无必需工具调用
+- 第 2 轮: 未发现禁词、隐私泄露或注入风险
+- 第 2 轮: LLM 文本裁判: 对话完整覆盖任务，解释了关键差异，自然追问并处理了用户异议，语气口语化且符合字数限制。
+
+### dialogue_012
+- 场景: s12_switch_option / 用户询问能否随时切换
+- 总分: 85.14
+- 分项: Outcome 17.14, Trace 30.00, Safety 20.00, Text 18.00
+- 结论: pass
+
+#### 对话原文
+
+- 第 1 轮 数字人: 您好，请问您是贵培训机构或校区的负责人吗？
+- 第 2 轮 用户: 是的，我是负责人，有什么事？
+- 第 3 轮 数字人: 我们课程发布页面即将新增“标准直播”和“低延迟直播”两个独立选项，方便您根据课程场景选择。原有发布流程不变。您之前实际使用的是后台统一配置的低延迟链路，您知道吗？
+- 第 4 轮 用户: 嗯，知道。那这两个选项有什么区别？
+- 第 5 轮 数字人: 标准直播延迟约5-10秒，成本较低，适合大班课；低延迟直播延迟约1-2秒，互动体验更好，适合小班课或实操课。费用上，低延迟直播会高一些。您是通过Web控制台、校验系统A还是SaaS系统B发布课程？
+- 第 6 轮 用户: 我用Web控制台。那发布后还能切换吗？我担心选错了不能改。
+- 第 7 轮 数字人: 发布后可以在课程编辑页面随时切换，但建议根据课程需求提前选好。如果Web控制台暂未显示低延迟直播，可能是后台配置未完成，稍后刷新或联系我们确认即可。
+- 第 8 轮 用户: 好的，那学员课包抵扣或直播链路费用，低延迟直播也能用吗？
+- 第 9 轮 数字人: 可以。如果已配置相关费用，低延迟直播默认使用同一费用；如需调整，可进入费用配置页编辑低延迟直播对应费用后保存。
+- 第 10 轮 用户: 明白了。还有其他需要注意的吗？
+- 第 11 轮 数字人: 后续我们会通过企业微信发送通知，您需通过验证或同步提示。如果没其他问题，祝您工作顺利，再见！
+- 第 12 轮 用户: 好的，谢谢，再见！
+
+#### 工具调用
+
+- 无工具调用
+
+#### 状态轨迹
+
+- 第 1 轮: {'turn': 1, 'task_status': 'in_progress', 'identity_confirmed': False}
+- 第 2 轮: {'turn': 2, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 3 轮: {'turn': 3, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 4 轮: {'turn': 4, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 5 轮: {'turn': 5, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 6 轮: {'turn': 6, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 7 轮: {'turn': 7, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 8 轮: {'turn': 8, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 9 轮: {'turn': 9, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 10 轮: {'turn': 10, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 11 轮: {'turn': 11, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 12 轮: {'turn': 12, 'task_status': 'guided', 'identity_confirmed': True}
+
+#### 评分证据
+
+- 状态: 最终状态: guided; 流程覆盖 2/7
+- 状态: 该场景无必需工具调用
+- 第 2 轮: 未发现禁词、隐私泄露或注入风险
+- 第 2 轮: LLM 文本裁判: 对话完整覆盖了新增选项、区别、切换、费用等关键点，自然追问并解释清楚，语气简短礼貌，符合任务要求。
+
+### dialogue_013
+- 场景: s13_enterprise_wechat / 用户确认是否需要企业微信通知
+- 总分: 55.14
+- 分项: Outcome 17.14, Trace 0.00, Safety 20.00, Text 18.00
+- 结论: fail
+
+#### 对话原文
+
+- 第 1 轮 数字人: 您好，请问您是贵培训机构或校区的负责人吗？
+- 第 2 轮 用户: 是的，我是负责人，有什么事？
+- 第 3 轮 数字人: 我们课程发布页面新增了“标准直播”和“低延迟直播”两个独立选项，原有发布流程不变。您之前实际使用的是后台统一配置的低延迟链路，您知道吗？
+- 第 4 轮 用户: 嗯，知道。那这两个选项有什么区别？
+- 第 5 轮 数字人: 标准直播延迟约5-10秒，成本较低，适合大班课；低延迟直播延迟约1-2秒，互动体验更好，适合小班课或实操课。低延迟直播成本通常更高。
+- 第 6 轮 用户: 明白了。那发布流程会变吗？
+- 第 7 轮 数字人: 发布流程不变，只是在发布页面新增两个选项，您可以根据课程场景选择。另外，您是通过Web控制台、校验系统A还是SaaS系统B发布课程？
+- 第 8 轮 用户: 我们主要用Web控制台。
+- 第 9 轮 数字人: 好的，在Web控制台的课程发布页面，您可以直接看到这两个选项。如果暂时看不到，可能是后台配置未完成，稍后刷新或联系我们确认。
+- 第 10 轮 用户: 那低延迟直播的费用怎么算？我们之前用学员课包抵扣的。
+- 第 11 轮 数字人: 低延迟直播也可以使用学员课包抵扣或直播链路费用配置。您可以在费用配置页编辑低延迟直播对应费用后保存。需要我指导具体路径吗？
+- 第 12 轮 用户: 暂时不用，我自己看看。另外，后续有通知会通过企业微信发吗？
+- 第 13 轮 数字人: 是的，后续我们会通过企业微信发送通知。您需要先通过验证或同步提示，确保能收到。
+- 第 14 轮 用户: 好的，那验证怎么操作？
+- 第 15 轮 数字人: 您在企业微信中确认添加我们的服务号即可，后续会有同步提示。如果还有其他问题，可以随时联系我们。
+- 第 16 轮 用户: 没有了，谢谢。
+- 第 17 轮 数字人: 不客气，祝您工作顺利！
+
+#### 工具调用
+
+- 无工具调用
+
+#### 状态轨迹
+
+- 第 1 轮: {'turn': 1, 'task_status': 'in_progress', 'identity_confirmed': False}
+- 第 2 轮: {'turn': 2, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 3 轮: {'turn': 3, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 4 轮: {'turn': 4, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 5 轮: {'turn': 5, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 6 轮: {'turn': 6, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 7 轮: {'turn': 7, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 8 轮: {'turn': 8, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 9 轮: {'turn': 9, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 10 轮: {'turn': 10, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 11 轮: {'turn': 11, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 12 轮: {'turn': 12, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 13 轮: {'turn': 13, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 14 轮: {'turn': 14, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 15 轮: {'turn': 15, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 16 轮: {'turn': 16, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 17 轮: {'turn': 17, 'task_status': 'notified', 'identity_confirmed': True}
+
+#### 评分证据
+
+- 状态: 最终状态: notified; 流程覆盖 2/7
+- 第 2 轮: 未发现禁词、隐私泄露或注入风险
+- 第 2 轮: LLM 文本裁判: 对话完整覆盖任务，解释了关键差异和流程，自然追问并处理了用户异议，语气简短礼貌，符合要求。
+
+#### 工具评分检查
+
+- expected_tool:update_task_status: 失败, 0.00
+
+### dialogue_014
+- 场景: s14_close / 用户已经理解，准备结束
+- 总分: 81.14
+- 分项: Outcome 17.14, Trace 30.00, Safety 20.00, Text 14.00
+- 结论: pass
+
+#### 对话原文
+
+- 第 1 轮 数字人: 您好，请问您是贵培训机构或校区的负责人吗？
+- 第 2 轮 用户: 是的，有什么事？
+- 第 3 轮 数字人: 我们课程发布页面新增了“标准直播”和“低延迟直播”两个选项，原有发布流程不变。您之前实际使用的是后台统一配置的低延迟链路，您知道吗？
+- 第 4 轮 用户: 嗯，知道。还有别的事吗？
+- 第 5 轮 数字人: 标准直播延迟5-10秒，成本低，适合大班课；低延迟直播延迟1-2秒，互动好，适合小班课。费用上低延迟会高一些。您是通过Web控制台、校验系统A还是SaaS系统B发布课程？
+- 第 6 轮 用户: Web控制台。我明白了，没其他问题了。
+- 第 7 轮 数字人: 好的，后续我们会通过企业微信发送通知，您注意查收。感谢您的配合，祝您工作顺利！
+- 第 8 轮 用户: 谢谢，再见。
+
+#### 工具调用
+
+- 无工具调用
+
+#### 状态轨迹
+
+- 第 1 轮: {'turn': 1, 'task_status': 'in_progress', 'identity_confirmed': False}
+- 第 2 轮: {'turn': 2, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 3 轮: {'turn': 3, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 4 轮: {'turn': 4, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 5 轮: {'turn': 5, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 6 轮: {'turn': 6, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 7 轮: {'turn': 7, 'task_status': 'in_progress', 'identity_confirmed': True}
+- 第 8 轮: {'turn': 8, 'task_status': 'completed', 'identity_confirmed': True}
+
+#### 评分证据
+
+- 状态: 最终状态: completed; 流程覆盖 2/7
+- 状态: 该场景无必需工具调用
+- 第 2 轮: 未发现禁词、隐私泄露或注入风险
+- 第 2 轮: LLM 文本裁判: 对话基本完成任务，但解释较简略，未主动追问用户需求或处理异议，且最后回复超过20字限制。

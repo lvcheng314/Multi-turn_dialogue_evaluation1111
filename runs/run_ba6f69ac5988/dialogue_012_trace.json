@@ -1,0 +1,171 @@
+{
+  "run_id": "run_ba6f69ac5988",
+  "dialogue_id": "dialogue_012",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "s12_ask_contract",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "你好，请问是张强吗？我是站长。我看到你已报名飞毛腿。请记住，午餐和晚餐高峰期需要上线。单日合同每天至少完成5单，多日合同每天至少完成3单。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "嗯，是我。有什么事吗？"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "今天你的飞毛腿合同已经生效了，请问你今天可以开始配送吗？"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "生效了？那具体有什么要求？"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "单日合同今天必须完成5单，多日合同每天至少3单。如果没完成，合同和派单可能受影响。"
+    },
+    {
+      "turn": 6,
+      "role": "user",
+      "content": "那如果连续几天完不成会怎样？"
+    },
+    {
+      "turn": 7,
+      "role": "agent",
+      "content": "目前很多骑手在申请，如果无法连续完成，名额可能被占用。所以尽量每天完成。"
+    },
+    {
+      "turn": 8,
+      "role": "user",
+      "content": "明白了。那今天我能配送，但我不确定能不能完成5单。"
+    },
+    {
+      "turn": 9,
+      "role": "agent",
+      "content": "尽量多跑跑，高峰期单量多。另外，飞毛腿报名按排名，减少拒单、取消、超时，恶劣天气单量更高，有助于保住资格。"
+    },
+    {
+      "turn": 10,
+      "role": "user",
+      "content": "好的，那我今天试试。还有，多日合同有奖励吗？"
+    },
+    {
+      "turn": 11,
+      "role": "agent",
+      "content": "连续完成7天多日合同，且每天完成3单，每单额外加1元。"
+    },
+    {
+      "turn": 12,
+      "role": "user",
+      "content": "那怎么退出飞毛腿？"
+    },
+    {
+      "turn": 13,
+      "role": "agent",
+      "content": "如需退出，需在前一天晚上10点前在App报名入口取消，次日生效。"
+    },
+    {
+      "turn": 14,
+      "role": "user",
+      "content": "好的，我知道了。那我今天先跑着。"
+    },
+    {
+      "turn": 15,
+      "role": "agent",
+      "content": "好的，加油！注意安全。如果有什么问题随时联系我。"
+    },
+    {
+      "turn": 16,
+      "role": "user",
+      "content": "好的，谢谢站长。"
+    }
+  ],
+  "tool_calls": [],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 8,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 9,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 10,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 11,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 12,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 13,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 14,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 15,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 16,
+      "task_status": "accepted",
+      "identity_confirmed": true
+    }
+  ]
+}

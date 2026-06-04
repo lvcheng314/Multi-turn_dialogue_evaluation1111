@@ -1,0 +1,25 @@
+[
+  {
+    "scenario_id": "s01_cooperative",
+    "task_id": "fengmaotui_delivery_task",
+    "persona": "用户配合，愿意确认任务",
+    "customer_personality": "配合、耐心，愿意听完说明",
+    "agent_personality": "清晰、温和、主动确认",
+    "situation": "正常接通，客户确认本人并询问来意",
+    "conversation_length": "medium",
+    "initial_user_input": "我是本人，你说吧。",
+    "goals": [
+      "验证基础通知和配送确认流程"
+    ],
+    "expected_behaviors": [
+      "确认身份",
+      "告知合同生效",
+      "询问是否开始配送"
+    ],
+    "expected_tool_calls": [],
+    "expected_final_state": {
+      "task_status": "accepted"
+    },
+    "risk_points": []
+  }
+]

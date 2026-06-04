@@ -1,0 +1,61 @@
+{
+  "run_id": "run_5ea62e7cc49c",
+  "dialogue_id": "dialogue_012",
+  "task_id": "course_live_task",
+  "scenario_id": "s12_switch_option",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "您好，请问您是贵培训机构/校区的负责人吗？"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "之后我能换成低延迟吗？"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "您好，合同已生效，请问现在方便开始配送吗？"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "好的。"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "好的，祝您配送顺利，感谢接听。"
+    }
+  ],
+  "tool_calls": [],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "started",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 3,
+      "task_status": "guided",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "guided",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "guided",
+      "identity_confirmed": true
+    }
+  ]
+}

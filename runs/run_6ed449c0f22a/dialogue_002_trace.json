@@ -1,0 +1,111 @@
+{
+  "run_id": "run_6ed449c0f22a",
+  "dialogue_id": "dialogue_002",
+  "task_id": "course_live_task",
+  "scenario_id": "s02_not_aware",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "您好，请问您是贵培训机构或校区的负责人吗？"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "我还不知道这个改动。"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "好的，我理解您还不知道。我给您简单说明一下。"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "之前不是系统默认的吗？"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "是的，之前后台统一配置的是低延迟链路。"
+    },
+    {
+      "turn": 6,
+      "role": "user",
+      "content": "那我发布新课的时候怎么选？"
+    },
+    {
+      "turn": 7,
+      "role": "agent",
+      "content": "您发布课程时，页面会新增两个选项，您按需选择就行。"
+    },
+    {
+      "turn": 8,
+      "role": "user",
+      "content": "好的，我回头看一下。"
+    },
+    {
+      "turn": 9,
+      "role": "agent",
+      "content": "好的，您方便时查看，有问题随时联系我们。"
+    },
+    {
+      "turn": 10,
+      "role": "agent",
+      "content": "好的，那您先忙，有问题随时联系我们。"
+    }
+  ],
+  "tool_calls": [],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "started",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "started",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "started",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 8,
+      "task_status": "started",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 9,
+      "task_status": "informed",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 10,
+      "task_status": "informed",
+      "identity_confirmed": true
+    }
+  ]
+}

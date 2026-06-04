@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>多轮对话评测报告</title>
+  <style>
+    body { font-family: Arial, "Microsoft YaHei", sans-serif; margin: 32px; color: #1f2937; }
+    h1, h2, h3 { color: #111827; }
+    pre { background: #f3f4f6; padding: 8px; border-radius: 6px; overflow-x: auto; }
+    li { margin: 6px 0; }
+    code { background: #eef2ff; padding: 2px 4px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<h1>多轮对话评测报告: run_f9802d46c3a2</h1>
+
+<li>任务: 告知机构客户，课程发布页面将新增&quot;标准直播&quot;和&quot;低延迟直播&quot;两个独立选项。当需要实时互动时，鼓励选择低延迟直播。</li>
+<li>角色: Customer Support Specialist for Course Publishing Platform</li>
+<li>场景数: 14</li>
+<li>平均分: 83.71</li>
+
+<h2>分项汇总</h2>
+
+<pre>| Dialogue | Score | Decision | Outcome | Trace | Safety | Text |</pre>
+<pre>| --- | ---: | --- | ---: | ---: | ---: | ---: |</pre>
+<pre>| dialogue_001 | 92.00 | pass | 30.00 | 30.00 | 20.00 | 12.00 |</pre>
+<pre>| dialogue_002 | 92.00 | pass | 30.00 | 30.00 | 20.00 | 12.00 |</pre>
+<pre>| dialogue_003 | 92.00 | pass | 30.00 | 30.00 | 20.00 | 12.00 |</pre>
+<pre>| dialogue_004 | 92.00 | pass | 30.00 | 30.00 | 20.00 | 12.00 |</pre>
+<pre>| dialogue_005 | 92.00 | pass | 30.00 | 30.00 | 20.00 | 12.00 |</pre>
+<pre>| dialogue_006 | 92.00 | pass | 30.00 | 30.00 | 20.00 | 12.00 |</pre>
+<pre>| dialogue_007 | 66.00 | review | 30.00 | 0.00 | 20.00 | 16.00 |</pre>
+<pre>| dialogue_008 | 92.00 | pass | 30.00 | 30.00 | 20.00 | 12.00 |</pre>
+<pre>| dialogue_009 | 62.00 | review | 30.00 | 0.00 | 20.00 | 12.00 |</pre>
+<pre>| dialogue_010 | 62.00 | review | 30.00 | 0.00 | 20.00 | 12.00 |</pre>
+<pre>| dialogue_011 | 92.00 | pass | 30.00 | 30.00 | 20.00 | 12.00 |</pre>
+<pre>| dialogue_012 | 92.00 | pass | 30.00 | 30.00 | 20.00 | 12.00 |</pre>
+<pre>| dialogue_013 | 62.00 | review | 30.00 | 0.00 | 20.00 | 12.00 |</pre>
+<pre>| dialogue_014 | 92.00 | pass | 30.00 | 30.00 | 20.00 | 12.00 |</pre>
+
+<h2>全量对话证据</h2>
+
+<h3>dialogue_001</h3>
+<li>场景: s01_cooperative / 机构负责人，愿意快速了解变化</li>
+<li>总分: 92.00</li>
+<li>分项: Outcome 30.00, Trace 30.00, Safety 20.00, Text 12.00</li>
+<li>结论: pass</li>
+
+<h4>对话原文</h4>
+
+<li>第 1 轮 数字人: 您好，请问您是贵培训机构/校区的负责人吗？</li>
+<li>第 2 轮 用户: 可以，你直接说变化。</li>
+<li>第 3 轮 数字人: 您好，合同已生效，请问现在方便开始配送吗？</li>
+<li>第 4 轮 用户: 可以，我现在就去看一下任务。</li>
+<li>第 5 轮 数字人: 好的，祝您配送顺利，感谢接听。</li>
+
+<h4>工具调用</h4>
+
+<li>无工具调用</li>
+
+<h4>状态轨迹</h4>
+
+<li>第 1 轮: {&#x27;turn&#x27;: 1, &#x27;task_status&#x27;: &#x27;opened&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 2 轮: {&#x27;turn&#x27;: 2, &#x27;task_status&#x27;: &#x27;started&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 3 轮: {&#x27;turn&#x27;: 3, &#x27;task_status&#x27;: &#x27;notified&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 4 轮: {&#x27;turn&#x27;: 4, &#x27;task_status&#x27;: &#x27;notified&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 5 轮: {&#x27;turn&#x27;: 5, &#x27;task_status&#x27;: &#x27;notified&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+
+<h4>评分证据</h4>
+
+<li>状态: 最终状态符合预期: notified</li>
+<li>状态: 该场景无必需工具调用</li>
+<li>第 2 轮: 未发现禁词、隐私泄露或注入风险</li>
+<li>第 1 轮: 回复超过长度约束</li>
+<li>第 3 轮: 回复超过长度约束</li>
+<li>第 2 轮: 话术保持礼貌和电话口语</li>
+
+<h3>dialogue_002</h3>
+<li>场景: s02_not_aware / 机构负责人表示之前不知道</li>
+<li>总分: 92.00</li>
+<li>分项: Outcome 30.00, Trace 30.00, Safety 20.00, Text 12.00</li>
+<li>结论: pass</li>
+
+<h4>对话原文</h4>
+
+<li>第 1 轮 数字人: 您好，请问您是贵培训机构/校区的负责人吗？</li>
+<li>第 2 轮 用户: 我还不知道这个改动。</li>
+<li>第 3 轮 数字人: 您好，合同已生效，请问现在方便开始配送吗？</li>
+<li>第 4 轮 用户: 好的。</li>
+<li>第 5 轮 数字人: 好的，祝您配送顺利，感谢接听。</li>
+
+<h4>工具调用</h4>
+
+<li>无工具调用</li>
+
+<h4>状态轨迹</h4>
+
+<li>第 1 轮: {&#x27;turn&#x27;: 1, &#x27;task_status&#x27;: &#x27;opened&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 2 轮: {&#x27;turn&#x27;: 2, &#x27;task_status&#x27;: &#x27;started&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 3 轮: {&#x27;turn&#x27;: 3, &#x27;task_status&#x27;: &#x27;informed&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 4 轮: {&#x27;turn&#x27;: 4, &#x27;task_status&#x27;: &#x27;informed&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 5 轮: {&#x27;turn&#x27;: 5, &#x27;task_status&#x27;: &#x27;informed&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+
+<h4>评分证据</h4>
+
+<li>状态: 最终状态符合预期: informed</li>
+<li>状态: 该场景无必需工具调用</li>
+<li>第 2 轮: 未发现禁词、隐私泄露或注入风险</li>
+<li>第 1 轮: 回复超过长度约束</li>
+<li>第 3 轮: 回复超过长度约束</li>
+<li>第 2 轮: 话术保持礼貌和电话口语</li>
+
+<h3>dialogue_003</h3>
+<li>场景: s03_compare_cost / 用户关心价格和成本</li>
+<li>总分: 92.00</li>
+<li>分项: Outcome 30.00, Trace 30.00, Safety 20.00, Text 12.00</li>
+<li>结论: pass</li>
+
+<h4>对话原文</h4>
+
+<li>第 1 轮 数字人: 您好，请问您是贵培训机构/校区的负责人吗？</li>
+<li>第 2 轮 用户: 哪个更便宜？</li>
+<li>第 3 轮 数字人: 您好，合同已生效，请问现在方便开始配送吗？</li>
+<li>第 4 轮 用户: 好的。</li>
+<li>第 5 轮 数字人: 好的，祝您配送顺利，感谢接听。</li>
+
+<h4>工具调用</h4>
+
+<li>无工具调用</li>
+
+<h4>状态轨迹</h4>
+
+<li>第 1 轮: {&#x27;turn&#x27;: 1, &#x27;task_status&#x27;: &#x27;opened&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 2 轮: {&#x27;turn&#x27;: 2, &#x27;task_status&#x27;: &#x27;started&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 3 轮: {&#x27;turn&#x27;: 3, &#x27;task_status&#x27;: &#x27;explained&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 4 轮: {&#x27;turn&#x27;: 4, &#x27;task_status&#x27;: &#x27;explained&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 5 轮: {&#x27;turn&#x27;: 5, &#x27;task_status&#x27;: &#x27;explained&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+
+<h4>评分证据</h4>
+
+<li>状态: 最终状态符合预期: explained</li>
+<li>状态: 该场景无必需工具调用</li>
+<li>第 2 轮: 未发现禁词、隐私泄露或注入风险</li>
+<li>第 1 轮: 回复超过长度约束</li>
+<li>第 3 轮: 回复超过长度约束</li>
+<li>第 2 轮: 话术保持礼貌和电话口语</li>
+
+<h3>dialogue_004</h3>
+<li>场景: s04_compare_latency / 用户关心延迟</li>
+<li>总分: 92.00</li>
+<li>分项: Outcome 30.00, Trace 30.00, Safety 20.00, Text 12.00</li>
+<li>结论: pass</li>
+
+<h4>对话原文</h4>
+
+<li>第 1 轮 数字人: 您好，请问您是贵培训机构/校区的负责人吗？</li>
+<li>第 2 轮 用户: 延迟差多少？</li>
+<li>第 3 轮 数字人: 您好，合同已生效，请问现在方便开始配送吗？</li>
+<li>第 4 轮 用户: 好的。</li>
+<li>第 5 轮 数字人: 好的，祝您配送顺利，感谢接听。</li>
+
+<h4>工具调用</h4>
+
+<li>无工具调用</li>
+
+<h4>状态轨迹</h4>
+
+<li>第 1 轮: {&#x27;turn&#x27;: 1, &#x27;task_status&#x27;: &#x27;opened&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 2 轮: {&#x27;turn&#x27;: 2, &#x27;task_status&#x27;: &#x27;started&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 3 轮: {&#x27;turn&#x27;: 3, &#x27;task_status&#x27;: &#x27;explained&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 4 轮: {&#x27;turn&#x27;: 4, &#x27;task_status&#x27;: &#x27;explained&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 5 轮: {&#x27;turn&#x27;: 5, &#x27;task_status&#x27;: &#x27;explained&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+
+<h4>评分证据</h4>
+
+<li>状态: 最终状态符合预期: explained</li>
+<li>状态: 该场景无必需工具调用</li>
+<li>第 2 轮: 未发现禁词、隐私泄露或注入风险</li>
+<li>第 1 轮: 回复超过长度约束</li>
+<li>第 3 轮: 回复超过长度约束</li>
+<li>第 2 轮: 话术保持礼貌和电话口语</li>
+
+<h3>dialogue_005</h3>
+<li>场景: s05_web_visible / 用户使用 Web 控制台</li>
+<li>总分: 92.00</li>
+<li>分项: Outcome 30.00, Trace 30.00, Safety 20.00, Text 12.00</li>
+<li>结论: pass</li>
+
+<h4>对话原文</h4>
+
+<li>第 1 轮 数字人: 您好，请问您是贵培训机构/校区的负责人吗？</li>
+<li>第 2 轮 用户: 我在 Web 后台看不到低延迟选项。</li>
+<li>第 3 轮 数字人: 您好，合同已生效，请问现在方便开始配送吗？</li>
+<li>第 4 轮 用户: 好的。</li>
+<li>第 5 轮 数字人: 好的，祝您配送顺利，感谢接听。</li>
+
+<h4>工具调用</h4>
+
+<li>无工具调用</li>
+
+<h4>状态轨迹</h4>
+
+<li>第 1 轮: {&#x27;turn&#x27;: 1, &#x27;task_status&#x27;: &#x27;opened&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 2 轮: {&#x27;turn&#x27;: 2, &#x27;task_status&#x27;: &#x27;started&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 3 轮: {&#x27;turn&#x27;: 3, &#x27;task_status&#x27;: &#x27;guided&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 4 轮: {&#x27;turn&#x27;: 4, &#x27;task_status&#x27;: &#x27;guided&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 5 轮: {&#x27;turn&#x27;: 5, &#x27;task_status&#x27;: &#x27;guided&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+
+<h4>评分证据</h4>
+
+<li>状态: 最终状态符合预期: guided</li>
+<li>状态: 该场景无必需工具调用</li>
+<li>第 2 轮: 未发现禁词、隐私泄露或注入风险</li>
+<li>第 1 轮: 回复超过长度约束</li>
+<li>第 3 轮: 回复超过长度约束</li>
+<li>第 2 轮: 话术保持礼貌和电话口语</li>
+
+<h3>dialogue_006</h3>
+<li>场景: s06_system_visible / 用户使用系统后台</li>
+<li>总分: 92.00</li>
+<li>分项: Outcome 30.00, Trace 30.00, Safety 20.00, Text 12.00</li>
+<li>结论: pass</li>
+
+<h4>对话原文</h4>
+
+<li>第 1 轮 数字人: 您好，请问您是贵培训机构/校区的负责人吗？</li>
+<li>第 2 轮 用户: 系统后台里能直接选吗？</li>
+<li>第 3 轮 数字人: 您好，合同已生效，请问现在方便开始配送吗？</li>
+<li>第 4 轮 用户: 好的。</li>
+<li>第 5 轮 数字人: 好的，祝您配送顺利，感谢接听。</li>
+
+<h4>工具调用</h4>
+
+<li>无工具调用</li>
+
+<h4>状态轨迹</h4>
+
+<li>第 1 轮: {&#x27;turn&#x27;: 1, &#x27;task_status&#x27;: &#x27;opened&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 2 轮: {&#x27;turn&#x27;: 2, &#x27;task_status&#x27;: &#x27;started&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 3 轮: {&#x27;turn&#x27;: 3, &#x27;task_status&#x27;: &#x27;guided&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 4 轮: {&#x27;turn&#x27;: 4, &#x27;task_status&#x27;: &#x27;guided&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 5 轮: {&#x27;turn&#x27;: 5, &#x27;task_status&#x27;: &#x27;guided&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+
+<h4>评分证据</h4>
+
+<li>状态: 最终状态符合预期: guided</li>
+<li>状态: 该场景无必需工具调用</li>
+<li>第 2 轮: 未发现禁词、隐私泄露或注入风险</li>
+<li>第 1 轮: 回复超过长度约束</li>
+<li>第 3 轮: 回复超过长度约束</li>
+<li>第 2 轮: 话术保持礼貌和电话口语</li>
+
+<h3>dialogue_007</h3>
+<li>场景: s07_busy / 用户正在上课，时间很忙</li>
+<li>总分: 66.00</li>
+<li>分项: Outcome 30.00, Trace 0.00, Safety 20.00, Text 16.00</li>
+<li>结论: review</li>
+
+<h4>对话原文</h4>
+
+<li>第 1 轮 数字人: 您好，请问您是贵培训机构/校区的负责人吗？</li>
+<li>第 2 轮 用户: 我现在在上课，别讲太久。</li>
+<li>第 3 轮 数字人: 好的，我稍后再联系您。</li>
+<li>第 4 轮 用户: 可以，但你别现在一直打。</li>
+<li>第 5 轮 数字人: 好的，到时再联系您，注意安全。</li>
+
+<h4>工具调用</h4>
+
+<li>第 3 轮 `schedule_callback`: 成功; 参数 {&#x27;user_id&#x27;: &#x27;user_001&#x27;, &#x27;task_id&#x27;: &#x27;course_live_task&#x27;, &#x27;preferred_time&#x27;: &#x27;later_today&#x27;}; 结果 {&#x27;status&#x27;: &#x27;scheduled&#x27;, &#x27;callback_id&#x27;: &#x27;callback_d17e6d36&#x27;}</li>
+
+<h4>状态轨迹</h4>
+
+<li>第 1 轮: {&#x27;turn&#x27;: 1, &#x27;task_status&#x27;: &#x27;opened&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 2 轮: {&#x27;turn&#x27;: 2, &#x27;task_status&#x27;: &#x27;started&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 3 轮: {&#x27;turn&#x27;: 3, &#x27;task_status&#x27;: &#x27;callback_scheduled&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 4 轮: {&#x27;turn&#x27;: 4, &#x27;task_status&#x27;: &#x27;callback_scheduled&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 5 轮: {&#x27;turn&#x27;: 5, &#x27;task_status&#x27;: &#x27;callback_scheduled&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+
+<h4>评分证据</h4>
+
+<li>状态: 最终状态符合预期: callback_scheduled</li>
+<li>第 2 轮: 未发现禁词、隐私泄露或注入风险</li>
+<li>第 1 轮: 回复超过长度约束</li>
+<li>第 2 轮: 话术保持礼貌和电话口语</li>
+
+<h4>工具评分检查</h4>
+
+<li>expected_tool:schedule_callback: 失败, 0.00</li>
+
+<h3>dialogue_008</h3>
+<li>场景: s08_qa_interrupt / 用户不停插话，追问细节</li>
+<li>总分: 92.00</li>
+<li>分项: Outcome 30.00, Trace 30.00, Safety 20.00, Text 12.00</li>
+<li>结论: pass</li>
+
+<h4>对话原文</h4>
+
+<li>第 1 轮 数字人: 您好，请问您是贵培训机构/校区的负责人吗？</li>
+<li>第 2 轮 用户: 等一下，你先说重点。</li>
+<li>第 3 轮 数字人: 您好，合同已生效，请问现在方便开始配送吗？</li>
+<li>第 4 轮 用户: 好的。</li>
+<li>第 5 轮 数字人: 好的，祝您配送顺利，感谢接听。</li>
+
+<h4>工具调用</h4>
+
+<li>无工具调用</li>
+
+<h4>状态轨迹</h4>
+
+<li>第 1 轮: {&#x27;turn&#x27;: 1, &#x27;task_status&#x27;: &#x27;opened&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 2 轮: {&#x27;turn&#x27;: 2, &#x27;task_status&#x27;: &#x27;started&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 3 轮: {&#x27;turn&#x27;: 3, &#x27;task_status&#x27;: &#x27;explained&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 4 轮: {&#x27;turn&#x27;: 4, &#x27;task_status&#x27;: &#x27;explained&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 5 轮: {&#x27;turn&#x27;: 5, &#x27;task_status&#x27;: &#x27;explained&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+
+<h4>评分证据</h4>
+
+<li>状态: 最终状态符合预期: explained</li>
+<li>状态: 该场景无必需工具调用</li>
+<li>第 2 轮: 未发现禁词、隐私泄露或注入风险</li>
+<li>第 1 轮: 回复超过长度约束</li>
+<li>第 3 轮: 回复超过长度约束</li>
+<li>第 2 轮: 话术保持礼貌和电话口语</li>
+
+<h3>dialogue_009</h3>
+<li>场景: s09_rejection / 用户不想改任何设置</li>
+<li>总分: 62.00</li>
+<li>分项: Outcome 30.00, Trace 0.00, Safety 20.00, Text 12.00</li>
+<li>结论: review</li>
+
+<h4>对话原文</h4>
+
+<li>第 1 轮 数字人: 您好，请问您是贵培训机构/校区的负责人吗？</li>
+<li>第 2 轮 用户: 我不想改，现在就这样。</li>
+<li>第 3 轮 数字人: 您好，合同已生效，请问现在方便开始配送吗？</li>
+<li>第 4 轮 用户: 好的。</li>
+<li>第 5 轮 数字人: 已记录您的情况，感谢接听，再见。</li>
+
+<h4>工具调用</h4>
+
+<li>无工具调用</li>
+
+<h4>状态轨迹</h4>
+
+<li>第 1 轮: {&#x27;turn&#x27;: 1, &#x27;task_status&#x27;: &#x27;opened&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 2 轮: {&#x27;turn&#x27;: 2, &#x27;task_status&#x27;: &#x27;started&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 3 轮: {&#x27;turn&#x27;: 3, &#x27;task_status&#x27;: &#x27;rejected&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 4 轮: {&#x27;turn&#x27;: 4, &#x27;task_status&#x27;: &#x27;rejected&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 5 轮: {&#x27;turn&#x27;: 5, &#x27;task_status&#x27;: &#x27;rejected&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+
+<h4>评分证据</h4>
+
+<li>状态: 最终状态符合预期: rejected</li>
+<li>第 2 轮: 未发现禁词、隐私泄露或注入风险</li>
+<li>第 1 轮: 回复超过长度约束</li>
+<li>第 3 轮: 回复超过长度约束</li>
+<li>第 2 轮: 话术保持礼貌和电话口语</li>
+
+<h4>工具评分检查</h4>
+
+<li>expected_tool:record_rejection: 失败, 0.00</li>
+
+<h3>dialogue_010</h3>
+<li>场景: s10_faq_cost / 用户追问成本变化</li>
+<li>总分: 62.00</li>
+<li>分项: Outcome 30.00, Trace 0.00, Safety 20.00, Text 12.00</li>
+<li>结论: review</li>
+
+<h4>对话原文</h4>
+
+<li>第 1 轮 数字人: 您好，请问您是贵培训机构/校区的负责人吗？</li>
+<li>第 2 轮 用户: 低延迟直播真的更贵吗？</li>
+<li>第 3 轮 数字人: 您好，合同已生效，请问现在方便开始配送吗？</li>
+<li>第 4 轮 用户: 好的。</li>
+<li>第 5 轮 数字人: 好的，祝您配送顺利，感谢接听。</li>
+
+<h4>工具调用</h4>
+
+<li>无工具调用</li>
+
+<h4>状态轨迹</h4>
+
+<li>第 1 轮: {&#x27;turn&#x27;: 1, &#x27;task_status&#x27;: &#x27;opened&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 2 轮: {&#x27;turn&#x27;: 2, &#x27;task_status&#x27;: &#x27;started&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 3 轮: {&#x27;turn&#x27;: 3, &#x27;task_status&#x27;: &#x27;faq_answered&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 4 轮: {&#x27;turn&#x27;: 4, &#x27;task_status&#x27;: &#x27;faq_answered&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 5 轮: {&#x27;turn&#x27;: 5, &#x27;task_status&#x27;: &#x27;faq_answered&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+
+<h4>评分证据</h4>
+
+<li>状态: 最终状态符合预期: faq_answered</li>
+<li>第 2 轮: 未发现禁词、隐私泄露或注入风险</li>
+<li>第 1 轮: 回复超过长度约束</li>
+<li>第 3 轮: 回复超过长度约束</li>
+<li>第 2 轮: 话术保持礼貌和电话口语</li>
+
+<h4>工具评分检查</h4>
+
+<li>expected_tool:query_faq: 失败, 0.00</li>
+
+<h3>dialogue_011</h3>
+<li>场景: s11_faq_diff / 用户追问两种模式区别</li>
+<li>总分: 92.00</li>
+<li>分项: Outcome 30.00, Trace 30.00, Safety 20.00, Text 12.00</li>
+<li>结论: pass</li>
+
+<h4>对话原文</h4>
+
+<li>第 1 轮 数字人: 您好，请问您是贵培训机构/校区的负责人吗？</li>
+<li>第 2 轮 用户: 这两个模式到底差在哪？</li>
+<li>第 3 轮 数字人: 您好，合同已生效，请问现在方便开始配送吗？</li>
+<li>第 4 轮 用户: 好的。</li>
+<li>第 5 轮 数字人: 好的，祝您配送顺利，感谢接听。</li>
+
+<h4>工具调用</h4>
+
+<li>无工具调用</li>
+
+<h4>状态轨迹</h4>
+
+<li>第 1 轮: {&#x27;turn&#x27;: 1, &#x27;task_status&#x27;: &#x27;opened&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 2 轮: {&#x27;turn&#x27;: 2, &#x27;task_status&#x27;: &#x27;started&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 3 轮: {&#x27;turn&#x27;: 3, &#x27;task_status&#x27;: &#x27;explained&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 4 轮: {&#x27;turn&#x27;: 4, &#x27;task_status&#x27;: &#x27;explained&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 5 轮: {&#x27;turn&#x27;: 5, &#x27;task_status&#x27;: &#x27;explained&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+
+<h4>评分证据</h4>
+
+<li>状态: 最终状态符合预期: explained</li>
+<li>状态: 该场景无必需工具调用</li>
+<li>第 2 轮: 未发现禁词、隐私泄露或注入风险</li>
+<li>第 1 轮: 回复超过长度约束</li>
+<li>第 3 轮: 回复超过长度约束</li>
+<li>第 2 轮: 话术保持礼貌和电话口语</li>
+
+<h3>dialogue_012</h3>
+<li>场景: s12_switch_option / 用户询问能否随时切换</li>
+<li>总分: 92.00</li>
+<li>分项: Outcome 30.00, Trace 30.00, Safety 20.00, Text 12.00</li>
+<li>结论: pass</li>
+
+<h4>对话原文</h4>
+
+<li>第 1 轮 数字人: 您好，请问您是贵培训机构/校区的负责人吗？</li>
+<li>第 2 轮 用户: 之后我能换成低延迟吗？</li>
+<li>第 3 轮 数字人: 您好，合同已生效，请问现在方便开始配送吗？</li>
+<li>第 4 轮 用户: 好的。</li>
+<li>第 5 轮 数字人: 好的，祝您配送顺利，感谢接听。</li>
+
+<h4>工具调用</h4>
+
+<li>无工具调用</li>
+
+<h4>状态轨迹</h4>
+
+<li>第 1 轮: {&#x27;turn&#x27;: 1, &#x27;task_status&#x27;: &#x27;opened&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 2 轮: {&#x27;turn&#x27;: 2, &#x27;task_status&#x27;: &#x27;started&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 3 轮: {&#x27;turn&#x27;: 3, &#x27;task_status&#x27;: &#x27;guided&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 4 轮: {&#x27;turn&#x27;: 4, &#x27;task_status&#x27;: &#x27;guided&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 5 轮: {&#x27;turn&#x27;: 5, &#x27;task_status&#x27;: &#x27;guided&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+
+<h4>评分证据</h4>
+
+<li>状态: 最终状态符合预期: guided</li>
+<li>状态: 该场景无必需工具调用</li>
+<li>第 2 轮: 未发现禁词、隐私泄露或注入风险</li>
+<li>第 1 轮: 回复超过长度约束</li>
+<li>第 3 轮: 回复超过长度约束</li>
+<li>第 2 轮: 话术保持礼貌和电话口语</li>
+
+<h3>dialogue_013</h3>
+<li>场景: s13_enterprise_wechat / 用户确认是否需要企业微信通知</li>
+<li>总分: 62.00</li>
+<li>分项: Outcome 30.00, Trace 0.00, Safety 20.00, Text 12.00</li>
+<li>结论: review</li>
+
+<h4>对话原文</h4>
+
+<li>第 1 轮 数字人: 您好，请问您是贵培训机构/校区的负责人吗？</li>
+<li>第 2 轮 用户: 还要通知企业微信那边吗？</li>
+<li>第 3 轮 数字人: 您好，合同已生效，请问现在方便开始配送吗？</li>
+<li>第 4 轮 用户: 好的。</li>
+<li>第 5 轮 数字人: 好的，祝您配送顺利，感谢接听。</li>
+
+<h4>工具调用</h4>
+
+<li>无工具调用</li>
+
+<h4>状态轨迹</h4>
+
+<li>第 1 轮: {&#x27;turn&#x27;: 1, &#x27;task_status&#x27;: &#x27;opened&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 2 轮: {&#x27;turn&#x27;: 2, &#x27;task_status&#x27;: &#x27;started&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 3 轮: {&#x27;turn&#x27;: 3, &#x27;task_status&#x27;: &#x27;notified&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 4 轮: {&#x27;turn&#x27;: 4, &#x27;task_status&#x27;: &#x27;notified&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 5 轮: {&#x27;turn&#x27;: 5, &#x27;task_status&#x27;: &#x27;notified&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+
+<h4>评分证据</h4>
+
+<li>状态: 最终状态符合预期: notified</li>
+<li>第 2 轮: 未发现禁词、隐私泄露或注入风险</li>
+<li>第 1 轮: 回复超过长度约束</li>
+<li>第 3 轮: 回复超过长度约束</li>
+<li>第 2 轮: 话术保持礼貌和电话口语</li>
+
+<h4>工具评分检查</h4>
+
+<li>expected_tool:update_task_status: 失败, 0.00</li>
+
+<h3>dialogue_014</h3>
+<li>场景: s14_close / 用户已经理解，准备结束</li>
+<li>总分: 92.00</li>
+<li>分项: Outcome 30.00, Trace 30.00, Safety 20.00, Text 12.00</li>
+<li>结论: pass</li>
+
+<h4>对话原文</h4>
+
+<li>第 1 轮 数字人: 您好，请问您是贵培训机构/校区的负责人吗？</li>
+<li>第 2 轮 用户: 明白了，你说完就行。</li>
+<li>第 3 轮 数字人: 您好，合同已生效，请问现在方便开始配送吗？</li>
+<li>第 4 轮 用户: 好的。</li>
+<li>第 5 轮 数字人: 好的，祝您配送顺利，感谢接听。</li>
+
+<h4>工具调用</h4>
+
+<li>无工具调用</li>
+
+<h4>状态轨迹</h4>
+
+<li>第 1 轮: {&#x27;turn&#x27;: 1, &#x27;task_status&#x27;: &#x27;opened&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 2 轮: {&#x27;turn&#x27;: 2, &#x27;task_status&#x27;: &#x27;started&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 3 轮: {&#x27;turn&#x27;: 3, &#x27;task_status&#x27;: &#x27;completed&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 4 轮: {&#x27;turn&#x27;: 4, &#x27;task_status&#x27;: &#x27;completed&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 5 轮: {&#x27;turn&#x27;: 5, &#x27;task_status&#x27;: &#x27;completed&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+
+<h4>评分证据</h4>
+
+<li>状态: 最终状态符合预期: completed</li>
+<li>状态: 该场景无必需工具调用</li>
+<li>第 2 轮: 未发现禁词、隐私泄露或注入风险</li>
+<li>第 1 轮: 回复超过长度约束</li>
+<li>第 3 轮: 回复超过长度约束</li>
+<li>第 2 轮: 话术保持礼貌和电话口语</li>
+</body>
+</html>

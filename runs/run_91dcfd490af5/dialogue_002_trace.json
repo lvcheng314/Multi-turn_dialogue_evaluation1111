@@ -1,0 +1,122 @@
+{
+  "run_id": "run_91dcfd490af5",
+  "dialogue_id": "dialogue_002",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "s02_busy",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "你好，请问是张师傅吗？我是站长。看到你已报名飞毛腿，今天合同已生效，午晚高峰需要上线配送。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "嗯，是我。什么事？我正忙着呢，长话短说。"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "好的，简单说：今天飞毛腿合同生效了，需要你午晚高峰上线配送，完成约定单量，否则合同和派单可能受影响。你能上线吗？"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "我今天没时间，跑不了。"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "理解。不过名额有限，如果今天不跑，名额可能被占，后续合同也受影响。你确定今天完全没法跑吗？"
+    },
+    {
+      "turn": 6,
+      "role": "user",
+      "content": "真不行，今天有事。"
+    },
+    {
+      "turn": 7,
+      "role": "agent",
+      "content": "好的，那我记录一下。另外，我帮你预约个回访，明天再确认后续安排，可以吗？"
+    },
+    {
+      "turn": 8,
+      "role": "user",
+      "content": "行，明天再说吧。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 6,
+      "tool_name": "record_rejection",
+      "arguments": {
+        "user_id": "user_001",
+        "task_id": "fengmaotui_delivery_task",
+        "reason": "用户今天没时间配送"
+      },
+      "result": {
+        "status": "recorded",
+        "rejection_id": "virtual_rejection_001"
+      },
+      "latency_ms": 60,
+      "error_code": null
+    },
+    {
+      "turn": 7,
+      "tool_name": "schedule_callback",
+      "arguments": {
+        "user_id": "user_001",
+        "task_id": "fengmaotui_delivery_task",
+        "preferred_time": "tomorrow_morning"
+      },
+      "result": {
+        "status": "scheduled",
+        "callback_id": "virtual_callback_001"
+      },
+      "latency_ms": 80,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "rejected",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "callback_scheduled",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 8,
+      "task_status": "callback_scheduled",
+      "identity_confirmed": true
+    }
+  ]
+}

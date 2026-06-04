@@ -1,0 +1,126 @@
+{
+  "run_id": "run_6ed449c0f22a",
+  "dialogue_id": "dialogue_013",
+  "task_id": "course_live_task",
+  "scenario_id": "s13_enterprise_wechat",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "您好，请问您是贵培训机构或校区的负责人吗？"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "还要通知企业微信那边吗？"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "是的，后续会通过企业微信发通知，您方便加一下验证吗？"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "谁会收到？"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "您机构的课程发布负责人会收到，方便确认一下吗？"
+    },
+    {
+      "turn": 6,
+      "role": "user",
+      "content": "如果没通过验证怎么办？"
+    },
+    {
+      "turn": 7,
+      "role": "agent",
+      "content": "您放心，我们会同步提示，确保通知能送达。"
+    },
+    {
+      "turn": 8,
+      "role": "user",
+      "content": "好的。"
+    },
+    {
+      "turn": 9,
+      "role": "agent",
+      "content": "好的，那您这边还有其他问题吗？"
+    },
+    {
+      "turn": 10,
+      "role": "agent",
+      "content": "好的，感谢您的接听，祝您工作顺利！"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 5,
+      "tool_name": "update_task_status",
+      "arguments": {
+        "task_id": "course_live_task",
+        "status": "notified",
+        "user_id": "user_001"
+      },
+      "result": {
+        "status": "notified"
+      },
+      "latency_ms": 1,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "started",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "started",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "notified",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "started",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 8,
+      "task_status": "started",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 9,
+      "task_status": "notified",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 10,
+      "task_status": "notified",
+      "identity_confirmed": true
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+[console_scripts]
+dialogue-eval = dialogue_eval.cli:app
+dialogue-eval-desktop = desktop_app:main

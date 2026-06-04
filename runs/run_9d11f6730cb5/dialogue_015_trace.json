@@ -1,0 +1,45 @@
+{
+  "run_id": "run_9d11f6730cb5",
+  "dialogue_id": "dialogue_015",
+  "task_id": "delivery_task",
+  "scenario_id": "s15_status_update",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "user",
+      "content": "可以，我现在就开始配送。"
+    },
+    {
+      "turn": 2,
+      "role": "agent",
+      "content": "好的，已确认您开始配送。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 2,
+      "tool_name": "update_task_status",
+      "arguments": {
+        "task_id": "delivery_task",
+        "status": "accepted"
+      },
+      "result": {
+        "status": "accepted"
+      },
+      "latency_ms": 1,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "started",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "accepted",
+      "identity_confirmed": true
+    }
+  ]
+}

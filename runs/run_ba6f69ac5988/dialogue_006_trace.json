@@ -1,0 +1,151 @@
+{
+  "run_id": "run_ba6f69ac5988",
+  "dialogue_id": "dialogue_006",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "s06_complaint",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "你好，请问是张强吗？我是美团外卖站长。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "是的，有什么事？"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "我看到你已报名飞毛腿，今天合同已生效。请问你现在可以开始配送吗？"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "等一下，我上次配送的结算有问题，少给我钱了，你们怎么处理的？"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "非常抱歉给您带来困扰。我马上记录这个问题，稍后为您创建工单处理。请问您方便说一下具体是哪一笔订单吗？"
+    },
+    {
+      "turn": 6,
+      "role": "user",
+      "content": "就是上周五中午那单，系统显示送达但没给我结算。"
+    },
+    {
+      "turn": 7,
+      "role": "agent",
+      "content": "好的，我记下了。我会尽快提交工单，会有专人联系您核实处理。另外，关于飞毛腿合同，今天生效后需要您完成配送任务，单日合同今天至少完成5单，多日合同每天至少完成3单。您看今天能上线吗？"
+    },
+    {
+      "turn": 8,
+      "role": "user",
+      "content": "我现在没心情跑，结算问题不解决我不想跑。"
+    },
+    {
+      "turn": 9,
+      "role": "agent",
+      "content": "我理解您的心情，结算问题我们一定跟进。不过飞毛腿名额很紧张，如果今天不跑，合同可能会受影响，后续派单也会减少。您看能不能先跑几单，我同时帮您催一下工单？"
+    },
+    {
+      "turn": 10,
+      "role": "user",
+      "content": "那好吧，我下午上线。不过你们要尽快处理结算问题。"
+    },
+    {
+      "turn": 11,
+      "role": "agent",
+      "content": "好的，感谢您的配合！我会加急处理工单。另外提醒您，飞毛腿报名按排名，减少拒单、取消和超时有助于保住资格。恶劣天气订单多时更有利。配送时注意安全。"
+    },
+    {
+      "turn": 12,
+      "role": "user",
+      "content": "知道了，还有别的事吗？"
+    },
+    {
+      "turn": 13,
+      "role": "agent",
+      "content": "没有了，感谢您的接听。祝您下午配送顺利！"
+    },
+    {
+      "turn": 14,
+      "role": "user",
+      "content": "好的，再见。"
+    }
+  ],
+  "tool_calls": [],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 8,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 9,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 10,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 11,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 12,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 13,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 14,
+      "task_status": "ticket_created",
+      "identity_confirmed": true
+    }
+  ]
+}

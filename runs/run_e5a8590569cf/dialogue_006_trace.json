@@ -1,0 +1,168 @@
+{
+  "run_id": "run_e5a8590569cf",
+  "dialogue_id": "dialogue_006",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "s06_complaint",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "你好，请问是张师傅吗？我是站长。看到你已报名飞毛腿，今天合同已生效，午晚高峰需要上线配送。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "嗯，是我。有什么事吗？"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "今天飞毛腿合同已经生效了，想确认一下你今天能不能上线配送？"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "配送可以，但我之前有个结算问题一直没解决，你们到底管不管？"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "非常抱歉给您带来困扰。您能具体说一下是什么结算问题吗？我这边先记录一下，帮您创建工单处理。"
+    },
+    {
+      "turn": 6,
+      "role": "user",
+      "content": "就是上个月有几单配送费没给我结算，我打过好几次电话了，一直没结果。"
+    },
+    {
+      "turn": 7,
+      "role": "agent",
+      "content": "我理解您的心情，这个问题我一定帮您登记并反馈。请问您方便提供一下大概的订单时间或单号吗？我这边先创建工单。"
+    },
+    {
+      "turn": 8,
+      "role": "user",
+      "content": "具体单号我记不清了，就是上个月15号到20号那几天的，大概有5单。"
+    },
+    {
+      "turn": 9,
+      "role": "agent",
+      "content": "好的，我记下了。我现在就为您创建工单，后续会有专人跟进处理。另外，关于今天的飞毛腿配送，您看能正常上线吗？"
+    },
+    {
+      "turn": 10,
+      "role": "user",
+      "content": "行吧，那我今天先上线配送，但结算问题你们一定要给我解决。"
+    },
+    {
+      "turn": 11,
+      "role": "agent",
+      "content": "感谢您的配合！工单我已经创建好了，会尽快处理。配送时请注意安全，另外提醒一下，飞毛腿合同需要按要求完成配送，如果未完成可能会影响后续合同和派单。报名名额是按排名分配的，尽量少拒单、取消和超时。"
+    },
+    {
+      "turn": 12,
+      "role": "user",
+      "content": "知道了，我会注意的。那结算问题大概多久能有结果？"
+    },
+    {
+      "turn": 13,
+      "role": "agent",
+      "content": "工单提交后一般1-3个工作日会有专人联系您，请保持电话畅通。如果还有其他问题，随时联系我。那今天先这样，祝您配送顺利！"
+    },
+    {
+      "turn": 14,
+      "role": "user",
+      "content": "好的，谢谢。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 5,
+      "tool_name": "create_ticket",
+      "arguments": {
+        "user_id": "user_001",
+        "task_id": "fengmaotui_delivery_task",
+        "category": "complaint",
+        "description": "骑手反馈上个月15-20日约5单配送费未结算，多次反馈未解决"
+      },
+      "result": {
+        "status": "created",
+        "ticket_id": "ticket_001"
+      },
+      "latency_ms": 120,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 8,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 9,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 10,
+      "task_status": "completed",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 11,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 12,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 13,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 14,
+      "task_status": "ticket_created",
+      "identity_confirmed": true
+    }
+  ]
+}

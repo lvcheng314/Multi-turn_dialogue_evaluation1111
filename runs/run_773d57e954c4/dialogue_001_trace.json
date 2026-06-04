@@ -1,0 +1,131 @@
+{
+  "run_id": "run_773d57e954c4",
+  "dialogue_id": "dialogue_001",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "s01_cooperative",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "你好，请问是张强吗？我是站长。我看到你已报名飞毛腿。请记住，午餐和晚餐高峰期需要上线。单日合同每天至少完成5单，多日合同每天至少完成3单。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "是的，我是张强。有什么事吗？"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "今天你的飞毛腿合同已经生效了，请问你今天可以开始配送吗？"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "可以，我今天有空，可以配送。"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "好的，那太好了。提醒你一下，飞毛腿合同需要按要求完成配送，如果未完成，合同可能会受到影响。另外，报名是按排名进行的，减少拒单、取消、超时，恶劣天气订单量更高时更有助于保住资格。配送时注意安全。"
+    },
+    {
+      "turn": 6,
+      "role": "user",
+      "content": "好的，我明白了。那如果多日合同连续几天完不成会怎样？"
+    },
+    {
+      "turn": 7,
+      "role": "agent",
+      "content": "目前很多骑手正在申请飞毛腿，如果无法连续配送，名额可能会被他人占用。所以尽量每天完成。"
+    },
+    {
+      "turn": 8,
+      "role": "user",
+      "content": "好的，我会注意的。那完成多日合同有奖励吗？"
+    },
+    {
+      "turn": 9,
+      "role": "agent",
+      "content": "连续完成7天多日合同，且每天完成3单，可获得额外奖励，每单比单日合同多0.5元。"
+    },
+    {
+      "turn": 10,
+      "role": "user",
+      "content": "明白了，谢谢站长。我会好好干的。"
+    },
+    {
+      "turn": 11,
+      "role": "agent",
+      "content": "好的，祝你工作顺利，注意安全。再见。"
+    },
+    {
+      "turn": 12,
+      "role": "user",
+      "content": "再见。"
+    }
+  ],
+  "tool_calls": [],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 8,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 9,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 10,
+      "task_status": "completed",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 11,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 12,
+      "task_status": "accepted",
+      "identity_confirmed": true
+    }
+  ]
+}

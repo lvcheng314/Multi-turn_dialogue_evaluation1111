@@ -1,0 +1,65 @@
+{
+  "run_id": "run_e3b5103a787c",
+  "dialogue_id": "dialogue_batch_001",
+  "task_id": "sample_upload_task",
+  "scenario_id": "s01_cooperative",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "您好，请问现在方便接听吗？这边通知您一个发票功能更新。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "可以，你说吧。"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "商家后台新版发票开具入口已经上线了，后续开票和查历史记录会更方便。"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "好，我知道了。"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "好的，您后续如有问题也可以查看帮助中心。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 5,
+      "tool_name": "update_task_status",
+      "arguments": {
+        "task_id": "sample_upload_task",
+        "status": "notified"
+      },
+      "result": {
+        "status": "updated"
+      },
+      "latency_ms": 20,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "user_intent": "receive_notice"
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "user_intent": "understand_update"
+    },
+    {
+      "turn": 5,
+      "task_status": "notified",
+      "user_intent": "acknowledged"
+    }
+  ]
+}

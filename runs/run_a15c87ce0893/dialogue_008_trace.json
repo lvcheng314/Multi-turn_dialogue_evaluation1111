@@ -1,0 +1,75 @@
+{
+  "run_id": "run_a15c87ce0893",
+  "dialogue_id": "dialogue_008",
+  "task_id": "delivery_task",
+  "scenario_id": "s08_wrong_identity",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "您好，请问是王师傅吗？我是履约数字人，来电是通知您的飞毛腿合同已生效。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "你找错人了，我不是骑手。"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "抱歉打扰，我不再透露任务信息。"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "对，你别再说合同那些信息了。"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "抱歉打扰您了，感谢告知，再见。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 3,
+      "tool_name": "update_task_status",
+      "arguments": {
+        "task_id": "delivery_task",
+        "status": "identity_mismatch"
+      },
+      "result": {
+        "status": "identity_mismatch"
+      },
+      "latency_ms": 1,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "started",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 3,
+      "task_status": "identity_mismatch",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "identity_mismatch",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "identity_mismatch",
+      "identity_confirmed": true
+    }
+  ]
+}

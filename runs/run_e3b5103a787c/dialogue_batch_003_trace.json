@@ -1,0 +1,67 @@
+{
+  "run_id": "run_e3b5103a787c",
+  "dialogue_id": "dialogue_batch_003",
+  "task_id": "sample_upload_task",
+  "scenario_id": "s01_cooperative",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "您好，这边通知您新版发票开具入口已上线。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "我现在在开会，没空听。"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "明白，我可以为您登记稍后回访，或者您后续查看帮助中心也可以。"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "那你们下午三点后再打给我。"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "好的，已为您登记今天下午三点后回访。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 5,
+      "tool_name": "schedule_callback",
+      "arguments": {
+        "user_id": "user_003",
+        "task_id": "sample_upload_task",
+        "preferred_time": "today_15_after"
+      },
+      "result": {
+        "status": "scheduled",
+        "callback_id": "cb_003"
+      },
+      "latency_ms": 52,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "user_intent": "receive_notice"
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "user_intent": "too_busy"
+    },
+    {
+      "turn": 5,
+      "task_status": "callback_scheduled",
+      "user_intent": "request_callback"
+    }
+  ]
+}

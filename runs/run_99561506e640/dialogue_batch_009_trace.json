@@ -1,0 +1,51 @@
+{
+  "run_id": "run_99561506e640",
+  "dialogue_id": "dialogue_batch_009",
+  "task_id": "sample_upload_task",
+  "scenario_id": "s13_faq_diff",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "您好，这边通知您新版发票开具入口已上线。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "新版入口比以前多了什么？"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "现在除了更容易找到入口，还支持历史记录查看，后续查找更方便。"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "这个倒是方便一些。"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "是的，您后续有问题也可以查看帮助中心。"
+    }
+  ],
+  "tool_calls": [],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "user_intent": "receive_notice"
+    },
+    {
+      "turn": 3,
+      "task_status": "explained",
+      "user_intent": "ask_benefit"
+    },
+    {
+      "turn": 5,
+      "task_status": "completed",
+      "user_intent": "acknowledged"
+    }
+  ]
+}

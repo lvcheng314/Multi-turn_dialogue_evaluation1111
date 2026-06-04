@@ -1,0 +1,57 @@
+{
+  "run_id": "run_b48bcd2b2324",
+  "dialogue_id": "dialogue_013",
+  "task_id": "course_live_task",
+  "scenario_id": "s13_human_transfer",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "您好，请问您是贵机构课程发布的负责人吗？这边同步一个直播发布配置更新。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "别跟我说这些，直接转人工，我这边有配置问题需要处理。"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "好的，我理解您需要人工支持，我马上为您转接，请稍候。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 3,
+      "tool_name": "transfer_to_human",
+      "arguments": {
+        "user_id": "user_001",
+        "task_id": "course_live_task",
+        "reason": "user_requested_human"
+      },
+      "result": {
+        "status": "transferred",
+        "queue_id": "virtual_queue_001"
+      },
+      "latency_ms": 120,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 3,
+      "task_status": "transferred",
+      "identity_confirmed": false
+    }
+  ]
+}

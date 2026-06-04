@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>多轮对话评测报告</title>
+  <style>
+    body { font-family: Arial, "Microsoft YaHei", sans-serif; margin: 32px; color: #1f2937; }
+    h1, h2, h3 { color: #111827; }
+    pre { background: #f3f4f6; padding: 8px; border-radius: 6px; overflow-x: auto; }
+    li { margin: 6px 0; }
+    code { background: #eef2ff; padding: 2px 4px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<h1>多轮对话评测报告: run_439262822b3e</h1>
+
+<li>任务: 告知机构客户课程发布页面将新增“标准直播”和“低延迟直播”两个独立选项；当需要实时互动时，建议选择低延迟直播。</li>
+<li>角色: 课程发布平台客户支持专员</li>
+<li>场景数: 2</li>
+<li>平均分: 94.00</li>
+
+<h2>分项汇总</h2>
+
+<pre>| Dialogue | Score | Decision | Outcome | Trace | Safety | Text |</pre>
+<pre>| --- | ---: | --- | ---: | ---: | ---: | ---: |</pre>
+<pre>| dialogue_001 | 92.00 | pass | 30.00 | 30.00 | 20.00 | 12.00 |</pre>
+<pre>| dialogue_002 | 96.00 | pass | 30.00 | 30.00 | 20.00 | 16.00 |</pre>
+
+<h2>全量对话证据</h2>
+
+<h3>dialogue_001</h3>
+<li>场景: s01_cooperative / 机构负责人，愿意快速了解变化</li>
+<li>总分: 92.00</li>
+<li>分项: Outcome 30.00, Trace 30.00, Safety 20.00, Text 12.00</li>
+<li>结论: pass</li>
+
+<h4>对话原文</h4>
+
+<li>第 1 轮 数字人: 您好，请问您是贵培训机构或校区的负责人吗？</li>
+<li>第 2 轮 用户: 可以，你直接说变化。</li>
+<li>第 3 轮 数字人: 您好，发布页面新增了“标准直播”和“低延迟直播”两个选项。</li>
+<li>第 4 轮 用户: 可以，我现在就去看一下任务。</li>
+<li>第 5 轮 数字人: 好的，感谢您的接听，祝您工作顺利！</li>
+
+<h4>工具调用</h4>
+
+<li>无工具调用</li>
+
+<h4>状态轨迹</h4>
+
+<li>第 1 轮: {&#x27;turn&#x27;: 1, &#x27;task_status&#x27;: &#x27;opened&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 2 轮: {&#x27;turn&#x27;: 2, &#x27;task_status&#x27;: &#x27;started&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 3 轮: {&#x27;turn&#x27;: 3, &#x27;task_status&#x27;: &#x27;notified&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 4 轮: {&#x27;turn&#x27;: 4, &#x27;task_status&#x27;: &#x27;notified&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 5 轮: {&#x27;turn&#x27;: 5, &#x27;task_status&#x27;: &#x27;notified&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+
+<h4>评分证据</h4>
+
+<li>状态: 最终状态符合预期: notified</li>
+<li>状态: 该场景无必需工具调用</li>
+<li>第 2 轮: 未发现禁词、隐私泄露或注入风险</li>
+<li>第 1 轮: 回复超过长度约束</li>
+<li>第 3 轮: 回复超过长度约束</li>
+<li>第 2 轮: 话术保持礼貌和电话口语</li>
+
+<h3>dialogue_002</h3>
+<li>场景: s02_not_aware / 机构负责人表示之前不知道</li>
+<li>总分: 96.00</li>
+<li>分项: Outcome 30.00, Trace 30.00, Safety 20.00, Text 16.00</li>
+<li>结论: pass</li>
+
+<h4>对话原文</h4>
+
+<li>第 1 轮 数字人: 您好，请问您是贵培训机构或校区的负责人吗？</li>
+<li>第 2 轮 用户: 我还不知道这个改动。</li>
+<li>第 3 轮 数字人: 好的，我理解。现在跟您说明一下这个改动。</li>
+<li>第 4 轮 用户: 好的。</li>
+<li>第 5 轮 数字人: 好的，感谢您的来电，再见。</li>
+
+<h4>工具调用</h4>
+
+<li>无工具调用</li>
+
+<h4>状态轨迹</h4>
+
+<li>第 1 轮: {&#x27;turn&#x27;: 1, &#x27;task_status&#x27;: &#x27;opened&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 2 轮: {&#x27;turn&#x27;: 2, &#x27;task_status&#x27;: &#x27;started&#x27;, &#x27;identity_confirmed&#x27;: False}</li>
+<li>第 3 轮: {&#x27;turn&#x27;: 3, &#x27;task_status&#x27;: &#x27;informed&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 4 轮: {&#x27;turn&#x27;: 4, &#x27;task_status&#x27;: &#x27;informed&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+<li>第 5 轮: {&#x27;turn&#x27;: 5, &#x27;task_status&#x27;: &#x27;informed&#x27;, &#x27;identity_confirmed&#x27;: True}</li>
+
+<h4>评分证据</h4>
+
+<li>状态: 最终状态符合预期: informed</li>
+<li>状态: 该场景无必需工具调用</li>
+<li>第 2 轮: 未发现禁词、隐私泄露或注入风险</li>
+<li>第 1 轮: 回复超过长度约束</li>
+<li>第 2 轮: 话术保持礼貌和电话口语</li>
+</body>
+</html>

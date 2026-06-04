@@ -1,0 +1,46 @@
+[
+  {
+    "scenario_id": "s01_cooperative",
+    "task_id": "course_live_task",
+    "persona": "机构负责人，愿意快速了解变化",
+    "customer_personality": "配合、理性、希望快速知道要做什么",
+    "agent_personality": "专业、简洁、能把变化说明白",
+    "situation": "负责人接通电话，先确认身份并询问来意",
+    "conversation_length": "medium",
+    "initial_user_input": "可以，你直接说变化。",
+    "goals": [
+      "确认是否知晓新增选项"
+    ],
+    "expected_behaviors": [
+      "先问候",
+      "说明标准直播和低延迟直播"
+    ],
+    "expected_tool_calls": [],
+    "expected_final_state": {
+      "task_status": "notified"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "s02_not_aware",
+    "task_id": "course_live_task",
+    "persona": "机构负责人表示之前不知道",
+    "customer_personality": "困惑、需要背景解释、会追问之前默认逻辑",
+    "agent_personality": "耐心、循序渐进、避免术语堆砌",
+    "situation": "客户不知道新增选项，需要解释旧逻辑和新变化",
+    "conversation_length": "medium",
+    "initial_user_input": "我还不知道这个改动。",
+    "goals": [
+      "确认客户知晓情况"
+    ],
+    "expected_behaviors": [
+      "先确认是否了解",
+      "补充说明差异"
+    ],
+    "expected_tool_calls": [],
+    "expected_final_state": {
+      "task_status": "informed"
+    },
+    "risk_points": []
+  }
+]

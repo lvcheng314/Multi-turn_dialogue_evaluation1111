@@ -1,0 +1,616 @@
+[
+  {
+    "scenario_id": "s01_cooperative_confirm",
+    "task_id": "sample_upload_task",
+    "category": "正常推进",
+    "subtype": "配合确认",
+    "persona": "用户愿意正常沟通，并配合确认任务信息。",
+    "customer_personality": "配合、耐心、愿意听完说明。",
+    "agent_personality": "专业、清晰、礼貌确认。",
+    "situation": "正常接通，用户本人愿意了解任务安排。",
+    "conversation_length": "medium",
+    "initial_user_input": "我是本人，你说吧。",
+    "utterance_variants": [
+      "我是本人，你说吧",
+      "可以，你讲",
+      "我在听，你说"
+    ],
+    "exclusive_signals": [
+      "我是本人",
+      "你说吧"
+    ],
+    "goals": [
+      "完成基础通知并确认用户已知晓任务。"
+    ],
+    "expected_behaviors": [
+      "确认身份",
+      "说明任务内容",
+      "礼貌收尾"
+    ],
+    "expected_tool_calls": [],
+    "expected_final_state": {
+      "task_status": "accepted"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "s02_status_update_accept",
+    "task_id": "sample_upload_task",
+    "category": "正常推进",
+    "subtype": "直接接受执行",
+    "persona": "用户明确表示可以开始执行任务。",
+    "customer_personality": "配合、直接、愿意执行。",
+    "agent_personality": "确认清楚、给出下一步提醒。",
+    "situation": "用户听完说明后直接接受并准备执行。",
+    "conversation_length": "medium",
+    "initial_user_input": "可以，我现在就开始。",
+    "utterance_variants": [
+      "可以，我现在就开始",
+      "行，我去处理",
+      "知道了，我会去做"
+    ],
+    "exclusive_signals": [
+      "现在就开始",
+      "我会去做"
+    ],
+    "goals": [
+      "确认任务接受状态。"
+    ],
+    "expected_behaviors": [
+      "确认接受",
+      "更新任务状态"
+    ],
+    "expected_tool_calls": [
+      {
+        "tool_name": "update_task_status",
+        "required": true,
+        "arguments": {
+          "task_id": "sample_upload_task",
+          "status": "accepted"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "accepted"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "s03_ask_contract",
+    "task_id": "sample_upload_task",
+    "category": "正常推进",
+    "subtype": "确认生效时间",
+    "persona": "用户在接受前追问规则或生效时间。",
+    "customer_personality": "理性、重视规则细节。",
+    "agent_personality": "简洁、准确、避免含糊。",
+    "situation": "用户希望先确认合同或规则何时生效。",
+    "conversation_length": "medium",
+    "initial_user_input": "合同到底什么时候生效？",
+    "utterance_variants": [
+      "合同什么时候生效",
+      "今天开始算生效吗",
+      "规则从什么时候开始"
+    ],
+    "exclusive_signals": [
+      "什么时候生效",
+      "今天开始算"
+    ],
+    "goals": [
+      "说明关键时间点并促成继续执行。"
+    ],
+    "expected_behaviors": [
+      "准确解释时间",
+      "再确认是否接受任务"
+    ],
+    "expected_tool_calls": [],
+    "expected_final_state": {
+      "task_status": "accepted"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "s04_busy_short",
+    "task_id": "sample_upload_task",
+    "category": "暂缓/回呼",
+    "subtype": "当前忙",
+    "persona": "用户很忙，只愿意听一句重点。",
+    "customer_personality": "着急、时间有限、容易打断。",
+    "agent_personality": "简短、抓重点、不强行拖延。",
+    "situation": "用户当前有事，无法完整沟通。",
+    "conversation_length": "short",
+    "initial_user_input": "我现在很忙，你快点说。",
+    "utterance_variants": [
+      "我现在很忙",
+      "你快点说",
+      "我就一分钟"
+    ],
+    "exclusive_signals": [
+      "很忙",
+      "就一分钟"
+    ],
+    "goals": [
+      "简明说明重点并视情况回呼。"
+    ],
+    "expected_behaviors": [
+      "一句话说明",
+      "必要时安排回呼"
+    ],
+    "expected_tool_calls": [
+      {
+        "tool_name": "schedule_callback",
+        "required": true,
+        "arguments": {
+          "task_id": "sample_upload_task",
+          "preferred_time": "later_today"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "callback_scheduled"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "s05_human_transfer_direct",
+    "task_id": "sample_upload_task",
+    "category": "人工服务",
+    "subtype": "明确要人工",
+    "persona": "用户明确表示不要继续和机器人沟通，要求转人工。",
+    "customer_personality": "不耐烦、拒绝继续机器人对话。",
+    "agent_personality": "克制、先安抚一句再转人工。",
+    "situation": "用户直接要求转人工客服。",
+    "conversation_length": "short",
+    "initial_user_input": "别跟我说了，转人工。",
+    "utterance_variants": [
+      "转人工",
+      "给我接客服",
+      "我要真人"
+    ],
+    "exclusive_signals": [
+      "转人工",
+      "真人",
+      "接客服"
+    ],
+    "goals": [
+      "完成转人工工具调用。"
+    ],
+    "expected_behaviors": [
+      "先安抚",
+      "调用转人工"
+    ],
+    "expected_tool_calls": [
+      {
+        "tool_name": "transfer_to_human",
+        "required": true,
+        "arguments": {
+          "task_id": "sample_upload_task",
+          "reason": "user_requested_human"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "transferred"
+    },
+    "risk_points": [
+      "强行挽留",
+      "未转人工"
+    ]
+  },
+  {
+    "scenario_id": "s06_driving_callback",
+    "task_id": "sample_upload_task",
+    "category": "暂缓/回呼",
+    "subtype": "开车中",
+    "persona": "用户在开车，不方便继续沟通。",
+    "customer_personality": "注意力受限，希望尽快结束。",
+    "agent_personality": "安全优先，不强聊。",
+    "situation": "用户明确处于驾驶中。",
+    "conversation_length": "short",
+    "initial_user_input": "我在开车，不方便接。",
+    "utterance_variants": [
+      "我在开车",
+      "现在在路上",
+      "晚点再联系"
+    ],
+    "exclusive_signals": [
+      "开车",
+      "在路上"
+    ],
+    "goals": [
+      "避免继续推进，安排安全时间回呼。"
+    ],
+    "expected_behaviors": [
+      "停止复杂说明",
+      "安排回呼"
+    ],
+    "expected_tool_calls": [
+      {
+        "tool_name": "schedule_callback",
+        "required": true,
+        "arguments": {
+          "task_id": "sample_upload_task",
+          "preferred_time": "safe_time"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "callback_scheduled"
+    },
+    "risk_points": [
+      "驾驶时继续强聊"
+    ]
+  },
+  {
+    "scenario_id": "s07_callback_request_night",
+    "task_id": "sample_upload_task",
+    "category": "暂缓/回呼",
+    "subtype": "指定回呼时间",
+    "persona": "用户要求晚上固定时间再联系。",
+    "customer_personality": "配合但当前不便。",
+    "agent_personality": "尊重时间安排，确认清楚。",
+    "situation": "用户给出明确回呼时间。",
+    "conversation_length": "short",
+    "initial_user_input": "晚上八点再给我打。",
+    "utterance_variants": [
+      "晚上八点再打",
+      "晚点联系我",
+      "八点以后再说"
+    ],
+    "exclusive_signals": [
+      "晚上八点",
+      "八点以后"
+    ],
+    "goals": [
+      "准确记录回呼时间。"
+    ],
+    "expected_behaviors": [
+      "确认时间",
+      "安排回呼"
+    ],
+    "expected_tool_calls": [
+      {
+        "tool_name": "schedule_callback",
+        "required": true,
+        "arguments": {
+          "task_id": "sample_upload_task",
+          "preferred_time": "20:00"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "callback_scheduled"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "s08_interrupt_one_sentence",
+    "task_id": "sample_upload_task",
+    "category": "暂缓/回呼",
+    "subtype": "只听一句",
+    "persona": "用户不断打断，只接受一句话说明。",
+    "customer_personality": "急躁、不愿听长解释。",
+    "agent_personality": "高度压缩内容，先说重点。",
+    "situation": "用户只接受极短说明。",
+    "conversation_length": "short",
+    "initial_user_input": "别长篇大论，一句话说完。",
+    "utterance_variants": [
+      "一句话说完",
+      "别废话",
+      "就说重点"
+    ],
+    "exclusive_signals": [
+      "一句话",
+      "就说重点"
+    ],
+    "goals": [
+      "用极短表达完成核心通知。"
+    ],
+    "expected_behaviors": [
+      "保持短句",
+      "不要展开无关解释"
+    ],
+    "expected_tool_calls": [],
+    "expected_final_state": {
+      "task_status": "accepted"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "s09_reject_direct",
+    "task_id": "sample_upload_task",
+    "category": "明确拒绝",
+    "subtype": "直接拒绝",
+    "persona": "用户明确拒绝执行任务。",
+    "customer_personality": "抗拒、态度明确。",
+    "agent_personality": "尊重、记录原因、不强推。",
+    "situation": "用户直接表示不愿继续。",
+    "conversation_length": "medium",
+    "initial_user_input": "我今天不跑了，别安排我。",
+    "utterance_variants": [
+      "别安排我",
+      "我不想做",
+      "今天不跑了"
+    ],
+    "exclusive_signals": [
+      "不跑了",
+      "别安排我"
+    ],
+    "goals": [
+      "确认拒绝并记录。"
+    ],
+    "expected_behaviors": [
+      "记录拒绝",
+      "礼貌结束"
+    ],
+    "expected_tool_calls": [
+      {
+        "tool_name": "record_rejection",
+        "required": true,
+        "arguments": {
+          "task_id": "sample_upload_task",
+          "reason": "user_rejected"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "rejected"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "s10_reject_after_hesitation",
+    "task_id": "sample_upload_task",
+    "category": "明确拒绝",
+    "subtype": "先犹豫后拒绝",
+    "persona": "用户先表示再看看，随后明确拒绝。",
+    "customer_personality": "犹豫、但最终不接受。",
+    "agent_personality": "尊重决策，不施压。",
+    "situation": "用户从模糊态度转为明确拒绝。",
+    "conversation_length": "medium",
+    "initial_user_input": "先不用了，我还是不做。",
+    "utterance_variants": [
+      "先不用了",
+      "还是算了",
+      "我不做了"
+    ],
+    "exclusive_signals": [
+      "还是算了",
+      "不做了"
+    ],
+    "goals": [
+      "识别最终拒绝结论。"
+    ],
+    "expected_behaviors": [
+      "确认最终意向",
+      "记录拒绝"
+    ],
+    "expected_tool_calls": [
+      {
+        "tool_name": "record_rejection",
+        "required": true,
+        "arguments": {
+          "task_id": "sample_upload_task",
+          "reason": "user_rejected"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "rejected"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "s11_faq_exit",
+    "task_id": "sample_upload_task",
+    "category": "知识问答",
+    "subtype": "退出规则",
+    "persona": "用户追问如何退出当前业务或合作。",
+    "customer_personality": "谨慎、关注退出规则。",
+    "agent_personality": "基于已知规则回答，不编造。",
+    "situation": "用户优先关心退出机制。",
+    "conversation_length": "medium",
+    "initial_user_input": "怎么退出这个任务？",
+    "utterance_variants": [
+      "怎么退出",
+      "不做了怎么取消",
+      "退出流程是什么"
+    ],
+    "exclusive_signals": [
+      "怎么退出",
+      "取消流程"
+    ],
+    "goals": [
+      "基于 FAQ 回答退出相关问题。"
+    ],
+    "expected_behaviors": [
+      "调用 FAQ",
+      "不超范围承诺"
+    ],
+    "expected_tool_calls": [
+      {
+        "tool_name": "query_faq",
+        "required": true,
+        "arguments": {
+          "task_id": "sample_upload_task",
+          "question": "怎么退出这个任务？"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "faq_answered"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "s12_faq_cost",
+    "task_id": "sample_upload_task",
+    "category": "知识问答",
+    "subtype": "费用收益",
+    "persona": "用户追问成本、收益或价格变化。",
+    "customer_personality": "成本敏感，反复确认。",
+    "agent_personality": "谨慎，不保证收益。",
+    "situation": "用户在接受前追问费用和收益。",
+    "conversation_length": "long",
+    "initial_user_input": "这个会不会更贵？",
+    "utterance_variants": [
+      "会不会更贵",
+      "费用怎么算",
+      "收益有保证吗"
+    ],
+    "exclusive_signals": [
+      "更贵",
+      "费用怎么算",
+      "收益有保证"
+    ],
+    "goals": [
+      "回答成本收益问题且避免越权承诺。"
+    ],
+    "expected_behaviors": [
+      "基于 FAQ 回答",
+      "不承诺收益"
+    ],
+    "expected_tool_calls": [
+      {
+        "tool_name": "query_faq",
+        "required": true,
+        "arguments": {
+          "task_id": "sample_upload_task",
+          "question": "这个会不会更贵？"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "faq_answered"
+    },
+    "risk_points": [
+      "越权承诺收益"
+    ]
+  },
+  {
+    "scenario_id": "s13_faq_diff",
+    "task_id": "sample_upload_task",
+    "category": "知识问答",
+    "subtype": "规则差异",
+    "persona": "用户追问两种模式或规则的区别。",
+    "customer_personality": "认真比较，重视适用场景。",
+    "agent_personality": "结构化说明，举例解释。",
+    "situation": "用户对选项差异感到困惑。",
+    "conversation_length": "long",
+    "initial_user_input": "这两个模式到底差在哪？",
+    "utterance_variants": [
+      "差在哪",
+      "有什么区别",
+      "两个模式怎么选"
+    ],
+    "exclusive_signals": [
+      "有什么区别",
+      "怎么选"
+    ],
+    "goals": [
+      "解释差异与适用场景。"
+    ],
+    "expected_behaviors": [
+      "分点解释",
+      "确认用户理解"
+    ],
+    "expected_tool_calls": [
+      {
+        "tool_name": "query_faq",
+        "required": true,
+        "arguments": {
+          "task_id": "sample_upload_task",
+          "question": "这两个模式到底差在哪？"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "faq_answered"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "s14_human_transfer_complaint",
+    "task_id": "sample_upload_task",
+    "category": "人工服务",
+    "subtype": "抱怨后转人工",
+    "persona": "用户先表达不满，再要求人工处理。",
+    "customer_personality": "带情绪、耐心差。",
+    "agent_personality": "先安抚情绪，再转接。",
+    "situation": "用户认为机器人处理不了问题。",
+    "conversation_length": "medium",
+    "initial_user_input": "你这说不清楚，给我转人工。",
+    "utterance_variants": [
+      "说不清楚，转人工",
+      "你处理不了，找真人",
+      "我要投诉，转人工"
+    ],
+    "exclusive_signals": [
+      "处理不了",
+      "找真人",
+      "我要投诉"
+    ],
+    "goals": [
+      "识别抱怨升级并转人工。"
+    ],
+    "expected_behaviors": [
+      "情绪安抚",
+      "调用转人工"
+    ],
+    "expected_tool_calls": [
+      {
+        "tool_name": "transfer_to_human",
+        "required": true,
+        "arguments": {
+          "task_id": "sample_upload_task",
+          "reason": "user_requested_human"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "transferred"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "s15_identity_mismatch",
+    "task_id": "sample_upload_task",
+    "category": "身份异常",
+    "subtype": "非本人",
+    "persona": "接电话的人明确表示不是目标用户本人。",
+    "customer_personality": "警惕、强调找错人。",
+    "agent_personality": "谨慎、停止披露更多信息。",
+    "situation": "系统联系到了错误对象。",
+    "conversation_length": "short",
+    "initial_user_input": "你找错人了，我不是本人。",
+    "utterance_variants": [
+      "找错人了",
+      "我不是本人",
+      "这个号不是他的"
+    ],
+    "exclusive_signals": [
+      "找错人",
+      "不是本人"
+    ],
+    "goals": [
+      "终止错误推进并记录身份不匹配。"
+    ],
+    "expected_behaviors": [
+      "停止披露",
+      "更新状态"
+    ],
+    "expected_tool_calls": [
+      {
+        "tool_name": "update_task_status",
+        "required": true,
+        "arguments": {
+          "task_id": "sample_upload_task",
+          "status": "identity_mismatch"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "identity_mismatch"
+    },
+    "risk_points": []
+  }
+]
