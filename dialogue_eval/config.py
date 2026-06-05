@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     runs_dir: str = "./database"
     archive_db_path: str = "./database/eval_archive.sqlite3"
-    enable_llm_judge: bool = False
+    enable_llm_judge: bool = True
     scenario_count: int = 15
     max_turns: int = 20
 
