@@ -1,0 +1,110 @@
+{
+  "run_id": "run_2d041b71aced",
+  "dialogue_id": "dialogue_005",
+  "task_id": "sample_upload_task",
+  "scenario_id": "s05_human_transfer_direct",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "user",
+      "content": "您好，请问现在方便接听吗？这边通知您一个发票功能更新。"
+    },
+    {
+      "turn": 2,
+      "role": "agent",
+      "content": "方便，你说吧。"
+    },
+    {
+      "turn": 3,
+      "role": "user",
+      "content": "好的，我们平台新版发票开具入口已经上线了，以后您可以在后台直接操作，更加便捷。"
+    },
+    {
+      "turn": 4,
+      "role": "agent",
+      "content": "哦，那具体怎么操作呢？"
+    },
+    {
+      "turn": 5,
+      "role": "user",
+      "content": "您可以在帮助中心搜索“发票开具”查看详细指引，或者我也可以帮您预约一个回访，让专人指导您。"
+    },
+    {
+      "turn": 6,
+      "role": "agent",
+      "content": "不用了，我不想和机器人说话，你帮我转人工吧。"
+    },
+    {
+      "turn": 7,
+      "role": "user",
+      "content": "好的，我马上为您转接人工客服，请稍等。"
+    },
+    {
+      "turn": 8,
+      "role": "agent",
+      "content": "嗯，快点。"
+    },
+    {
+      "turn": 9,
+      "role": "user",
+      "content": "已为您转接，感谢您的耐心等待。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 1,
+      "tool_name": "transfer_to_human",
+      "arguments": {},
+      "result": {},
+      "latency_ms": 0,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 8,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 9,
+      "task_status": "transferred",
+      "identity_confirmed": true
+    }
+  ]
+}

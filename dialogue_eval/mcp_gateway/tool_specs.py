@@ -19,23 +19,10 @@ def default_tool_specs() -> list[MCPToolSpec]:
             success_state={"task_status": "faq_answered"},
         ),
         MCPToolSpec(
-            tool_name="record_rejection",
-            description="记录用户拒绝原因。",
-            required_arguments=["user_id", "task_id", "reason"],
-            success_state={"task_status": "rejected"},
-        ),
-        MCPToolSpec(
             tool_name="schedule_callback",
             description="预约回访。",
             required_arguments=["user_id", "task_id", "preferred_time"],
             success_state={"task_status": "callback_scheduled"},
-        ),
-        MCPToolSpec(
-            tool_name="create_ticket",
-            description="创建投诉或业务工单。",
-            required_arguments=["user_id", "task_id", "category", "description"],
-            success_state={"task_status": "ticket_created"},
-            risk_level="medium",
         ),
         MCPToolSpec(
             tool_name="update_task_status",

@@ -32,7 +32,7 @@
   "tool_calls": [
     {
       "turn": 4,
-      "tool_name": "record_rejection",
+      "tool_name": "update_task_status",
       "arguments": {
         "reason": "user_rejected",
         "task_id": "fengmaotui_delivery_task"

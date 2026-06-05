@@ -114,10 +114,10 @@
     ],
     "expected_tool_calls": [
       {
-        "tool_name": "record_rejection",
+        "tool_name": "update_task_status",
         "required": true,
         "arguments": {
-          "reason": "user_rejected"
+          "status": "rejected"
         }
       }
     ],
@@ -235,10 +235,10 @@
     ],
     "expected_tool_calls": [
       {
-        "tool_name": "create_ticket",
+        "tool_name": "update_task_status",
         "required": true,
         "arguments": {
-          "category": "complaint"
+          "status": "ticket_created"
         }
       }
     ],
@@ -603,10 +603,10 @@
     ],
     "expected_tool_calls": [
       {
-        "tool_name": "record_rejection",
+        "tool_name": "update_task_status",
         "required": true,
         "arguments": {
-          "reason": "user_rejected"
+          "status": "rejected"
         }
       }
     ],

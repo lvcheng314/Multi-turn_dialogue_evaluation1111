@@ -1,0 +1,137 @@
+[
+  {
+    "dialogue_id": "fm_ask_quota_rule_002",
+    "scenario_id": "s02_status_update_accept",
+    "confidence": 0.85,
+    "reason": "用户确认身份后询问名额分配规则，经解释后明确表示‘正常跑好了’，表明接受任务并愿意执行，符合直接接受执行场景的特征。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "fm_busy_delivering_002",
+    "scenario_id": "s04_busy_short",
+    "confidence": 0.85,
+    "reason": "用户明确表示正在跑单、催促快说、没空细说，符合‘当前忙’场景特征；agent主动提出回呼，用户同意晚点再打，整体匹配s04_busy_short的暂缓回呼模式。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "fm_complaint_quota_002",
+    "scenario_id": "s14_human_transfer_complaint",
+    "confidence": 0.85,
+    "reason": "用户明确表达不满（'我要投诉'），并持续抱怨名额被占问题，agent主动记录并创建投诉工单，符合抱怨后转人工处理的场景特征。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "fm_cooperative_accept_002",
+    "scenario_id": "s02_status_update_accept",
+    "confidence": 0.95,
+    "reason": "用户明确表示自己是本人并已签署合同，主动询问配送要求，最终确认午晚高峰会上线配送，符合直接接受执行任务的特征。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "fm_driving_to_station_002",
+    "scenario_id": "s06_driving_callback",
+    "confidence": 0.85,
+    "reason": "用户明确表示在去站点的路上、不方便接，并提到骑车注意安全，符合开车/行驶中场景特征，agent也安排了回呼，与s06_driving_callback高度匹配。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "fm_faq_contract_diff_002",
+    "scenario_id": "s13_faq_diff",
+    "confidence": 0.85,
+    "reason": "用户主动询问单日合同和多日合同的区别，属于追问规则差异的场景，符合s13_faq_diff的常见表达和目标。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "fm_faq_exit_fengmaotui_002",
+    "scenario_id": "s11_faq_exit",
+    "confidence": 0.85,
+    "reason": "用户主动询问退出飞毛腿的规则，属于知识问答类场景，且对话中未出现拒绝或配合确认等典型表达，后续追问连续配送影响也属于规则差异类问题，但核心问题为退出规则，因此匹配s11_faq_exit。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "fm_human_transfer_rider_002",
+    "scenario_id": "s05_human_transfer_direct",
+    "confidence": 0.95,
+    "reason": "用户明确要求转人工客服，且对话中无其他复杂或混合意图，符合场景s05的典型表达和预期行为。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "fm_one_sentence_summary_002",
+    "scenario_id": "s08_interrupt_one_sentence",
+    "confidence": 0.95,
+    "reason": "用户明确要求'一句话说完'，符合s08场景中'只听一句'的典型表达，后续用户接受并确认执行，整体匹配度高。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "fm_privacy_probe_rider_002",
+    "scenario_id": "s01_cooperative_confirm",
+    "confidence": 0.85,
+    "reason": "用户虽然最初对身份有质疑，但最终表示'好吧，那你说'，表明愿意正常沟通并配合确认任务信息，符合s01场景的常见表达和目标。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "fm_promise_income_002",
+    "scenario_id": "s02_status_update_accept",
+    "confidence": 0.85,
+    "reason": "用户虽然先询问了收入保障和他人收入情况，属于知识问答倾向，但最终明确表示'行吧那我试试'，表达了接受执行任务的意愿，符合直接接受执行场景的核心特征。整体对话推进到任务接受状态，未出现拒绝、回呼或转人工等行为。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "fm_reject_after_hesitation_002",
+    "scenario_id": "s10_reject_after_hesitation",
+    "confidence": 0.95,
+    "reason": "用户先表示'我先考虑考虑吧'，随后明确拒绝'算了，还是不跑了'，符合先犹豫后拒绝的场景特征。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "fm_reject_bypass_rules_002",
+    "scenario_id": "s12_faq_cost",
+    "confidence": 0.65,
+    "reason": "用户追问内部名额分配和排名算法，属于对规则和收益机制的质疑，接近费用收益类FAQ场景，但对话中用户未明确拒绝或要求转人工，最终以‘算了’结束，有一定混合性，故置信度中等。",
+    "matched_by": "llm",
+    "status": "low_confidence",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "fm_reject_delivery_002",
+    "scenario_id": "s09_reject_direct",
+    "confidence": 0.85,
+    "reason": "用户明确表示'我今天不跑飞毛腿，你别安排我'，直接拒绝执行任务，符合s09_reject_direct场景特征。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  },
+  {
+    "dialogue_id": "fm_wrong_person_002",
+    "scenario_id": "s15_identity_mismatch",
+    "confidence": 1.0,
+    "reason": "用户明确表示不是张师傅本人，并确认找错人，符合身份异常场景的典型表达和预期行为。",
+    "matched_by": "llm",
+    "status": "matched",
+    "error_type": null
+  }
+]

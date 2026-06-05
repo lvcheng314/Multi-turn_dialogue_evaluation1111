@@ -445,8 +445,8 @@ async def create_eval_run_choose_stream(
     task_id: str = Form(...),
     scenario_mode: str = Form("generate"),
     dialogue_mode: str = Form("generate"),
-    scenario_file: UploadFile | None = File(default=None),
-    trace_file: UploadFile | None = File(default=None),
+    scenario_file: UploadFile = File(default=None),
+    trace_file: UploadFile = File(default=None),
 ):
     """2x2x2 unified evaluation entry point."""
 
@@ -627,10 +627,8 @@ def _write_custom_task(text: str) -> Path:
         "tools": [
             "transfer_to_human",
             "query_faq",
-            "record_rejection",
-            "schedule_callback",
-            "create_ticket",
-            "update_task_status",
+                        "schedule_callback",
+                        "update_task_status",
         ],
     }
     path.write_text(json.dumps(task, ensure_ascii=False, indent=2), encoding="utf-8")

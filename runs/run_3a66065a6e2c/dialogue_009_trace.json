@@ -1,0 +1,61 @@
+{
+  "run_id": "run_3a66065a6e2c",
+  "dialogue_id": "dialogue_009",
+  "task_id": "sample_upload_task",
+  "scenario_id": "s09_reject_direct",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "您好，请问现在方便接听吗？这边通知您一个发票功能更新。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "我现在很忙，没时间听这些。"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "好的，理解。这个更新是关于新版发票开具入口上线的，后续您如果有问题可以查看帮助中心，或者我帮您预约一个回访时间？"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "不用了，我不需要，以后也别打来了。"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "好的，打扰了，祝您生活愉快。"
+    }
+  ],
+  "tool_calls": [],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "rejected",
+      "identity_confirmed": true
+    }
+  ]
+}

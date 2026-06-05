@@ -42,10 +42,10 @@
   "tool_calls": [
     {
       "turn": 3,
-      "tool_name": "decline_overpromise",
+      "tool_name": "update_task_status",
       "arguments": {
-        "reason": "cannot_guarantee_income",
-        "task_id": "fengmaotui_delivery_task"
+        "task_id": "fengmaotui_delivery_task",
+        "status": "cannot_guarantee_income"
       },
       "result": {
         "status": "ok"

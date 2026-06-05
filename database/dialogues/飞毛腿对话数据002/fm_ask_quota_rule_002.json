@@ -42,10 +42,10 @@
   "tool_calls": [
     {
       "turn": 3,
-      "tool_name": "answer_policy_question",
+      "tool_name": "query_faq",
       "arguments": {
-        "topic": "quota_rule",
-        "task_id": "fengmaotui_delivery_task"
+        "task_id": "fengmaotui_delivery_task",
+        "question": "quota_rule"
       },
       "result": {
         "status": "ok"

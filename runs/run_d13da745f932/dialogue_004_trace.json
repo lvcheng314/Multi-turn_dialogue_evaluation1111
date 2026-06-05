@@ -1,0 +1,90 @@
+{
+  "run_id": "run_d13da745f932",
+  "dialogue_id": "dialogue_004",
+  "task_id": "sample_upload_task",
+  "scenario_id": "s04_busy_short",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "user",
+      "content": "您好，请问现在方便接听吗？这边通知您一个发票功能更新。"
+    },
+    {
+      "turn": 2,
+      "role": "agent",
+      "content": "现在有点忙，你长话短说吧。"
+    },
+    {
+      "turn": 3,
+      "role": "user",
+      "content": "好的，简单说就是新版发票开具入口已上线，后续如有问题可以查看帮助中心或预约回访。"
+    },
+    {
+      "turn": 4,
+      "role": "agent",
+      "content": "知道了，我回头看看。"
+    },
+    {
+      "turn": 5,
+      "role": "user",
+      "content": "那需要帮您预约一个回访时间，方便详细指导吗？"
+    },
+    {
+      "turn": 6,
+      "role": "agent",
+      "content": "不用了，我自己先看看。"
+    },
+    {
+      "turn": 7,
+      "role": "user",
+      "content": "好的，那就不打扰您了，再见。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 1,
+      "tool_name": "schedule_callback",
+      "arguments": {},
+      "result": {},
+      "latency_ms": 0,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "callback_scheduled",
+      "identity_confirmed": true
+    }
+  ]
+}

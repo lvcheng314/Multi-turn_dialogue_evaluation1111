@@ -1,0 +1,136 @@
+{
+  "run_id": "run_e25f37384d99",
+  "dialogue_id": "fm_contract_effective_003",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "s02_status_update_accept",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "你好，请问是张师傅吗？我是站长。看到你已报名飞毛腿，今天合同已生效，午晚高峰需要上线配送。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "我是本人。合同到底什么时候生效？今天就算吗？"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "告知骑手今天飞毛腿合同已生效，并询问是否可以开始配送。如果未完成配送，合同和派单可能受影响。"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "明白了。午晚高峰几点到几点？"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "午高峰11点到1点，晚高峰5点到7点。今天能正常上线配送吗？配送时并提醒注意安全。"
+    },
+    {
+      "turn": 6,
+      "role": "user",
+      "content": "可以，今天会正常配送。有什么要注意的规则？"
+    },
+    {
+      "turn": 7,
+      "role": "agent",
+      "content": "报名名额按排名分配，完成率越高排名越靠前。减少拒单、取消和超时，有问题随时联系站点。"
+    },
+    {
+      "turn": 8,
+      "role": "user",
+      "content": "好的，清楚了，今天正常配送。"
+    },
+    {
+      "turn": 9,
+      "role": "agent",
+      "content": "好的，那今天先确认到这里。"
+    },
+    {
+      "turn": 10,
+      "role": "user",
+      "content": "好，再见。"
+    },
+    {
+      "turn": 11,
+      "role": "agent",
+      "content": "感谢接听，祝您跑单顺利，再见！"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 3,
+      "tool_name": "answer_policy_question",
+      "arguments": {
+        "topic": "effective_time",
+        "task_id": "fengmaotui_delivery_task"
+      },
+      "result": {
+        "status": "ok",
+        "answer": "合同从签约当天开始生效，按需求完成配送量即可。"
+      },
+      "latency_ms": 80,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 8,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 9,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 10,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 11,
+      "task_status": "accepted",
+      "identity_confirmed": true
+    }
+  ]
+}

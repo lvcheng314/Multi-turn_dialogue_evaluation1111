@@ -52,10 +52,10 @@
   "tool_calls": [
     {
       "turn": 5,
-      "tool_name": "confirm_delivery_acceptance",
+      "tool_name": "update_task_status",
       "arguments": {
-        "result": "accepted",
-        "task_id": "fengmaotui_delivery_task"
+        "task_id": "fengmaotui_delivery_task",
+        "status": "accepted"
       },
       "result": {
         "status": "ok"

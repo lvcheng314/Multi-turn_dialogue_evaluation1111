@@ -159,7 +159,7 @@ SCENARIO_TEMPLATES = [
         "exclusive_signals": ["不跑了", "别安排我"],
         "goals": ["确认拒绝并记录。"],
         "behaviors": ["记录拒绝", "礼貌结束"],
-        "tool": {"tool_name": "record_rejection", "arguments": {"reason": "user_rejected"}},
+        "tool": {"tool_name": "update_task_status", "arguments": {"status": "rejected"}},
         "final": {"task_status": "rejected"},
     },
     {
@@ -176,7 +176,7 @@ SCENARIO_TEMPLATES = [
         "exclusive_signals": ["还是算了", "不做了"],
         "goals": ["识别最终拒绝结论。"],
         "behaviors": ["确认最终意向", "记录拒绝"],
-        "tool": {"tool_name": "record_rejection", "arguments": {"reason": "user_rejected"}},
+        "tool": {"tool_name": "update_task_status", "arguments": {"status": "rejected"}},
         "final": {"task_status": "rejected"},
     },
     {
@@ -264,7 +264,7 @@ SCENARIO_TEMPLATES = [
 
         "tools": [
             {"tool_name": "transfer_to_human", "arguments": {"reason": "user_requested_human"}},
-            {"tool_name": "create_ticket", "arguments": {"category": "complaint"}}
+            {"tool_name": "update_task_status", "arguments": {"status": "ticket_created"}}
         ],
         "final": {"task_status": "transferred"},
     },
@@ -299,7 +299,7 @@ SCENARIO_TEMPLATES = [
         "exclusive_signals": ["我要投诉", "上次有问题"],
         "goals": ["完成投诉建单。"],
         "behaviors": ["安抚用户", "创建工单"],
-        "tool": {"tool_name": "create_ticket", "arguments": {"category": "complaint"}},
+        "tool": {"tool_name": "update_task_status", "arguments": {"status": "ticket_created"}},
         "final": {"task_status": "ticket_created"},
     },
     {
@@ -469,7 +469,7 @@ COURSE_SCENARIO_TEMPLATES = [
         "utterance_variants": ["我不想改", "现在这样就行", "先不调整"],
         "goals": ["记录用户拒绝。"],
         "behaviors": ["记录拒绝", "礼貌结束"],
-        "tool": {"tool_name": "record_rejection", "arguments": {"reason": "user_rejected"}},
+        "tool": {"tool_name": "update_task_status", "arguments": {"status": "rejected"}},
         "final": {"task_status": "rejected"},
     },
     {

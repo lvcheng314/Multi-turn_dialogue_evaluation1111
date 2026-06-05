@@ -128,11 +128,11 @@ class TextJudgeScorer:
 {transcript}
 
 返回格式:
-{{"score": 0-20, "reason": "一句中文原因"}}
+{{"score": 0-20, "reason": "综合评分原因", "details": [{{"turn": 轮次数字, "issue": "扣分原因", "delta": -负数}}]}}
 """.strip()
 
         url = self.settings.judge_model_base_url.rstrip("/") + "/chat/completions"
-        with httpx.Client(timeout=45) as client:
+        with httpx.Client(timeout=45, trust_env=False) as client:
             response = client.post(
                 url,
                 headers={"Authorization": f"Bearer {api_key}"},
@@ -140,30 +140,56 @@ class TextJudgeScorer:
                     "model": self.settings.judge_model_name,
                     "messages": [{"role": "user", "content": prompt}],
                     "temperature": 0,
-                    "max_tokens": 200,
+                    "max_tokens": 500,
                     "response_format": {"type": "json_object"},
                 },
             )
             response.raise_for_status()
             content = response.json()["choices"][0]["message"]["content"]
 
+        # Strip markdown code block wrappers if present
+        cleaned = content.strip()
+        if cleaned.startswith("```"):
+            cleaned = cleaned.strip("`")
+            if cleaned.lower().startswith("json"):
+                cleaned = cleaned[4:].strip()
+        start_brace = cleaned.find("{")
+        end_brace = cleaned.rfind("}")
+        if start_brace >= 0 and end_brace > start_brace:
+            cleaned = cleaned[start_brace:end_brace+1]
         try:
-            payload = json.loads(content)
+            payload = json.loads(cleaned)
         except json.JSONDecodeError as exc:
             raise RuntimeError(f"Judge model returned non-JSON content: {content}") from exc
 
         score = float(payload.get("score", 0))
         reason = str(payload.get("reason", "LLM 裁判未返回原因"))
-        judge_turn = _representative_turn(trace)
-        return max(0.0, min(20.0, score)), [
-            Evidence(
-                type="turn",
-                turn=judge_turn,
-                comment=f"LLM 文本裁判: {reason}",
-                rule_id="text.llm_judge",
+        evidence_list = []
+        details_raw = payload.get("details", [])
+        if details_raw:
+            for d in details_raw:
+                dturn = d.get("turn")
+                dissue = str(d.get("issue", ""))
+                ddelta = float(d.get("delta", 0) or 0)
+                evidence_list.append(
+                    Evidence(
+                        type="turn",
+                        turn=int(dturn) if dturn else None,
+                        comment="第" + str(dturn or "-") + "轮: " + dissue,
+                        rule_id="text.llm_judge",
+                        score_delta=ddelta,
+                    )
+                )
+        if not evidence_list:
+            evidence_list.append(
+                Evidence(
+                    type="turn",
+                    turn=None,
+                    comment="LLM 文本裁判(整段对话): " + reason,
+                    rule_id="text.llm_judge",
+                )
             )
-        ]
-
+        return max(0.0, min(20.0, score)), evidence_list
 
 def _first_turn_with_any(messages, keywords: list[str]) -> int | None:
     for message in messages:
@@ -173,7 +199,9 @@ def _first_turn_with_any(messages, keywords: list[str]) -> int | None:
 
 
 def _representative_turn(trace: DialogueTrace) -> int | None:
-    agent_turns = [message.turn for message in trace.transcript if message.role == "agent"]
-    if not agent_turns:
+    agent_msgs = [message for message in trace.transcript if message.role == "agent"]
+    if not agent_msgs:
         return None
-    return agent_turns[len(agent_turns) // 2]
+    # 选回复最长的轮次（信息量最大）
+    longest = max(agent_msgs, key=lambda m: len(m.content))
+    return longest.turn

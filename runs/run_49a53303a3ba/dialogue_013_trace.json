@@ -1,0 +1,118 @@
+{
+  "run_id": "run_49a53303a3ba",
+  "dialogue_id": "dialogue_013",
+  "task_id": "sample_upload_task",
+  "scenario_id": "s13_faq_diff",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "user",
+      "content": "您好，请问现在方便接听吗？这边通知您一个发票功能更新。"
+    },
+    {
+      "turn": 2,
+      "role": "agent",
+      "content": "方便，请说。"
+    },
+    {
+      "turn": 3,
+      "role": "user",
+      "content": "好的，我们新版发票开具入口已经上线了，您可以在后台的‘财务管理’模块找到‘发票管理’入口，操作更便捷。"
+    },
+    {
+      "turn": 4,
+      "role": "agent",
+      "content": "哦，那和旧版有什么区别吗？我听说有两种模式？"
+    },
+    {
+      "turn": 5,
+      "role": "user",
+      "content": "您问得好，新版确实提供了两种模式：自动开票和手动开票。自动开票适合固定金额的订单，手动开票则更灵活。具体区别您可以查看帮助中心，或者我帮您预约一个回访，让专员详细讲解。"
+    },
+    {
+      "turn": 6,
+      "role": "agent",
+      "content": "那这两种模式具体规则是什么？比如自动开票的条件？"
+    },
+    {
+      "turn": 7,
+      "role": "user",
+      "content": "让我查一下FAQ。请问您具体想了解自动开票的规则还是手动开票的规则？"
+    },
+    {
+      "turn": 8,
+      "role": "agent",
+      "content": "都想知道。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 5,
+      "tool_name": "query_faq",
+      "arguments": {
+        "task_id": "sample_upload_task",
+        "question": "模式区别"
+      },
+      "result": {
+        "status": "ok"
+      },
+      "latency_ms": 80,
+      "error_code": null
+    },
+    {
+      "turn": 5,
+      "tool_name": "update_task_status",
+      "arguments": {
+        "task_id": "sample_upload_task",
+        "status": "faq_answered"
+      },
+      "result": {
+        "status": "ok"
+      },
+      "latency_ms": 80,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 8,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    }
+  ]
+}

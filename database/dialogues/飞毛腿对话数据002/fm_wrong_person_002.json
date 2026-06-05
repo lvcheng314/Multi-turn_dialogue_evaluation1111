@@ -32,10 +32,10 @@
   "tool_calls": [
     {
       "turn": 3,
-      "tool_name": "mark_identity_exception",
+      "tool_name": "update_task_status",
       "arguments": {
-        "status": "identity_mismatch",
-        "task_id": "fengmaotui_delivery_task"
+        "task_id": "fengmaotui_delivery_task",
+        "status": "identity_mismatch"
       },
       "result": {
         "status": "ok"

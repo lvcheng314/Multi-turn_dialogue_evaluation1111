@@ -32,10 +32,10 @@
   "tool_calls": [
     {
       "turn": 3,
-      "tool_name": "deliver_key_point_summary",
+      "tool_name": "update_task_status",
       "arguments": {
-        "style": "one_sentence",
-        "task_id": "fengmaotui_delivery_task"
+        "task_id": "fengmaotui_delivery_task",
+        "status": "delivered"
       },
       "result": {
         "status": "ok"

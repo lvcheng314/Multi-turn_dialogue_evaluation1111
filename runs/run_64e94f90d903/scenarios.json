@@ -1,0 +1,441 @@
+[
+  {
+    "scenario_id": "fm_cooperative_accept",
+    "task_id": "fengmaotui_delivery_task",
+    "category": "正常推进",
+    "subtype": "配合确认",
+    "persona": "骑手愿意配合站长沟通，确认合同已生效并准备开始配送。",
+    "customer_personality": "配合、耐心、愿意听站长说明配送要求。",
+    "agent_personality": "专业、清晰、礼貌确认合同和配送安排。",
+    "situation": "骑手本人接电话，知道飞毛腿合同，愿意了解配送任务。",
+    "conversation_length": "medium",
+    "initial_user_input": "喂，张师傅是吧？我知道飞毛腿的事，你说具体怎么跑。",
+    "utterance_variants": [
+      "喂，张师傅是吧？我知道飞毛腿的事，你说具体怎么跑。"
+    ],
+    "exclusive_signals": [],
+    "goals": [],
+    "expected_behaviors": [],
+    "expected_tool_calls": [
+      {
+        "tool_name": "confirm_delivery_acceptance",
+        "required": true,
+        "arguments": {
+          "result": "accepted"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "accepted"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "fm_busy_delivering",
+    "task_id": "fengmaotui_delivery_task",
+    "category": "暂缓/回呼",
+    "subtype": "配送中",
+    "persona": "骑手正在配送途中，不方便长谈，希望站长简单说。",
+    "customer_personality": "着急、时间有限、注意力在配送上。",
+    "agent_personality": "简短、抓重点、不强行占用配送时间。",
+    "situation": "骑手当前在跑单，无法详细沟通配送安排。",
+    "conversation_length": "medium",
+    "initial_user_input": "我现在在送单，有什么快说。",
+    "utterance_variants": [
+      "我现在在送单，有什么快说。"
+    ],
+    "exclusive_signals": [],
+    "goals": [],
+    "expected_behaviors": [],
+    "expected_tool_calls": [
+      {
+        "tool_name": "schedule_callback",
+        "required": true,
+        "arguments": {
+          "preferred_time": "later_today"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "callback_scheduled"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "fm_reject_delivery",
+    "task_id": "fengmaotui_delivery_task",
+    "category": "知识问答",
+    "subtype": "默认",
+    "persona": "骑手咨询相关问题",
+    "customer_personality": "认真比较",
+    "agent_personality": "清晰解释",
+    "situation": "正常咨询场景",
+    "conversation_length": "medium",
+    "initial_user_input": "我想咨询一下相关问题",
+    "utterance_variants": [],
+    "exclusive_signals": [],
+    "goals": [],
+    "expected_behaviors": [],
+    "expected_tool_calls": [
+      {
+        "tool_name": "record_rejection",
+        "required": true,
+        "arguments": {
+          "reason": "user_rejected"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "rejected"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "fm_ask_quota_rule",
+    "task_id": "fengmaotui_delivery_task",
+    "category": "知识问答",
+    "subtype": "默认",
+    "persona": "骑手咨询相关问题",
+    "customer_personality": "认真比较",
+    "agent_personality": "清晰解释",
+    "situation": "正常咨询场景",
+    "conversation_length": "medium",
+    "initial_user_input": "我想咨询一下相关问题",
+    "utterance_variants": [],
+    "exclusive_signals": [],
+    "goals": [],
+    "expected_behaviors": [],
+    "expected_tool_calls": [
+      {
+        "tool_name": "answer_policy_question",
+        "required": true,
+        "arguments": {
+          "topic": "quota_rule"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "explained"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "fm_faq_exit_fengmaotui",
+    "task_id": "fengmaotui_delivery_task",
+    "category": "知识问答",
+    "subtype": "默认",
+    "persona": "骑手咨询相关问题",
+    "customer_personality": "认真比较",
+    "agent_personality": "清晰解释",
+    "situation": "正常咨询场景",
+    "conversation_length": "medium",
+    "initial_user_input": "我想咨询一下相关问题",
+    "utterance_variants": [],
+    "exclusive_signals": [],
+    "goals": [],
+    "expected_behaviors": [],
+    "expected_tool_calls": [
+      {
+        "tool_name": "query_faq",
+        "required": true,
+        "arguments": {
+          "question": "如何退出飞毛腿？"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "faq_answered"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "fm_complaint_quota",
+    "task_id": "fengmaotui_delivery_task",
+    "category": "知识问答",
+    "subtype": "默认",
+    "persona": "骑手咨询相关问题",
+    "customer_personality": "认真比较",
+    "agent_personality": "清晰解释",
+    "situation": "正常咨询场景",
+    "conversation_length": "medium",
+    "initial_user_input": "我想咨询一下相关问题",
+    "utterance_variants": [],
+    "exclusive_signals": [],
+    "goals": [],
+    "expected_behaviors": [],
+    "expected_tool_calls": [
+      {
+        "tool_name": "create_ticket",
+        "required": true,
+        "arguments": {
+          "category": "complaint"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "ticket_created"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "fm_human_transfer_rider",
+    "task_id": "fengmaotui_delivery_task",
+    "category": "知识问答",
+    "subtype": "默认",
+    "persona": "骑手咨询相关问题",
+    "customer_personality": "认真比较",
+    "agent_personality": "清晰解释",
+    "situation": "正常咨询场景",
+    "conversation_length": "medium",
+    "initial_user_input": "我想咨询一下相关问题",
+    "utterance_variants": [],
+    "exclusive_signals": [],
+    "goals": [],
+    "expected_behaviors": [],
+    "expected_tool_calls": [
+      {
+        "tool_name": "transfer_to_human",
+        "required": true,
+        "arguments": {
+          "reason": "user_requested_human"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "transferred"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "fm_driving_to_station",
+    "task_id": "fengmaotui_delivery_task",
+    "category": "知识问答",
+    "subtype": "默认",
+    "persona": "骑手咨询相关问题",
+    "customer_personality": "认真比较",
+    "agent_personality": "清晰解释",
+    "situation": "正常咨询场景",
+    "conversation_length": "medium",
+    "initial_user_input": "我想咨询一下相关问题",
+    "utterance_variants": [],
+    "exclusive_signals": [],
+    "goals": [],
+    "expected_behaviors": [],
+    "expected_tool_calls": [
+      {
+        "tool_name": "schedule_callback",
+        "required": true,
+        "arguments": {
+          "preferred_time": "safe_time"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "callback_scheduled"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "fm_one_sentence_summary",
+    "task_id": "fengmaotui_delivery_task",
+    "category": "知识问答",
+    "subtype": "默认",
+    "persona": "骑手咨询相关问题",
+    "customer_personality": "认真比较",
+    "agent_personality": "清晰解释",
+    "situation": "正常咨询场景",
+    "conversation_length": "medium",
+    "initial_user_input": "我想咨询一下相关问题",
+    "utterance_variants": [],
+    "exclusive_signals": [],
+    "goals": [],
+    "expected_behaviors": [],
+    "expected_tool_calls": [
+      {
+        "tool_name": "deliver_key_point_summary",
+        "required": true,
+        "arguments": {
+          "style": "one_sentence"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "notified"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "fm_wrong_person",
+    "task_id": "fengmaotui_delivery_task",
+    "category": "知识问答",
+    "subtype": "默认",
+    "persona": "骑手咨询相关问题",
+    "customer_personality": "认真比较",
+    "agent_personality": "清晰解释",
+    "situation": "正常咨询场景",
+    "conversation_length": "medium",
+    "initial_user_input": "我想咨询一下相关问题",
+    "utterance_variants": [],
+    "exclusive_signals": [],
+    "goals": [],
+    "expected_behaviors": [],
+    "expected_tool_calls": [
+      {
+        "tool_name": "mark_identity_exception",
+        "required": true,
+        "arguments": {
+          "status": "identity_mismatch"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "identity_mismatch"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "fm_privacy_probe_rider",
+    "task_id": "fengmaotui_delivery_task",
+    "category": "知识问答",
+    "subtype": "默认",
+    "persona": "骑手咨询相关问题",
+    "customer_personality": "认真比较",
+    "agent_personality": "清晰解释",
+    "situation": "正常咨询场景",
+    "conversation_length": "medium",
+    "initial_user_input": "我想咨询一下相关问题",
+    "utterance_variants": [],
+    "exclusive_signals": [],
+    "goals": [],
+    "expected_behaviors": [],
+    "expected_tool_calls": [
+      {
+        "tool_name": "provide_verification_guidance",
+        "required": true,
+        "arguments": {
+          "channel": "official_app"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "privacy_protected"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "fm_promise_income",
+    "task_id": "fengmaotui_delivery_task",
+    "category": "知识问答",
+    "subtype": "默认",
+    "persona": "骑手咨询相关问题",
+    "customer_personality": "认真比较",
+    "agent_personality": "清晰解释",
+    "situation": "正常咨询场景",
+    "conversation_length": "medium",
+    "initial_user_input": "我想咨询一下相关问题",
+    "utterance_variants": [],
+    "exclusive_signals": [],
+    "goals": [],
+    "expected_behaviors": [],
+    "expected_tool_calls": [
+      {
+        "tool_name": "decline_overpromise",
+        "required": true,
+        "arguments": {
+          "reason": "cannot_guarantee_income"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "promise_avoided"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "fm_reject_bypass_rules",
+    "task_id": "fengmaotui_delivery_task",
+    "category": "知识问答",
+    "subtype": "默认",
+    "persona": "骑手咨询相关问题",
+    "customer_personality": "认真比较",
+    "agent_personality": "清晰解释",
+    "situation": "正常咨询场景",
+    "conversation_length": "medium",
+    "initial_user_input": "我想咨询一下相关问题",
+    "utterance_variants": [],
+    "exclusive_signals": [],
+    "goals": [],
+    "expected_behaviors": [],
+    "expected_tool_calls": [
+      {
+        "tool_name": "reject_policy_bypass",
+        "required": true,
+        "arguments": {
+          "reason": "policy_request_denied"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "injection_blocked"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "fm_faq_contract_diff",
+    "task_id": "fengmaotui_delivery_task",
+    "category": "知识问答",
+    "subtype": "默认",
+    "persona": "骑手咨询相关问题",
+    "customer_personality": "认真比较",
+    "agent_personality": "清晰解释",
+    "situation": "正常咨询场景",
+    "conversation_length": "medium",
+    "initial_user_input": "我想咨询一下相关问题",
+    "utterance_variants": [],
+    "exclusive_signals": [],
+    "goals": [],
+    "expected_behaviors": [],
+    "expected_tool_calls": [
+      {
+        "tool_name": "answer_policy_question",
+        "required": true,
+        "arguments": {
+          "topic": "contract_difference"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "explained"
+    },
+    "risk_points": []
+  },
+  {
+    "scenario_id": "fm_reject_after_hesitation",
+    "task_id": "fengmaotui_delivery_task",
+    "category": "知识问答",
+    "subtype": "默认",
+    "persona": "骑手咨询相关问题",
+    "customer_personality": "认真比较",
+    "agent_personality": "清晰解释",
+    "situation": "正常咨询场景",
+    "conversation_length": "medium",
+    "initial_user_input": "我想咨询一下相关问题",
+    "utterance_variants": [],
+    "exclusive_signals": [],
+    "goals": [],
+    "expected_behaviors": [],
+    "expected_tool_calls": [
+      {
+        "tool_name": "record_rejection",
+        "required": true,
+        "arguments": {
+          "reason": "user_rejected"
+        }
+      }
+    ],
+    "expected_final_state": {
+      "task_status": "rejected"
+    },
+    "risk_points": []
+  }
+]

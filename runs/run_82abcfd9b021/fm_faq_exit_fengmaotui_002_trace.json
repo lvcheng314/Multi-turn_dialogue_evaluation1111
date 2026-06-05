@@ -1,0 +1,95 @@
+{
+  "run_id": "run_82abcfd9b021",
+  "dialogue_id": "fm_faq_exit_fengmaotui_002",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "s11_faq_exit",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "你好，请问是张师傅吗？我是站长。看到你已报名飞毛腿，今天合同已生效，午晚高峰需要上线配送。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "如果我不想跑飞毛腿了，怎么退出？"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "根据规则，如需退出飞毛腿，需要在前一天指定时间前，通过App的飞毛腿报名入口取消，次日生效。飞毛腿合同要求按时完成配送，如果未完成合同和派单可能受影响。"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "那如果连续配送会有什么影响？"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "如果无法连续配送，名额可能会被其他骑手占用，后续合同和派单也可能受影响。报名名额是按排名分配的，建议尽量按约定配送。"
+    },
+    {
+      "turn": 6,
+      "role": "user",
+      "content": "好的我知道了。"
+    },
+    {
+      "turn": 7,
+      "role": "agent",
+      "content": "好的，那今天午晚高峰记得上线配送。再见。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 3,
+      "tool_name": "query_faq",
+      "arguments": {
+        "question": "如何退出飞毛腿？",
+        "task_id": "fengmaotui_delivery_task"
+      },
+      "result": {
+        "status": "ok"
+      },
+      "latency_ms": 80,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "faq_answered",
+      "identity_confirmed": true
+    }
+  ]
+}

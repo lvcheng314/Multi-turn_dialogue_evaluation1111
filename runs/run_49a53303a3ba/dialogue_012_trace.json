@@ -1,0 +1,100 @@
+{
+  "run_id": "run_49a53303a3ba",
+  "dialogue_id": "dialogue_012",
+  "task_id": "sample_upload_task",
+  "scenario_id": "s12_faq_cost",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "user",
+      "content": "您好，请问现在方便接听吗？这边通知您一个发票功能更新。"
+    },
+    {
+      "turn": 2,
+      "role": "agent",
+      "content": "方便，您说。"
+    },
+    {
+      "turn": 3,
+      "role": "user",
+      "content": "好的，我们平台新版发票开具入口已经上线了，以后您开票会更方便。请问您之前开票遇到过什么问题吗？"
+    },
+    {
+      "turn": 4,
+      "role": "agent",
+      "content": "嗯，之前开票流程有点复杂，有时候找不到入口。这个新版有什么变化？"
+    },
+    {
+      "turn": 5,
+      "role": "user",
+      "content": "新版入口整合到了商家后台的财务模块，操作更简单。另外，如果后续您有疑问，可以查看帮助中心，或者我们也可以安排回访指导。您需要预约回访吗？"
+    },
+    {
+      "turn": 6,
+      "role": "agent",
+      "content": "先不用预约，我自己看看。不过我想问一下，这个功能更新会不会增加成本或者影响收益？"
+    },
+    {
+      "turn": 7,
+      "role": "user",
+      "content": "这个您放心，功能更新是免费的，不会增加任何成本，也不会影响您的收益。我帮您查一下相关FAQ，稍等。"
+    },
+    {
+      "turn": 8,
+      "role": "agent",
+      "content": "好的，谢谢。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 1,
+      "tool_name": "query_faq",
+      "arguments": {},
+      "result": {},
+      "latency_ms": 0,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 8,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    }
+  ]
+}

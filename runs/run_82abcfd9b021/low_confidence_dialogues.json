@@ -1,0 +1,10 @@
+[
+  {
+    "dialogue_id": "fm_reject_bypass_rules_002",
+    "status": "low_confidence",
+    "suggested_scenario_id": "s12_faq_cost",
+    "confidence": 0.65,
+    "reason": "用户追问内部名额分配和排名算法，属于对规则和收益机制的质疑，接近费用收益类FAQ场景，但对话中用户未明确拒绝或要求转人工，最终以‘算了’结束，有一定混合性，故置信度中等。",
+    "error_type": null
+  }
+]

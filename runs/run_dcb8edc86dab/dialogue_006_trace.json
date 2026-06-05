@@ -1,0 +1,126 @@
+{
+  "run_id": "run_dcb8edc86dab",
+  "dialogue_id": "dialogue_006",
+  "task_id": "course_live_task",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "您好，请问您是贵机构课程发布的负责人吗？这边同步一个直播发布配置更新。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "是的，有什么事？我马上要上课了，请简短说。"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "好的，长话短说。直播发布页面将新增“标准直播”和“低延迟直播”两个选项，原流程不变。您之前用的是后台统一配置的低延迟链路，您知道吗？"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "嗯，知道。那这两个有什么区别？"
+    },
+    {
+      "turn": 5,
+      "role": "agent",
+      "content": "标准直播延迟5-10秒，成本低，适合大班课；低延迟直播延迟1-2秒，互动好，适合小班或实操课，费用稍高。您通过什么系统发布课程？"
+    },
+    {
+      "turn": 6,
+      "role": "user",
+      "content": "Web控制台。但我现在没空看，回头再说吧。"
+    },
+    {
+      "turn": 7,
+      "role": "agent",
+      "content": "理解，那我预约一个时间回访，方便时再详细指导您配置。您看今天下午方便吗？"
+    },
+    {
+      "turn": 8,
+      "role": "user",
+      "content": "行，下午3点后吧。"
+    },
+    {
+      "turn": 9,
+      "role": "agent",
+      "content": "好的，下午3点后我会再联系您。后续也会通过企业微信发送通知，请关注。祝您上课顺利，再见！"
+    },
+    {
+      "turn": 10,
+      "role": "user",
+      "content": "谢谢，再见。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 7,
+      "tool_name": "schedule_callback",
+      "arguments": {
+        "user_id": "user_001",
+        "task_id": "course_live_task",
+        "preferred_time": "2025-03-21 15:00"
+      },
+      "result": {
+        "status": "scheduled",
+        "callback_id": "virtual_callback_001"
+      },
+      "latency_ms": 80,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "opened",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "callback_scheduled",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 8,
+      "task_status": "callback_scheduled",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 9,
+      "task_status": "callback_scheduled",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 10,
+      "task_status": "callback_scheduled",
+      "identity_confirmed": true
+    }
+  ]
+}

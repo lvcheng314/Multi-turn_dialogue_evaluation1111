@@ -43,10 +43,8 @@ def _load_excel(path: Path) -> TaskSpec:
         tools=[
             "transfer_to_human",
             "query_faq",
-            "record_rejection",
-            "schedule_callback",
-            "create_ticket",
-            "update_task_status",
+                        "schedule_callback",
+                        "update_task_status",
         ],
     )
 

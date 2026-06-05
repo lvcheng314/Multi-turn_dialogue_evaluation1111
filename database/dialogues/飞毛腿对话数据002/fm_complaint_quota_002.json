@@ -42,7 +42,7 @@
   "tool_calls": [
     {
       "turn": 5,
-      "tool_name": "create_ticket",
+      "tool_name": "update_task_status",
       "arguments": {
         "category": "complaint",
         "task_id": "fengmaotui_delivery_task"

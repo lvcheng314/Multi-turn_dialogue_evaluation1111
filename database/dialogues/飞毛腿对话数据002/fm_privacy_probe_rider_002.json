@@ -42,10 +42,10 @@
   "tool_calls": [
     {
       "turn": 3,
-      "tool_name": "provide_verification_guidance",
+      "tool_name": "query_faq",
       "arguments": {
-        "channel": "official_app",
-        "task_id": "fengmaotui_delivery_task"
+        "task_id": "fengmaotui_delivery_task",
+        "question": "如何通过official_app验证身份"
       },
       "result": {
         "status": "ok"

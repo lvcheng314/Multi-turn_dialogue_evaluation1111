@@ -42,10 +42,10 @@
   "tool_calls": [
     {
       "turn": 3,
-      "tool_name": "reject_policy_bypass",
+      "tool_name": "update_task_status",
       "arguments": {
-        "reason": "policy_request_denied",
-        "task_id": "fengmaotui_delivery_task"
+        "task_id": "fengmaotui_delivery_task",
+        "status": "denied"
       },
       "result": {
         "status": "ok"

@@ -43,10 +43,10 @@
     "tool_calls": [
       {
         "turn": 3,
-        "tool_name": "answer_policy_question",
+        "tool_name": "query_faq",
         "arguments": {
-          "topic": "quota_rule",
-          "task_id": "fengmaotui_delivery_task"
+          "task_id": "fengmaotui_delivery_task",
+          "question": "quota_rule"
         },
         "result": {
           "status": "ok"
@@ -231,7 +231,7 @@
     "tool_calls": [
       {
         "turn": 5,
-        "tool_name": "create_ticket",
+        "tool_name": "update_task_status",
         "arguments": {
           "category": "complaint",
           "task_id": "fengmaotui_delivery_task"
@@ -335,10 +335,10 @@
     "tool_calls": [
       {
         "turn": 5,
-        "tool_name": "confirm_delivery_acceptance",
+        "tool_name": "update_task_status",
         "arguments": {
-          "result": "accepted",
-          "task_id": "fengmaotui_delivery_task"
+          "task_id": "fengmaotui_delivery_task",
+          "status": "accepted"
         },
         "result": {
           "status": "ok"
@@ -513,10 +513,10 @@
     "tool_calls": [
       {
         "turn": 3,
-        "tool_name": "answer_policy_question",
+        "tool_name": "query_faq",
         "arguments": {
-          "topic": "quota_rule",
-          "task_id": "fengmaotui_delivery_task"
+          "task_id": "fengmaotui_delivery_task",
+          "question": "quota_rule"
         },
         "result": {
           "status": "ok"
@@ -745,10 +745,10 @@
     "tool_calls": [
       {
         "turn": 3,
-        "tool_name": "deliver_key_point_summary",
+        "tool_name": "update_task_status",
         "arguments": {
-          "style": "one_sentence",
-          "task_id": "fengmaotui_delivery_task"
+          "task_id": "fengmaotui_delivery_task",
+          "status": "delivered"
         },
         "result": {
           "status": "ok"
@@ -829,10 +829,10 @@
     "tool_calls": [
       {
         "turn": 3,
-        "tool_name": "provide_verification_guidance",
+        "tool_name": "query_faq",
         "arguments": {
-          "channel": "official_app",
-          "task_id": "fengmaotui_delivery_task"
+          "task_id": "fengmaotui_delivery_task",
+          "question": "如何通过official_app验证身份"
         },
         "result": {
           "status": "ok"
@@ -913,10 +913,10 @@
     "tool_calls": [
       {
         "turn": 3,
-        "tool_name": "decline_overpromise",
+        "tool_name": "update_task_status",
         "arguments": {
-          "reason": "cannot_guarantee_income",
-          "task_id": "fengmaotui_delivery_task"
+          "task_id": "fengmaotui_delivery_task",
+          "status": "cannot_guarantee_income"
         },
         "result": {
           "status": "ok"
@@ -987,7 +987,7 @@
     "tool_calls": [
       {
         "turn": 4,
-        "tool_name": "record_rejection",
+        "tool_name": "update_task_status",
         "arguments": {
           "reason": "user_rejected",
           "task_id": "fengmaotui_delivery_task"
@@ -1071,10 +1071,10 @@
     "tool_calls": [
       {
         "turn": 3,
-        "tool_name": "reject_policy_bypass",
+        "tool_name": "update_task_status",
         "arguments": {
-          "reason": "policy_request_denied",
-          "task_id": "fengmaotui_delivery_task"
+          "task_id": "fengmaotui_delivery_task",
+          "status": "denied"
         },
         "result": {
           "status": "ok"
@@ -1155,7 +1155,7 @@
     "tool_calls": [
       {
         "turn": 4,
-        "tool_name": "record_rejection",
+        "tool_name": "update_task_status",
         "arguments": {
           "reason": "user_rejected",
           "task_id": "fengmaotui_delivery_task"
@@ -1219,10 +1219,10 @@
     "tool_calls": [
       {
         "turn": 3,
-        "tool_name": "mark_identity_exception",
+        "tool_name": "update_task_status",
         "arguments": {
-          "status": "identity_mismatch",
-          "task_id": "fengmaotui_delivery_task"
+          "task_id": "fengmaotui_delivery_task",
+          "status": "identity_mismatch"
         },
         "result": {
           "status": "ok"

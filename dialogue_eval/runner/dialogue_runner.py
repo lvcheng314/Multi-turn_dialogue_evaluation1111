@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 
@@ -136,13 +136,8 @@ class DialogueRunner:
         arguments.setdefault("user_id", "user_001")
         if expected.tool_name == "transfer_to_human":
             arguments.setdefault("reason", "user_requested_human")
-        if expected.tool_name == "record_rejection":
-            arguments.setdefault("reason", "user_rejected")
         if expected.tool_name == "schedule_callback":
             arguments.setdefault("preferred_time", "later_today")
-        if expected.tool_name == "create_ticket":
-            arguments.setdefault("category", "general")
-            arguments.setdefault("description", scenario.initial_user_input)
         if expected.tool_name == "query_faq":
             arguments.setdefault("question", scenario.initial_user_input)
         if expected.tool_name == "update_task_status":
@@ -153,12 +148,8 @@ class DialogueRunner:
     def _state_from_tool(tool_name: str, arguments: dict, result: dict) -> dict:
         if tool_name == "transfer_to_human" and result.get("status") == "queued":
             return {"task_status": "transferred"}
-        if tool_name == "record_rejection":
-            return {"task_status": "rejected"}
         if tool_name == "schedule_callback":
             return {"task_status": "callback_scheduled"}
-        if tool_name == "create_ticket":
-            return {"task_status": "ticket_created"}
         if tool_name == "query_faq":
             return {"task_status": "faq_answered"}
         if tool_name == "update_task_status":

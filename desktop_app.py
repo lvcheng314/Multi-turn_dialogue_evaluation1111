@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import sys
+sys.dont_write_bytecode = True  # 禁止.pyc缓存，永远吃源码
+
 import os
 import socket
 import threading
