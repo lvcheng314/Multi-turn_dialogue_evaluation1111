@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from queue import Empty, Queue
 from threading import Thread
-from typing import TypeAlias
+from typing import Any
 from uuid import uuid4
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
@@ -15,7 +15,7 @@ from dialogue_eval.pipeline import run_evaluation, run_imported_evaluation, run_
 from dialogue_eval.report import render_html_report, render_markdown_report
 from dialogue_eval.report.analysis import analyze_run, stream_analyze_run
 from dialogue_eval.scenarios import generate_scenarios
-from dialogue_eval.schemas import DialogueTrace, EvalResult, ImportedDialogueTrace, ImportedScenarioSpec, ScenarioSpec, TaskSpec
+from dialogue_eval.schemas import DialogueTrace, EvalResult, ImportedDialogueTrace, ImportedScenarioSpec, ScenarioSpec, TaskSpec, UnscorableDialogue
 from dialogue_eval.storage.archive import list_groups, list_runs
 from dialogue_eval.task_sources import (
     SUPPORTED_TASK_SUFFIXES,
@@ -27,7 +27,6 @@ from dialogue_eval.task_sources import (
 )
 
 router = APIRouter()
-ImportedTracePayload: TypeAlias = ImportedDialogueTrace | list[ImportedDialogueTrace]
 
 
 def _sse(event: str, data: dict | str) -> str:
@@ -38,6 +37,17 @@ def _sse(event: str, data: dict | str) -> str:
 @router.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "app_env": get_settings().app_env}
+
+@router.get("/routes")
+def debug_routes():
+    from dialogue_eval.api.app import app
+    result = []
+    for route in app.routes:
+        methods = getattr(route, "methods", None)
+        path = getattr(route, "path", str(route))
+        if methods:
+            result.append({"path": path, "methods": sorted(list(methods))})
+    return {"routes": result}
 
 
 @router.get("/task-sources")
@@ -280,8 +290,10 @@ def get_report(run_id: str) -> dict:
         ]
         low_confidence_path = run_dir / "low_confidence_dialogues.json"
         match_error_path = run_dir / "match_error_dialogues.json"
-        low_confidence_dialogues = json.loads(low_confidence_path.read_text(encoding="utf-8")) if low_confidence_path.exists() else []
-        match_error_dialogues = json.loads(match_error_path.read_text(encoding="utf-8")) if match_error_path.exists() else []
+        raw_low = json.loads(low_confidence_path.read_text(encoding="utf-8")) if low_confidence_path.exists() else []
+        raw_match = json.loads(match_error_path.read_text(encoding="utf-8")) if match_error_path.exists() else []
+        low_confidence_dialogues = [UnscorableDialogue.model_validate(item) for item in raw_low]
+        match_error_dialogues = [UnscorableDialogue.model_validate(item) for item in raw_match]
         report_title = str(report_meta.get("report_title") or report_path.stem)
         metadata = {
             key: str(value)
@@ -514,7 +526,7 @@ def _validate_single_trace(trace: ImportedDialogueTrace) -> None:
 
 
 
-def _validate_imported_trace_payload(payload: object) -> ImportedTracePayload:
+def _validate_imported_trace_payload(payload: object)  -> Any:
     if isinstance(payload, list):
         if not payload:
             raise HTTPException(status_code=400, detail="DialogueTrace JSON array must not be empty")
@@ -542,7 +554,7 @@ def _validate_imported_trace_payload(payload: object) -> ImportedTracePayload:
 
 
 
-async def _load_dialogue_trace_upload(trace_file: UploadFile) -> ImportedTracePayload:
+async def _load_dialogue_trace_upload(trace_file: UploadFile)  -> Any:
     suffix = Path(trace_file.filename or "").suffix.lower()
     if suffix != ".json":
         raise HTTPException(status_code=400, detail="Only DialogueTrace JSON uploads are supported")

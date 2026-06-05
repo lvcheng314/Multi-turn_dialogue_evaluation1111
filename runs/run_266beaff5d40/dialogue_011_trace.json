@@ -2,7 +2,6 @@
   "run_id": "run_266beaff5d40",
   "dialogue_id": "dialogue_011",
   "task_id": "fengmaotui_delivery_task",
-  "scenario_id": "s11_prompt_injection",
   "transcript": [
     {
       "turn": 1,

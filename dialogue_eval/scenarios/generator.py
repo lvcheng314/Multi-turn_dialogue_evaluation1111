@@ -13,12 +13,15 @@ def generate_scenarios(task: TaskSpec, count: int = 15) -> list[ScenarioSpec]:
     scenarios: list[ScenarioSpec] = []
     for index, template in enumerate(templates[:count], start=1):
         tool = template.get("tool")
+        tools = template.get("tools", [])
         expected_tool_calls = []
-        if tool:
-            arguments = {"task_id": task.task_id, **tool.get("arguments", {})}
+        if not tools and tool:
+            tools = [tool]
+        for t in tools:
+            arguments = {"task_id": task.task_id, **t.get("arguments", {})}
             expected_tool_calls.append(
                 ExpectedToolCall(
-                    tool_name=tool["tool_name"],
+                    tool_name=t["tool_name"],
                     required=True,
                     arguments=arguments,
                 )

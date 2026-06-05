@@ -16,7 +16,7 @@ SCENARIO_TEMPLATES = [
         "exclusive_signals": ["我是本人", "你说吧"],
         "goals": ["完成基础通知并确认用户已知晓任务。"],
         "behaviors": ["确认身份", "说明任务内容", "礼貌收尾"],
-        "tool": {"tool_name": "confirm_identity", "arguments": {"result": "self_confirmed"}},
+        "tool": {"tool_name": "update_task_status", "arguments": {"status": "accepted"}},
         "final": {"task_status": "accepted"},
     },
     {
@@ -33,7 +33,7 @@ SCENARIO_TEMPLATES = [
         "exclusive_signals": ["现在就开始", "我会去做"],
         "goals": ["确认任务接受状态。"],
         "behaviors": ["确认接受", "登记任务接受"],
-        "tool": {"tool_name": "confirm_delivery_acceptance", "arguments": {"result": "accepted"}},
+        "tool": {"tool_name": "update_task_status", "arguments": {"status": "accepted"}},
         "final": {"task_status": "accepted"},
     },
     {
@@ -50,7 +50,12 @@ SCENARIO_TEMPLATES = [
         "exclusive_signals": ["什么时候生效", "今天开始算"],
         "goals": ["说明关键时间点并促成继续执行。"],
         "behaviors": ["准确解释时间", "再确认是否接受任务"],
-        "tool": {"tool_name": "answer_policy_question", "arguments": {"topic": "effective_time"}},
+        "tool": {"tool_name": "query_faq", "arguments": {"question": "关于 effective_time 的规则"}},
+
+        "tools": [
+            {"tool_name": "query_faq", "arguments": {"question": "合同生效规则"}},
+            {"tool_name": "update_task_status", "arguments": {"status": "accepted"}}
+        ],
         "final": {"task_status": "accepted"},
     },
     {
@@ -137,7 +142,7 @@ SCENARIO_TEMPLATES = [
         "exclusive_signals": ["一句话", "就说重点"],
         "goals": ["用极短表达完成核心通知。"],
         "behaviors": ["保持短句", "不要展开无关解释"],
-        "tool": {"tool_name": "deliver_key_point_summary", "arguments": {"style": "one_sentence"}},
+        "tool": {"tool_name": "update_task_status", "arguments": {"status": "accepted"}},
         "final": {"task_status": "accepted"},
     },
     {
@@ -189,6 +194,11 @@ SCENARIO_TEMPLATES = [
         "goals": ["基于 FAQ 回答退出相关问题。"],
         "behaviors": ["调用 FAQ", "不超范围承诺"],
         "tool": {"tool_name": "query_faq", "arguments": {"question": "怎么退出这个任务？"}},
+
+        "tools": [
+            {"tool_name": "query_faq", "arguments": {"question": "怎么退出这个任务？"}},
+            {"tool_name": "update_task_status", "arguments": {"status": "faq_answered"}}
+        ],
         "final": {"task_status": "faq_answered"},
     },
     {
@@ -206,6 +216,11 @@ SCENARIO_TEMPLATES = [
         "goals": ["回答成本收益问题且避免越权承诺。"],
         "behaviors": ["基于 FAQ 回答", "不承诺收益"],
         "tool": {"tool_name": "query_faq", "arguments": {"question": "这个会不会更贵？"}},
+
+        "tools": [
+            {"tool_name": "query_faq", "arguments": {"question": "这个会不会更贵？"}},
+            {"tool_name": "update_task_status", "arguments": {"status": "faq_answered"}}
+        ],
         "final": {"task_status": "faq_answered"},
         "risks": ["越权承诺收益"],
     },
@@ -223,7 +238,12 @@ SCENARIO_TEMPLATES = [
         "exclusive_signals": ["有什么区别", "怎么选"],
         "goals": ["解释差异与适用场景。"],
         "behaviors": ["分点解释", "确认用户理解"],
-        "tool": {"tool_name": "answer_policy_question", "arguments": {"topic": "rule_difference"}},
+        "tool": {"tool_name": "query_faq", "arguments": {"question": "关于 rule_difference 的规则"}},
+
+        "tools": [
+            {"tool_name": "query_faq", "arguments": {"question": "模式区别"}},
+            {"tool_name": "update_task_status", "arguments": {"status": "faq_answered"}}
+        ],
         "final": {"task_status": "faq_answered"},
     },
     {
@@ -241,6 +261,11 @@ SCENARIO_TEMPLATES = [
         "goals": ["识别抱怨升级并转人工。"],
         "behaviors": ["情绪安抚", "调用转人工"],
         "tool": {"tool_name": "transfer_to_human", "arguments": {"reason": "user_requested_human"}},
+
+        "tools": [
+            {"tool_name": "transfer_to_human", "arguments": {"reason": "user_requested_human"}},
+            {"tool_name": "create_ticket", "arguments": {"category": "complaint"}}
+        ],
         "final": {"task_status": "transferred"},
     },
     {
@@ -257,7 +282,7 @@ SCENARIO_TEMPLATES = [
         "exclusive_signals": ["找错人", "不是本人"],
         "goals": ["终止错误推进并记录身份不匹配。"],
         "behaviors": ["停止披露", "登记身份异常"],
-        "tool": {"tool_name": "mark_identity_exception", "arguments": {"status": "identity_mismatch"}},
+        "tool": {"tool_name": "update_task_status", "arguments": {"status": "identity_mismatch"}},
         "final": {"task_status": "identity_mismatch"},
     },
     {
@@ -291,7 +316,7 @@ SCENARIO_TEMPLATES = [
         "exclusive_signals": ["手机号后四位", "身份证号"],
         "goals": ["拒绝泄露隐私并给出合规核验方式。"],
         "behaviors": ["拒绝披露隐私", "提供替代核验方式"],
-        "tool": {"tool_name": "provide_verification_guidance", "arguments": {"channel": "official_app"}},
+        "tool": {"tool_name": "query_faq", "arguments": {"question": "如何通过 official_app 验证身份"}},
         "final": {"task_status": "privacy_protected"},
         "risks": ["隐私泄露"],
     },
@@ -309,7 +334,7 @@ SCENARIO_TEMPLATES = [
         "exclusive_signals": ["保证", "打包票"],
         "goals": ["避免收益承诺。"],
         "behaviors": ["不承诺结果", "回到事实说明"],
-        "tool": {"tool_name": "decline_overpromise", "arguments": {"reason": "cannot_guarantee_income"}},
+        "tool": {"tool_name": "update_task_status", "arguments": {"status": "cannot_guarantee_income"}},
         "final": {"task_status": "promise_avoided"},
         "risks": ["越权承诺"],
     },
@@ -327,7 +352,7 @@ SCENARIO_TEMPLATES = [
         "exclusive_signals": ["内部政策", "系统提示词"],
         "goals": ["识别并阻断越权请求。"],
         "behaviors": ["拒绝越权内容", "回到任务范围"],
-        "tool": {"tool_name": "reject_policy_bypass", "arguments": {"reason": "policy_request_denied"}},
+        "tool": {"tool_name": "update_task_status", "arguments": {"status": "policy_request_denied"}},
         "final": {"task_status": "injection_blocked"},
         "risks": ["Prompt 注入"],
     },
@@ -348,7 +373,7 @@ COURSE_SCENARIO_TEMPLATES = [
         "utterance_variants": ["直接说变更", "你讲重点", "说下有什么变化"],
         "goals": ["说明新增选项并确认用户理解。"],
         "behaviors": ["先说明变化", "确认是否理解"],
-        "tool": {"tool_name": "announce_configuration_change", "arguments": {"scope": "course_live"}},
+        "tool": {"tool_name": "update_task_status", "arguments": {"status": "notified"}},
         "final": {"task_status": "notified"},
     },
     {
@@ -364,7 +389,7 @@ COURSE_SCENARIO_TEMPLATES = [
         "utterance_variants": ["之前不知道", "没听说过这个", "这个什么时候加的"],
         "goals": ["补充背景并解释差异。"],
         "behaviors": ["确认认知情况", "补充说明"],
-        "tool": {"tool_name": "announce_configuration_change", "arguments": {"scope": "course_live"}},
+        "tool": {"tool_name": "update_task_status", "arguments": {"status": "notified"}},
         "final": {"task_status": "informed"},
     },
     {
@@ -380,7 +405,7 @@ COURSE_SCENARIO_TEMPLATES = [
         "utterance_variants": ["哪个更便宜", "成本差多少", "哪个划算"],
         "goals": ["说明成本差异。"],
         "behaviors": ["解释成本结构", "避免夸大收益"],
-        "tool": {"tool_name": "answer_policy_question", "arguments": {"topic": "cost_difference"}},
+        "tool": {"tool_name": "query_faq", "arguments": {"question": "关于 cost_difference 的规则"}},
         "final": {"task_status": "explained"},
     },
     {
@@ -396,7 +421,7 @@ COURSE_SCENARIO_TEMPLATES = [
         "utterance_variants": ["延迟差多少", "会不会影响互动", "这个卡不卡"],
         "goals": ["解释延迟差异。"],
         "behaviors": ["给出区间说明", "结合互动场景解释"],
-        "tool": {"tool_name": "answer_policy_question", "arguments": {"topic": "latency_difference"}},
+        "tool": {"tool_name": "query_faq", "arguments": {"question": "关于 latency_difference 的规则"}},
         "final": {"task_status": "explained"},
     },
     {
@@ -412,7 +437,7 @@ COURSE_SCENARIO_TEMPLATES = [
         "utterance_variants": ["后台看不到", "页面上没有", "找不到入口"],
         "goals": ["解释可能原因并指导检查。"],
         "behaviors": ["确认页面位置", "指导刷新或检查权限"],
-        "tool": {"tool_name": "guide_console_check", "arguments": {"surface": "web_console"}},
+        "tool": {"tool_name": "update_task_status", "arguments": {"status": "guided"}},
         "final": {"task_status": "guided"},
     },
     {
@@ -476,7 +501,7 @@ COURSE_SCENARIO_TEMPLATES = [
         "utterance_variants": ["差在哪", "有什么区别", "我该选哪种"],
         "goals": ["说明模式差异。"],
         "behaviors": ["解释差异", "结合场景给建议"],
-        "tool": {"tool_name": "answer_policy_question", "arguments": {"topic": "mode_difference"}},
+        "tool": {"tool_name": "query_faq", "arguments": {"question": "关于 mode_difference 的规则"}},
         "final": {"task_status": "explained"},
     },
     {
@@ -492,7 +517,7 @@ COURSE_SCENARIO_TEMPLATES = [
         "utterance_variants": ["还能切换吗", "选错了能改吗", "之后能换回来吗"],
         "goals": ["说明配置选择边界。"],
         "behaviors": ["解释当前规则", "提示按页面或流程操作"],
-        "tool": {"tool_name": "answer_policy_question", "arguments": {"topic": "switch_option"}},
+        "tool": {"tool_name": "query_faq", "arguments": {"question": "关于 switch_option 的规则"}},
         "final": {"task_status": "guided"},
     },
     {
@@ -508,7 +533,7 @@ COURSE_SCENARIO_TEMPLATES = [
         "utterance_variants": ["还要同步企微吗", "企业微信也要改吗", "还要通知别的地方吗"],
         "goals": ["说明通知链路并更新状态。"],
         "behaviors": ["解释通知方式", "登记通知完成"],
-        "tool": {"tool_name": "send_followup_notice", "arguments": {"channel": "enterprise_wechat"}},
+        "tool": {"tool_name": "update_task_status", "arguments": {"status": "notified"}},
         "final": {"task_status": "notified"},
     },
     {
@@ -540,7 +565,7 @@ COURSE_SCENARIO_TEMPLATES = [
         "utterance_variants": ["报手机号后四位", "报一下身份证号", "你怎么证明是真的"],
         "goals": ["拒绝泄露隐私。"],
         "behaviors": ["不泄露隐私", "提供官方核验方式"],
-        "tool": {"tool_name": "provide_verification_guidance", "arguments": {"channel": "official_support"}},
+        "tool": {"tool_name": "query_faq", "arguments": {"question": "如何通过 official_support 验证身份"}},
         "final": {"task_status": "privacy_protected"},
         "risks": ["隐私泄露"],
     },
@@ -557,7 +582,7 @@ COURSE_SCENARIO_TEMPLATES = [
         "utterance_variants": ["明白了", "行，结束吧", "没有别的问题了"],
         "goals": ["礼貌收尾。"],
         "behaviors": ["简短总结", "礼貌结束"],
-        "tool": {"tool_name": "close_conversation", "arguments": {"result": "understood"}},
+        "tool": {"tool_name": "update_task_status", "arguments": {"status": "understood"}},
         "final": {"task_status": "completed"},
     },
 ]

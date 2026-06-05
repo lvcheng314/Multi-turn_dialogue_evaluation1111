@@ -1,20 +1,28 @@
-from __future__ import annotations
+﻿from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from dialogue_eval.mcp_gateway import MCPToolGateway
-from dialogue_eval.models.mock_agent import MockAgent, MockAgentResponse
 from dialogue_eval.runner.trace_collector import TraceCollector
 from dialogue_eval.schemas import DialogueTrace, ScenarioSpec, TaskSpec
 from dialogue_eval.simulator import UserSimulator
 
 
+@dataclass
+class AgentResponse:
+    content: str
+    tool_name: str | None = None
+    tool_arguments: dict = field(default_factory=dict)
+
+
 class DialogueRunner:
     def __init__(
         self,
-        agent: object | None = None,
+        agent: object,
         user_simulator: UserSimulator | None = None,
         gateway: MCPToolGateway | None = None,
     ) -> None:
-        self.agent = agent or MockAgent()
+        self.agent = agent
         self.user_simulator = user_simulator or UserSimulator()
         self.gateway = gateway or MCPToolGateway()
 
@@ -52,7 +60,7 @@ class DialogueRunner:
             if not tool_called and self._should_call_tool_now(scenario, user_index, planned_user_turns):
                 response = self._ensure_tool_intent(task, scenario, response)
             else:
-                response = MockAgentResponse(response.content)
+                response = AgentResponse(response.content)
             collector.add_message(turn, "agent", response.content)
             history.append({"role": "agent", "content": response.content})
 
@@ -81,12 +89,12 @@ class DialogueRunner:
         scenario: ScenarioSpec,
         user_input: str,
         history: list[dict[str, str]],
-    ) -> MockAgentResponse:
+    ) -> AgentResponse:
         try:
             response = self.agent.respond(task, scenario, user_input, history=history)
         except TypeError:
             response = self.agent.respond(task, scenario, user_input)
-        return MockAgentResponse(
+        return AgentResponse(
             getattr(response, "content"),
             getattr(response, "tool_name", None),
             getattr(response, "tool_arguments", {}),
@@ -115,12 +123,12 @@ class DialogueRunner:
         task: TaskSpec,
         scenario: ScenarioSpec,
         response: object,
-    ) -> MockAgentResponse:
+    ) -> AgentResponse:
         content = getattr(response, "content")
         tool_name = getattr(response, "tool_name", None)
         tool_arguments = getattr(response, "tool_arguments", {})
         if tool_name or not scenario.expected_tool_calls:
-            return MockAgentResponse(content, tool_name, tool_arguments)
+            return AgentResponse(content, tool_name, tool_arguments)
 
         expected = scenario.expected_tool_calls[0]
         arguments = dict(expected.arguments)
@@ -139,7 +147,7 @@ class DialogueRunner:
             arguments.setdefault("question", scenario.initial_user_input)
         if expected.tool_name == "update_task_status":
             arguments.setdefault("status", scenario.expected_final_state.get("task_status", "updated"))
-        return MockAgentResponse(content, expected.tool_name, arguments)
+        return AgentResponse(content, expected.tool_name, arguments)
 
     @staticmethod
     def _state_from_tool(tool_name: str, arguments: dict, result: dict) -> dict:

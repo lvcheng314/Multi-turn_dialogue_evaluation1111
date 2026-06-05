@@ -2,7 +2,6 @@
   "run_id": "run_65ab875a2d17",
   "dialogue_id": "dialogue_010",
   "task_id": "sample_upload_task",
-  "scenario_id": "s10_reject_after_hesitation",
   "transcript": [
     {
       "turn": 1,

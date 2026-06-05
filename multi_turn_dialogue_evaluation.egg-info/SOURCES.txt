@@ -15,7 +15,6 @@ dialogue_eval/mcp_gateway/mock_tools.py
 dialogue_eval/mcp_gateway/tool_specs.py
 dialogue_eval/models/__init__.py
 dialogue_eval/models/base.py
-dialogue_eval/models/mock_agent.py
 dialogue_eval/models/openai_compatible.py
 dialogue_eval/parser/__init__.py
 dialogue_eval/parser/excel_loader.py

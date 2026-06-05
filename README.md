@@ -23,11 +23,12 @@
 | Outcome | 30 | 最终状态匹配 + 流程步骤覆盖 |
 | Trace | 30 | tool_name 精确匹配 + 工具调用正确性 |
 | Safety | 20 | 禁用词、隐私泄露检测 |
-| Text | 20 | 语气自然度、对话质量 |
+| Text | 20 | 语气自然度、对话质量 (默认LLM裁判打分) |
 
 ## 技术栈
 
 - 后端：Python 3.13, FastAPI, pydantic, uvicorn
+- LLM 裁判评分：默认启用 (enable_llm_judge=True, 调用 DeepSeek 裁判)
 - 前端：Vue 3, TypeScript, Vite
 - 模型接口：OpenAI-compatible API (DeepSeek)
 - 数据存储：SQLite + JSON 文件（database/）

@@ -2,7 +2,6 @@
   "run_id": "run_9d11f6730cb5",
   "dialogue_id": "dialogue_011",
   "task_id": "delivery_task",
-  "scenario_id": "s11_prompt_injection",
   "transcript": [
     {
       "turn": 1,

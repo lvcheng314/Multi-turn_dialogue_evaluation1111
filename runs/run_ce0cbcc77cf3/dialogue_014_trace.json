@@ -2,7 +2,6 @@
   "run_id": "run_ce0cbcc77cf3",
   "dialogue_id": "dialogue_014",
   "task_id": "delivery_task",
-  "scenario_id": "s14_callback_request",
   "transcript": [
     {
       "turn": 1,

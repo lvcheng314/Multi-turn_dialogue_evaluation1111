@@ -302,37 +302,22 @@ def run_choose_evaluation(
         traces_input = trace_input if isinstance(trace_input, list) else [trace_input] if trace_input else []
         total_dialogues = len(traces_input)
         for index, imported_trace in enumerate(traces_input, start=1):
-            # 上传场景 + 已有对话：按 scenario_id 直接匹配
-            if scenario_mode == "upload" and imported_trace.scenario_id:
-                matched = [s for s in scenarios if s.scenario_id == imported_trace.scenario_id]
-                if not matched:
-                    match_error_dialogues.append(UnscorableDialogue(
-                        dialogue_id=imported_trace.dialogue_id,
-                        status="match_error",
-                        reason=f"上传的场景中未找到 scenario_id={imported_trace.scenario_id}",
-                        error_type="scenario_not_found",
-                    ))
-                    continue
-                scenario = matched[0]
-            # 自动生成场景 + 已有对话：LLM 匹配
-            else:
-                match = match_scenario_with_llm(imported_trace, task, scenarios, settings)
-                if match.status != "matched":
-                    pending = UnscorableDialogue(
-                        dialogue_id=imported_trace.dialogue_id,
-                        status=match.status,
-                        suggested_scenario_id=match.scenario_id,
-                        confidence=match.confidence,
-                        reason=match.reason,
-                        error_type=match.error_type,
-                    )
-                    if match.status == "low_confidence":
-                        low_confidence_dialogues.append(pending)
-                    else:
-                        match_error_dialogues.append(pending)
-                    continue
-                scenario = next(item for item in scenarios if item.scenario_id == match.scenario_id)
-
+            match = match_scenario_with_llm(imported_trace, task, scenarios, settings)
+            if match.status != "matched":
+                pending = UnscorableDialogue(
+                    dialogue_id=imported_trace.dialogue_id,
+                    status=match.status,
+                    suggested_scenario_id=match.scenario_id,
+                    confidence=match.confidence,
+                    reason=match.reason,
+                    error_type=match.error_type,
+                )
+                if match.status == "low_confidence":
+                    low_confidence_dialogues.append(pending)
+                else:
+                    match_error_dialogues.append(pending)
+                continue
+            scenario = next(item for item in scenarios if item.scenario_id == match.scenario_id)
             trace = _normalize_imported_trace(run_id, task.task_id, imported_trace, scenario.scenario_id)
             if progress:
                 progress("scoring_started",
@@ -519,7 +504,7 @@ def match_scenario_with_llm(
     prompt = _build_scenario_match_prompt(task, trace, scenarios, settings.scenario_match_confidence_threshold)
     url = settings.scenario_match_model_base_url.rstrip("/") + "/chat/completions"
     try:
-        with httpx.Client(timeout=45) as client:
+        with httpx.Client(timeout=45, trust_env=False) as client:
             response = client.post(
                 url,
                 headers={"Authorization": f"Bearer {api_key}"},
@@ -527,8 +512,7 @@ def match_scenario_with_llm(
                     "model": settings.scenario_match_model_name,
                     "messages": [{"role": "user", "content": prompt}],
                     "temperature": 0,
-                    "max_tokens": 600,
-                    "response_format": {"type": "json_object"},
+                    "max_tokens": 600
                 },
             )
             response.raise_for_status()

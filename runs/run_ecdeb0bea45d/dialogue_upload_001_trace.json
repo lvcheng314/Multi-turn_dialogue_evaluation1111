@@ -2,7 +2,6 @@
   "run_id": "run_ecdeb0bea45d",
   "dialogue_id": "dialogue_upload_001",
   "task_id": "sample_upload_task",
-  "scenario_id": "s15_status_update",
   "transcript": [
     {
       "turn": 1,
