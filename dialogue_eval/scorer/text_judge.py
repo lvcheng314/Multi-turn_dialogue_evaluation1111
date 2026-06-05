@@ -5,12 +5,62 @@ import json
 import httpx
 
 from dialogue_eval.config import Settings, get_settings
+import os
+import torch
+from transformers import BertTokenizer, BertForSequenceClassification
+
 from dialogue_eval.schemas import DialogueTrace, Evidence, ScoringConfig, TaskSpec
 
 
 class TextJudgeScorer:
-    def __init__(self, settings: Settings | None = None) -> None:
+    def __init__(self, settings=None) -> None:
         self.settings = settings or get_settings()
+        self._bert_model = None
+        self._bert_tokenizer = None
+        self._bert_device = None
+
+    def _load_bert(self):
+        model_path = "saved_model/bert_text_scorer"
+        if os.path.exists(model_path) and os.path.exists(os.path.join(model_path, "pytorch_model.bin")):
+            try:
+                self._bert_model = BertForSequenceClassification.from_pretrained(model_path)
+                self._bert_tokenizer = BertTokenizer.from_pretrained(model_path)
+                self._bert_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+                self._bert_model.to(self._bert_device)
+                self._bert_model.eval()
+                return True
+            except Exception:
+                return False
+        return False
+
+    def _trace_to_text(self, trace):
+        turns = [f"{m.role}: {m.content}" for m in trace.transcript]
+        return " | ".join(turns)
+
+    def _score_with_bert(self, trace):
+        if self._bert_model is None:
+            self._load_bert()
+        if self._bert_model is None:
+            return self._score_with_rules(trace)
+
+        text = self._trace_to_text(trace)
+        if not text.strip():
+            return 0.0, [Evidence(type="turn", comment="Empty transcript", rule_id="text.bert_empty")]
+        try:
+            enc = self._bert_tokenizer(
+                text, max_length=512, truncation=True, padding=True,
+                return_tensors="pt"
+            )
+            enc = {k: v.to(self._bert_device) for k, v in enc.items()}
+            with torch.no_grad():
+                score = self._bert_model(**enc).logits.item()
+            score = max(0.0, min(20.0, round(score, 2)))
+            return score, [Evidence(
+                type="turn", comment=f"BERT文本评分: {score}/20",
+                rule_id="text.bert_judge"
+            )]
+        except Exception as e:
+            return self._score_with_rules(trace)
 
     def score(
         self,
@@ -20,7 +70,7 @@ class TextJudgeScorer:
     ) -> tuple[float, list[Evidence]]:
         if config and config.enable_llm_judge:
             return self._score_with_llm(task, trace)
-        return self._score_with_rules(task, trace)
+        return self._score_with_bert(trace)
 
     def _score_with_rules(self, task: TaskSpec, trace: DialogueTrace) -> tuple[float, list[Evidence]]:
         agent_messages = [message for message in trace.transcript if message.role == "agent"]
