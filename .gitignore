@@ -44,5 +44,3 @@ database/*.sqlite3-shm
 database/run_*/
 database/custom_tasks/
 
-# Model weights (require training)
-saved_model/
