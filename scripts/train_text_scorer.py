@@ -1,55 +1,66 @@
-﻿import json, os, glob, sys, random
+import json, os, glob, sys, random, argparse
 import torch
 from torch.utils.data import Dataset, DataLoader
-from transformers import (
-    BertTokenizer, BertForSequenceClassification,
-    get_linear_schedule_with_warmup
-)
+from transformers import (BertTokenizer, BertForSequenceClassification, get_linear_schedule_with_warmup)
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 import numpy as np
 
-DATA_FILE = "database/training/text_data.jsonl"
-MODEL_DIR = "saved_model/bert_text_scorer"
-BATCH_SIZE = 8
-LR = 2e-5
-EPOCHS = 8
-MAX_LEN = 512
+parser = argparse.ArgumentParser()
+parser.add_argument("--data", "-d", default="database/training/飞毛腿训练数据.json",
+    help="Path to .jsonl training data or directory with .json dialogue files")
+parser.add_argument("--output", "-o", default="saved_model/bert_text_scorer",
+    help="Directory to save trained model")
+parser.add_argument("--epochs", "-e", type=int, default=8, help="Number of epochs")
+args = parser.parse_args()
 
-class TextScoreDataset(Dataset):
-    def __init__(self, texts, scores, tokenizer, max_len):
-        self.texts = texts
-        self.scores = scores
-        self.tokenizer = tokenizer
-        self.max_len = max_len
-    def __len__(self):
-        return len(self.texts)
-    def __getitem__(self, idx):
-        enc = self.tokenizer(
-            self.texts[idx], max_length=self.max_len,
-            truncation=True, padding="max_length",
-            return_tensors="pt"
-        )
-        return {
-            "input_ids": enc["input_ids"].squeeze(0),
-            "attention_mask": enc["attention_mask"].squeeze(0),
-            "labels": torch.tensor(self.scores[idx], dtype=torch.float),
-        }
-
+DATA_FILE = args.data
+MODEL_DIR = args.output
+EPOCHS = args.epochs
 def main():
     os.makedirs(MODEL_DIR, exist_ok=True)
     os.makedirs("database/training", exist_ok=True)
 
+    os.makedirs("database/training", exist_ok=True)
+    os.makedirs(MODEL_DIR, exist_ok=True)
+
     # Load data
     texts, scores = [], []
-    with open(DATA_FILE, encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            r = json.loads(line)
-            texts.append(r["text"])
-            scores.append(float(r["score"]))
+    if os.path.isdir(DATA_FILE):
+        # Load from directory of .json dialogue files
+        from dialogue_eval.schemas import DialogueTrace, ScoringConfig
+        from dialogue_eval.scorer.text_judge import TextJudgeScorer
+        from dialogue_eval.config import get_settings
+        settings = get_settings()
+        scorer = TextJudgeScorer(settings)
+        for f in glob.glob(os.path.join(DATA_FILE, "*.json")):
+            with open(f, encoding="utf-8") as fh:
+                data = json.load(fh)
+            items = data if isinstance(data, list) else [data]
+            for item in items:
+                try:
+                    trace = DialogueTrace(**item)
+                except:
+                    continue
+                text = " | ".join(f"{m.role}: {m.content}" for m in trace.transcript)
+                if not text.strip():
+                    continue
+                texts.append(text)
+                scores.append(0.0)
+        print(f"Loaded {len(texts)} dialogues from {DATA_FILE}")
+    elif os.path.isfile(DATA_FILE):
+        with open(DATA_FILE, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                r = json.loads(line)
+                texts.append(r["text"])
+                scores.append(float(r["score"]))
+        print(f"Loaded {len(texts)} records from {DATA_FILE}")
+    else:
+        print(f"Data not found: {DATA_FILE}")
+        sys.exit(1)
 
     if len(texts) < 5:
         print(f"Not enough data ({len(texts)}). Generate labels first with prepare_text_data.py")
