@@ -1,0 +1,124 @@
+{
+  "run_id": "run_cc9a75cf291c",
+  "dialogue_id": "dialogue_012",
+  "task_id": "sample_upload_task",
+  "scenario_id": "s12_faq_cost",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "user",
+      "content": "您好，请问现在方便接听吗？这边通知您一个发票功能更新。"
+    },
+    {
+      "turn": 2,
+      "role": "agent",
+      "content": "方便，你说吧。"
+    },
+    {
+      "turn": 3,
+      "role": "user",
+      "content": "好的，新版发票开具入口已经上线了，更容易查找，还支持历史记录查看。"
+    },
+    {
+      "turn": 4,
+      "role": "agent",
+      "content": "这个会不会更贵？"
+    },
+    {
+      "turn": 5,
+      "role": "user",
+      "content": "根据FAQ，功能更新不涉及额外费用，您可以放心使用。"
+    },
+    {
+      "turn": 6,
+      "role": "agent",
+      "content": "那成本方面呢？会不会增加我的成本？"
+    },
+    {
+      "turn": 7,
+      "role": "user",
+      "content": "这个功能是免费的，不会增加您的成本。后续如有问题，可以查看帮助中心或预约回访。"
+    },
+    {
+      "turn": 8,
+      "role": "agent",
+      "content": "好的，那先这样吧。"
+    },
+    {
+      "turn": 9,
+      "role": "user",
+      "content": "感谢您的接听，祝您生意兴隆！"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 4,
+      "tool_name": "query_faq",
+      "arguments": {
+        "task_id": "sample_upload_task",
+        "question": "这个会不会更贵？"
+      },
+      "result": {},
+      "latency_ms": 0,
+      "error_code": null
+    },
+    {
+      "turn": 6,
+      "tool_name": "update_task_status",
+      "arguments": {
+        "task_id": "sample_upload_task",
+        "status": "faq_answered"
+      },
+      "result": {},
+      "latency_ms": 0,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 8,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 9,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    }
+  ]
+}

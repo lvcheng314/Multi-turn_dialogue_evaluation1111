@@ -28,6 +28,7 @@ from dialogue_eval.schemas import (
 from dialogue_eval.scorer import ScorerSkill
 from dialogue_eval.storage import RunStore
 from dialogue_eval.storage.archive import archive_run
+from dialogue_eval.scorer.speaker import likely_agent_role
 
 
 def run_evaluation(
@@ -470,6 +471,7 @@ def _normalize_imported_trace(
 ) -> DialogueTrace:
     """标准化导入对话。"""
     transcript = sorted(trace_input.transcript, key=lambda message: message.turn)
+    transcript = _normalize_transcript_roles(transcript)
     state_trace = trace_input.state_trace or _infer_state_trace_from_transcript(transcript)
     if state_trace:
         final_status = state_trace[-1].get("task_status")
@@ -483,6 +485,31 @@ def _normalize_imported_trace(
         tool_calls=trace_input.tool_calls,
         state_trace=state_trace,
     )
+
+
+def _normalize_transcript_roles(transcript) -> list:
+    probe = DialogueTrace(
+        run_id="probe",
+        dialogue_id="probe",
+        task_id="probe",
+        scenario_id="probe",
+        transcript=transcript,
+        tool_calls=[],
+        state_trace=[],
+    )
+    if likely_agent_role(probe) == "agent":
+        return transcript
+
+    normalized = []
+    for message in transcript:
+        normalized.append(
+            message.model_copy(
+                update={
+                    "role": "agent" if message.role == "user" else "user" if message.role == "agent" else message.role
+                }
+            )
+        )
+    return normalized
 
 
 def match_scenario_with_llm(

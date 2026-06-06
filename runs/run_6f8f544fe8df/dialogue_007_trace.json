@@ -1,0 +1,63 @@
+{
+  "run_id": "run_6f8f544fe8df",
+  "dialogue_id": "dialogue_007",
+  "task_id": "sample_upload_task",
+  "scenario_id": "s07_callback_request_night",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "agent",
+      "content": "您好，请问现在方便接听吗？这边通知您一个发票功能更新。"
+    },
+    {
+      "turn": 2,
+      "role": "user",
+      "content": "嗯，现在不太方便，能晚上8点再打吗？"
+    },
+    {
+      "turn": 3,
+      "role": "agent",
+      "content": "好的，没问题。我记一下，晚上8点再联系您。那先不打扰了，晚上见。"
+    },
+    {
+      "turn": 4,
+      "role": "user",
+      "content": "好的，谢谢，晚上8点等您电话。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 2,
+      "tool_name": "schedule_callback",
+      "arguments": {
+        "task_id": "sample_upload_task",
+        "preferred_time": "20:00"
+      },
+      "result": {},
+      "latency_ms": 0,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "run_id": "run_f6fdd0494fe6",
+  "dialogue_id": "dialogue_012",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "s12_faq_cost",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "user",
+      "content": "你好，请问是张师傅吗？我是站长。看到你已报名飞毛腿，今天合同已生效，午晚高峰需要上线配送。"
+    },
+    {
+      "turn": 2,
+      "role": "agent",
+      "content": "站长你好，是我。合同生效了是吧？那配送的话，这个会不会更贵啊？"
+    },
+    {
+      "turn": 3,
+      "role": "user",
+      "content": "这个您放心，费用方面和之前一样，没有变化。您看今天能上线配送吗？"
+    },
+    {
+      "turn": 4,
+      "role": "agent",
+      "content": "真的没变化吗？我再确认一下，会不会有隐藏费用？"
+    },
+    {
+      "turn": 5,
+      "role": "user",
+      "content": "没有隐藏费用，合同条款都写得很清楚。您愿意配送的话，注意安全，按时完成就好。"
+    },
+    {
+      "turn": 6,
+      "role": "agent",
+      "content": "那好吧，我今天上线。不过如果完不成任务会怎样？"
+    },
+    {
+      "turn": 7,
+      "role": "user",
+      "content": "如果未完成，合同和派单可能受影响。名额按排名分配，尽量少拒单、取消和超时。"
+    },
+    {
+      "turn": 8,
+      "role": "agent",
+      "content": "明白了，我会注意的。那就这样吧，谢谢站长。"
+    },
+    {
+      "turn": 9,
+      "role": "user",
+      "content": "好的，祝您配送顺利，再见！"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 2,
+      "tool_name": "query_faq",
+      "arguments": {
+        "task_id": "fengmaotui_delivery_task",
+        "question": "这个会不会更贵？"
+      },
+      "result": {},
+      "latency_ms": 0,
+      "error_code": null
+    },
+    {
+      "turn": 6,
+      "tool_name": "update_task_status",
+      "arguments": {
+        "task_id": "fengmaotui_delivery_task",
+        "status": "faq_answered"
+      },
+      "result": {},
+      "latency_ms": 0,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 8,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 9,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    }
+  ]
+}

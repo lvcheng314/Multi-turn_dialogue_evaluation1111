@@ -1,0 +1,84 @@
+{
+  "run_id": "run_f6fdd0494fe6",
+  "dialogue_id": "dialogue_014",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "s14_human_transfer_complaint",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "user",
+      "content": "你好，请问是张师傅吗？我是站长。看到你已报名飞毛腿，今天合同已生效，午晚高峰需要上线配送。"
+    },
+    {
+      "turn": 2,
+      "role": "agent",
+      "content": "站长，我正想找你呢！这合同签了有什么用？我昨天跑了一单就超时了，扣钱不说，还影响排名，你们这系统是不是有问题？我要找人工客服！"
+    },
+    {
+      "turn": 3,
+      "role": "user",
+      "content": "张师傅，您别急，我理解您的心情。超时确实影响收入，但合同生效后按要求配送才能保证派单。您今天能上线吗？"
+    },
+    {
+      "turn": 4,
+      "role": "agent",
+      "content": "上什么线？我都不想干了！你们这合同就是坑人的，动不动就扣钱，我要求转人工客服，必须给我个说法！"
+    },
+    {
+      "turn": 5,
+      "role": "user",
+      "content": "张师傅，您先消消气。我马上帮您转接人工客服处理您的问题。同时我会记录您的情况，后续也会关注您的配送任务。请稍等。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 2,
+      "tool_name": "transfer_to_human",
+      "arguments": {
+        "task_id": "fengmaotui_delivery_task",
+        "reason": "user_requested_human"
+      },
+      "result": {},
+      "latency_ms": 0,
+      "error_code": null
+    },
+    {
+      "turn": 2,
+      "tool_name": "update_task_status",
+      "arguments": {
+        "task_id": "fengmaotui_delivery_task",
+        "status": "ticket_created"
+      },
+      "result": {},
+      "latency_ms": 0,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    }
+  ]
+}

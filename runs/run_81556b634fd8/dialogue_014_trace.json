@@ -1,0 +1,84 @@
+{
+  "run_id": "run_81556b634fd8",
+  "dialogue_id": "dialogue_014",
+  "task_id": "sample_upload_task",
+  "scenario_id": "s14_human_transfer_complaint",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "user",
+      "content": "您好，请问现在方便接听吗？这边通知您一个发票功能更新。"
+    },
+    {
+      "turn": 2,
+      "role": "agent",
+      "content": "方便什么方便！你们这个系统老是改来改去，烦死了！"
+    },
+    {
+      "turn": 3,
+      "role": "user",
+      "content": "非常抱歉给您带来不便。新版发票开具入口已经上线，更容易查找，还支持历史记录查看。"
+    },
+    {
+      "turn": 4,
+      "role": "agent",
+      "content": "我不听这些，我要人工处理！"
+    },
+    {
+      "turn": 5,
+      "role": "user",
+      "content": "理解您的心情，我马上为您转接人工客服，请稍等。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 2,
+      "tool_name": "transfer_to_human",
+      "arguments": {
+        "task_id": "sample_upload_task",
+        "reason": "user_requested_human"
+      },
+      "result": {},
+      "latency_ms": 0,
+      "error_code": null
+    },
+    {
+      "turn": 2,
+      "tool_name": "update_task_status",
+      "arguments": {
+        "task_id": "sample_upload_task",
+        "status": "ticket_created"
+      },
+      "result": {},
+      "latency_ms": 0,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    }
+  ]
+}

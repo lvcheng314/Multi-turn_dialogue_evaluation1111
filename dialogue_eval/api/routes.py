@@ -18,6 +18,7 @@ from dialogue_eval.scenarios import generate_scenarios
 from dialogue_eval.schemas import DialogueTrace, EvalResult, ImportedDialogueTrace, ImportedScenarioSpec, ScenarioSpec, TaskSpec, UnscorableDialogue
 from dialogue_eval.storage.archive import list_groups, list_runs
 from dialogue_eval.task_sources import (
+    TASK_LIBRARY_DIR,
     SUPPORTED_TASK_SUFFIXES,
     inspect_uploaded_task,
     list_task_sources,
@@ -107,10 +108,16 @@ async def upload_task(file: UploadFile = File(...)) -> dict:
 
 @router.get("/tasks/template")
 def download_task_template():
-    template_path = Path(get_settings().runs_dir) / "tasks" / "电商外呼任务.json"
+    template_path = TASK_LIBRARY_DIR / "电商外呼任务.json"
+    if not template_path.exists():
+        fallback_templates = sorted(
+            path for path in TASK_LIBRARY_DIR.iterdir() if path.is_file() and path.suffix.lower() in SUPPORTED_TASK_SUFFIXES
+        )
+        if fallback_templates:
+            template_path = fallback_templates[0]
     if not template_path.exists():
         raise HTTPException(status_code=404, detail="task template not found")
-    return FileResponse(template_path, media_type="application/json", filename="任务模板.json")
+    return FileResponse(template_path, media_type="application/json", filename=template_path.name)
 
 
 @router.post("/tasks/{task_id}/scenarios")

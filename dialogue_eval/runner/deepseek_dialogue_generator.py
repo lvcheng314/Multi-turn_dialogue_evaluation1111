@@ -6,6 +6,7 @@ from dialogue_eval.config import Settings
 from dialogue_eval.mcp_gateway.tool_specs import default_tool_specs
 from dialogue_eval.models.openai_compatible import OpenAICompatibleAgent
 from dialogue_eval.schemas import ChatMessage, DialogueTrace, ScenarioSpec, TaskSpec, ToolCallTrace
+from dialogue_eval.scorer.speaker import likely_agent_role
 
 
 class DeepSeekDialogueGenerator:
@@ -55,6 +56,7 @@ class DeepSeekDialogueGenerator:
         ]
         if not transcript:
             raise RuntimeError(f"DeepSeek returned empty transcript: {content}")
+        transcript = _normalize_transcript_roles(transcript)
 
         final_status = scenario.expected_final_state.get("task_status", payload.get("final_status", "completed"))
         # Auto-generate tool_calls from scenario if model didn't
@@ -239,3 +241,28 @@ def _nearest_agent_turn(transcript: list[ChatMessage]) -> int:
         if message.role == "agent":
             return message.turn
     return transcript[-1].turn if transcript else 1
+
+
+def _normalize_transcript_roles(transcript: list[ChatMessage]) -> list[ChatMessage]:
+    probe = DialogueTrace(
+        run_id="probe",
+        dialogue_id="probe",
+        task_id="probe",
+        scenario_id="probe",
+        transcript=transcript,
+        tool_calls=[],
+        state_trace=[],
+    )
+    if likely_agent_role(probe) == "agent":
+        return transcript
+
+    normalized: list[ChatMessage] = []
+    for message in transcript:
+        normalized.append(
+            ChatMessage(
+                turn=message.turn,
+                role="agent" if message.role == "user" else "user" if message.role == "agent" else message.role,
+                content=message.content,
+            )
+        )
+    return normalized

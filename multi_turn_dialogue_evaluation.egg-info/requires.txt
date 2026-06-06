@@ -9,7 +9,7 @@ pydantic-settings>=2.5.2
 pytest>=8.3.3
 typer>=0.12.5
 uvicorn>=0.30.6
-scikit-learn>=1.9.0
+scikit-learn<1.9.0,>=1.8.0
 tqdm>=4.67.3
 
 [build]

@@ -81,7 +81,7 @@ sequenceDiagram
 
 | 层级 | 技术 |
 |-------|------------|
-| 后端 | Python 3.13, FastAPI, Pydantic v2, Uvicorn |
+| 后端 | Python 3.12-3.13, FastAPI, Pydantic v2, Uvicorn |
 | LLM 接口 | OpenAI-compatible API (DeepSeek) |
 | LLM 裁判 | 可选：调用 DeepSeek 进行文本质量评分 |
 | 前端 | Vue 3, TypeScript, Vite |

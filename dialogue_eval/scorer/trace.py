@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dialogue_eval.schemas import DialogueTrace, Evidence, ScenarioSpec, ToolTraceCheck
+from dialogue_eval.scorer.speaker import speaker_messages
 
 
 TRACE_MAX_SCORE = 30.0
@@ -122,16 +123,24 @@ def _check(name: str, passed: bool, turn: int | None, reason: str) -> ToolTraceC
 
 def _check_human_transfer_sequence(trace: DialogueTrace, tool_turn: int) -> tuple[bool, int | None, str]:
     """检查转人工前是否有承接。"""
-    agent_messages = [message for message in trace.transcript if message.role == "agent" and message.turn <= tool_turn]
+    agent_messages = [message for message in speaker_messages(trace, "agent") if message.turn <= tool_turn]
     if not agent_messages:
         return False, None, "转人工前缺少数字人回复，未做到先安抚/承接再转接。"
 
     message = agent_messages[-1]
     content = message.content
-    has_ack = any(keyword in content for keyword in ["理解", "好的", "抱歉", "稍等", "马上"])
-    has_transfer = any(keyword in content for keyword in ["转人工", "人工", "客服"])
-    has_bridge = any(keyword in content for keyword in ["帮您", "为您", "处理", "转接", "安排"])
-    passed = has_ack and has_transfer and has_bridge
+    has_ack = any(keyword in content for keyword in ["理解", "好的", "抱歉", "收到", "明白", "马上", "稍等"])
+    has_transfer = any(keyword in content for keyword in ["转人工", "人工", "客服", "转接"])
+    has_bridge = any(keyword in content for keyword in ["帮您", "为您", "处理", "转接", "安排", "联系"])
+    user_messages = [message for message in speaker_messages(trace, "user") if message.turn <= tool_turn]
+    immediate_transfer_requested = any(
+        any(keyword in message.content for keyword in ["转人工", "人工客服", "别跟我说了", "不要机器人"])
+        for message in user_messages[-2:]
+    )
+    if immediate_transfer_requested:
+        passed = has_transfer and (has_ack or has_bridge)
+    else:
+        passed = has_ack and has_transfer and has_bridge
     if passed:
-        return True, message.turn, "转人工前已先安抚/承接，再调用工具。"
-    return False, message.turn, "转人工前未体现完整承接动作。"
+        return True, message.turn, "转人工前已完成必要承接并明确转接。"
+    return False, message.turn, "转人工前未体现必要承接或未明确说明转接。"

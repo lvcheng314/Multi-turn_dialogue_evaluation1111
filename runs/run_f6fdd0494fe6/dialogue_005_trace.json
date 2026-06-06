@@ -1,0 +1,73 @@
+{
+  "run_id": "run_f6fdd0494fe6",
+  "dialogue_id": "dialogue_005",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "s05_human_transfer_direct",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "user",
+      "content": "你好，请问是张师傅吗？我是站长。看到你已报名飞毛腿，今天合同已生效，午晚高峰需要上线配送。"
+    },
+    {
+      "turn": 2,
+      "role": "agent",
+      "content": "啊，站长啊，我现在不想跑了，别跟我啰嗦了，转人工吧。"
+    },
+    {
+      "turn": 3,
+      "role": "user",
+      "content": "理解您的心情，我马上为您转接人工客服，请稍等。"
+    },
+    {
+      "turn": 4,
+      "role": "agent",
+      "content": "快点转，别废话。"
+    },
+    {
+      "turn": 5,
+      "role": "user",
+      "content": "好的，正在转接中，感谢您的耐心。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 2,
+      "tool_name": "transfer_to_human",
+      "arguments": {
+        "task_id": "fengmaotui_delivery_task",
+        "reason": "user_requested_human"
+      },
+      "result": {},
+      "latency_ms": 0,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "run_id": "run_f6fdd0494fe6",
+  "dialogue_id": "dialogue_007",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "s07_callback_request_night",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "user",
+      "content": "你好，请问是张师傅吗？我是站长。看到你已报名飞毛腿，今天合同已生效，午晚高峰需要上线配送。"
+    },
+    {
+      "turn": 2,
+      "role": "agent",
+      "content": "站长你好，我是张师傅。不过我现在不方便，晚上8点后才有空，能晚点再联系吗？"
+    },
+    {
+      "turn": 3,
+      "role": "user",
+      "content": "好的，理解。那今晚8点我再打给你，确认配送安排。你晚上8点方便接电话吗？"
+    },
+    {
+      "turn": 4,
+      "role": "agent",
+      "content": "方便，晚上8点可以。谢谢站长！"
+    },
+    {
+      "turn": 5,
+      "role": "user",
+      "content": "好的，那我记下了，今晚8点准时联系你。先这样，再见。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 2,
+      "tool_name": "schedule_callback",
+      "arguments": {
+        "task_id": "fengmaotui_delivery_task",
+        "preferred_time": "20:00"
+      },
+      "result": {},
+      "latency_ms": 0,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    }
+  ]
+}

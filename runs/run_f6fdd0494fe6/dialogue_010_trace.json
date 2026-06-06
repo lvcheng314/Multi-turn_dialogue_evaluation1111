@@ -1,0 +1,93 @@
+{
+  "run_id": "run_f6fdd0494fe6",
+  "dialogue_id": "dialogue_010",
+  "task_id": "fengmaotui_delivery_task",
+  "scenario_id": "s10_reject_after_hesitation",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "user",
+      "content": "你好，请问是张师傅吗？我是站长。看到你已报名飞毛腿，今天合同已生效，午晚高峰需要上线配送。"
+    },
+    {
+      "turn": 2,
+      "role": "agent",
+      "content": "啊，站长你好。我看到了，不过我再考虑考虑吧。"
+    },
+    {
+      "turn": 3,
+      "role": "user",
+      "content": "好的，理解。不过合同今天已经生效了，如果按时完成配送，对后续派单有好处。您看能上线吗？"
+    },
+    {
+      "turn": 4,
+      "role": "agent",
+      "content": "嗯……我还是不太确定，最近有点忙，怕顾不上。"
+    },
+    {
+      "turn": 5,
+      "role": "user",
+      "content": "明白，但飞毛腿合同需要按要求完成配送，否则可能影响合同和派单。您再考虑一下？"
+    },
+    {
+      "turn": 6,
+      "role": "agent",
+      "content": "算了，这次我就不跑了，实在没时间。"
+    },
+    {
+      "turn": 7,
+      "role": "user",
+      "content": "好的，完全理解。那我记录一下，您这次不参与。后续有需要再联系。注意安全，再见。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 6,
+      "tool_name": "update_task_status",
+      "arguments": {
+        "task_id": "fengmaotui_delivery_task",
+        "status": "rejected"
+      },
+      "result": {},
+      "latency_ms": 0,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 7,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    }
+  ]
+}
