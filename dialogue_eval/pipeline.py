@@ -12,7 +12,7 @@ from dialogue_eval.config import Settings, get_settings
 from dialogue_eval.parser import load_task
 from dialogue_eval.report import render_html_report, render_markdown_report
 from dialogue_eval.report.markdown import build_report_identity
-from dialogue_eval.runner.deepseek_dialogue_generator import DeepSeekDialogueGenerator
+from dialogue_eval.runner.deepseek_dialogue_generator import DeepSeekDialogueGenerator, _align_tool_turn
 from dialogue_eval.scenarios import generate_scenarios
 from dialogue_eval.schemas import (
     DialogueTrace,
@@ -39,6 +39,8 @@ def run_evaluation(
     progress: Callable[[str, dict | None], None] | None = None,
 ) -> RunSummary:
     """执行模型生成对话评测。"""
+    # Default flow: generate scenarios, simulate dialogues, score them, then
+    # persist reports and archive metadata for the run.
     settings = settings or get_settings()
     task = load_task(task_path)
     scenario_count = scenarios_count or settings.scenario_count
@@ -118,6 +120,8 @@ def run_imported_evaluation(
     progress: Callable[[str, dict | None], None] | None = None,
 ) -> RunSummary:
     """执行导入对话评测。"""
+    # Imported traces reuse the same scoring pipeline, but they first need to
+    # be matched to a concrete scenario and rubric context.
     settings = settings or get_settings()
     task = load_task(task_path)
     scenarios = generate_scenarios(task, settings.scenario_count)
@@ -146,6 +150,8 @@ def run_imported_evaluation(
         match = match_scenario_with_llm(imported_trace, task, scenarios, settings)
         matches.append(match)
         if match.status != "matched":
+            # Keep unmatched traces in artifacts so operators can review them
+            # manually instead of silently dropping them from the run.
             pending = UnscorableDialogue(
                 dialogue_id=imported_trace.dialogue_id,
                 status=match.status,
@@ -238,6 +244,8 @@ def run_choose_evaluation(
       - "generate": 用大模型逐次模拟对话
       - "import":   使用上传的对话数据
     """
+    # The UI can mix generated/uploaded scenarios and dialogues, so this entry
+    # point keeps those combinations behind one orchestration function.
     settings = settings or get_settings()
     task = load_task(task_path)
     scenario_count = scenarios_count or settings.scenario_count
@@ -373,6 +381,8 @@ def run_choose_evaluation(
 
 def _imported_scenario_to_spec(imported: ImportedScenarioSpec, task_id: str) -> ScenarioSpec:
     """将上传的场景数据转为标准的 ScenarioSpec。"""
+    # Normalize uploaded scenarios once here so downstream code can assume the
+    # internal ScenarioSpec shape regardless of source.
     return ScenarioSpec(
         scenario_id=imported.scenario_id,
         task_id=task_id,
@@ -413,6 +423,8 @@ def _finalize_run(
 ) -> RunSummary:
     """收尾并生成报告。"""
     store.write_json(run_id, "results.json", results)
+    # Centralizing report generation keeps every evaluation mode writing the
+    # same artifact set and archive summary.
     if progress:
         progress("report_generation_started", {"run_id": run_id})
     report_title, report_file_stem = build_report_identity(task, settings.runs_dir)
@@ -471,9 +483,20 @@ def _normalize_imported_trace(
 ) -> DialogueTrace:
     """标准化导入对话。"""
     transcript = sorted(trace_input.transcript, key=lambda message: message.turn)
+    # Imported traces should look the same as generated traces before scoring,
+    # otherwise scorers would need special-case logic.
     transcript = _normalize_transcript_roles(transcript)
+    valid_turns = {message.turn for message in transcript}
+    tool_calls = [
+        call.model_copy(
+            update={"turn": _align_tool_turn(call.tool_name, call.turn, transcript, valid_turns)}
+        )
+        for call in trace_input.tool_calls
+    ]
     state_trace = trace_input.state_trace or _infer_state_trace_from_transcript(transcript)
     if state_trace:
+        # Imported data often misses the terminal state. Defaulting it here
+        # keeps report aggregation stable.
         final_status = state_trace[-1].get("task_status")
         state_trace[-1]["task_status"] = final_status or "completed"
     return DialogueTrace(
@@ -482,12 +505,14 @@ def _normalize_imported_trace(
         task_id=task_id,
         scenario_id=scenario_id,
         transcript=transcript,
-        tool_calls=trace_input.tool_calls,
+        tool_calls=tool_calls,
         state_trace=state_trace,
     )
 
 
 def _normalize_transcript_roles(transcript) -> list:
+    # Some external exports flip agent and user labels. Normalize once before
+    # any speaker heuristics or scoring rules consume the trace.
     probe = DialogueTrace(
         run_id="probe",
         dialogue_id="probe",
@@ -519,6 +544,8 @@ def match_scenario_with_llm(
     settings: Settings,
 ) -> ScenarioMatchResult:
     """使用 LLM 为导入对话识别场景。"""
+    # Imported traces only enter quantitative scoring after they are mapped to
+    # a scenario with a concrete rubric context.
     api_key = settings.effective_scenario_match_api_key
     if not api_key:
         return ScenarioMatchResult(
@@ -629,6 +656,8 @@ def _build_scenario_match_prompt(
     threshold: float,
 ) -> str:
     """构造场景识别提示词。"""
+    # The model output is parsed directly, so the prompt constrains the format
+    # to JSON instead of relying on brittle text extraction.
     transcript = "\n".join(f"{message.role}: {message.content}" for message in trace.transcript)
     scenario_lines = []
     for scenario in scenarios:

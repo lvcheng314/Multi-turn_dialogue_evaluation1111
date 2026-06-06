@@ -18,6 +18,8 @@ def generate_scenarios(task: TaskSpec, count: int = 15) -> list[ScenarioSpec]:
         if not tools and tool:
             tools = [tool]
         for t in tools:
+            # Inject task context into every expected tool call so later scoring
+            # can validate behavior without depending on template-only defaults.
             arguments = {"task_id": task.task_id, **t.get("arguments", {})}
             expected_tool_calls.append(
                 ExpectedToolCall(

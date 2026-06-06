@@ -399,7 +399,43 @@ textarea {
 }
 
 .primary {
-  background: #2364aa;
+  position: relative;
+  border: 1px solid #0f2b4d;
+  border-radius: 14px;
+  padding: 12px 22px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #f8fbff;
+  background:
+    linear-gradient(135deg, #0f4c81 0%, #1f78d1 55%, #56a4ff 100%);
+  box-shadow:
+    0 12px 24px rgba(20, 76, 138, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  text-shadow: 0 1px 1px rgba(9, 24, 45, 0.45);
+  transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
+}
+
+.primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    0 16px 28px rgba(20, 76, 138, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  filter: saturate(1.05);
+}
+
+.primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow:
+    0 8px 18px rgba(20, 76, 138, 0.24),
+    inset 0 2px 4px rgba(5, 17, 33, 0.18);
+}
+
+.primary:disabled {
+  color: rgba(248, 251, 255, 0.82);
+  background: linear-gradient(135deg, #6f8faf 0%, #87a4c2 100%);
+  border-color: #6b88a6;
+  box-shadow: none;
+  text-shadow: none;
 }
 
 .messages {

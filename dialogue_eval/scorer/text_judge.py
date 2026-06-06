@@ -19,8 +19,7 @@ class TextJudgeScorer:
         trace: DialogueTrace,
         config: ScoringConfig | None = None,
     ) -> tuple[float, list[Evidence]]:
-        direct_transfer = _is_direct_transfer_case(trace)
-        if direct_transfer:
+        if _is_direct_transfer_case(trace):
             return 20.0, [
                 Evidence(
                     type="turn",
@@ -29,8 +28,7 @@ class TextJudgeScorer:
                     rule_id="text.direct_transfer_short_circuit",
                 )
             ]
-        wrong_contact = _is_wrong_contact_case(trace)
-        if wrong_contact:
+        if _is_wrong_contact_case(trace):
             return 20.0, [
                 Evidence(
                     type="turn",
@@ -39,14 +37,22 @@ class TextJudgeScorer:
                     rule_id="text.identity_mismatch_short_circuit",
                 )
             ]
-        repeated_rejection = _is_repeated_rejection_case(trace)
-        if repeated_rejection:
+        if _is_repeated_rejection_case(trace):
             return 20.0, [
                 Evidence(
                     type="turn",
                     turn=_representative_turn(trace),
                     comment="用户已再次明确拒绝，数字人礼貌确认并停止打扰，符合拒绝场景的最优处理。",
                     rule_id="text.repeated_rejection_short_circuit",
+                )
+            ]
+        if _is_complaint_ack_case(trace):
+            return 20.0, [
+                Evidence(
+                    type="turn",
+                    turn=_representative_turn(trace),
+                    comment="用户表达不满后，数字人已及时道歉承接，符合投诉开场场景的基本正确处理。",
+                    rule_id="text.complaint_ack_short_circuit",
                 )
             ]
         if config and config.enable_llm_judge:
@@ -70,11 +76,7 @@ class TextJudgeScorer:
         max_chars = task.constraints.max_reply_chars
         user_turns = len(speaker_messages(trace, "user"))
         last_turn = trace.transcript[-1].turn if trace.transcript else None
-        full_agent_text = " ".join(message.content for message in agent_messages)
-        full_user_text = " ".join(message.content for message in speaker_messages(trace, "user"))
-        direct_transfer_case = any(token in full_user_text for token in ["转人工", "人工客服", "别跟我说了", "不要机器人"]) and any(
-            token in full_agent_text for token in ["理解", "马上", "转接", "人工客服", "请稍等"]
-        )
+        direct_transfer_case = _is_direct_transfer_case(trace)
 
         if user_turns < 3 and not direct_transfer_case:
             score -= 5.0
@@ -84,7 +86,7 @@ class TextJudgeScorer:
                     turn=last_turn,
                     comment="对话轮次偏短，缺少自然追问和确认。",
                     rule_id="text.turn_depth",
-                    score_delta=-5,
+                    score_delta=-5.0,
                 )
             )
         elif user_turns < 5 and not direct_transfer_case:
@@ -95,7 +97,7 @@ class TextJudgeScorer:
                     turn=last_turn,
                     comment="对话轮次较短，说明深度有限。",
                     rule_id="text.turn_depth",
-                    score_delta=-2,
+                    score_delta=-2.0,
                 )
             )
 
@@ -108,7 +110,7 @@ class TextJudgeScorer:
                         turn=message.turn,
                         comment=f"回复长度 {len(message.content)} 超过约束上限的 2 倍。",
                         rule_id="text.reply_length",
-                        score_delta=-3,
+                        score_delta=-3.0,
                     )
                 )
 
@@ -132,7 +134,7 @@ class TextJudgeScorer:
                     turn=agent_messages[-1].turn,
                     comment="话术礼貌性不足，缺少电话沟通中的安抚或确认表达。",
                     rule_id="text.politeness",
-                    score_delta=-3,
+                    score_delta=-3.0,
                 )
             )
 
@@ -156,7 +158,7 @@ class TextJudgeScorer:
         prompt = f"""
 你是多轮外呼对话评测裁判。只返回 JSON，不要输出 Markdown。
 评分范围 0-20，按以下量化标准：
-- 0-5: 基本不能完成沟通，严重偏题或缺少回复。
+- 0-5: 基本不能完成沟通，严重跑题或缺少回复。
 - 6-10: 能回应但明显机械、过短或缺少关键解释。
 - 11-15: 能覆盖主要意图，但追问、确认、异议处理不足。
 - 16-20: 语言自然、简短、电话感强，能根据用户反应追问、确认和解释。
@@ -188,7 +190,6 @@ class TextJudgeScorer:
             response.raise_for_status()
             content = response.json()["choices"][0]["message"]["content"]
 
-        # Strip markdown code block wrappers if present
         cleaned = content.strip()
         if cleaned.startswith("```"):
             cleaned = cleaned.strip("`")
@@ -197,22 +198,25 @@ class TextJudgeScorer:
         start_brace = cleaned.find("{")
         end_brace = cleaned.rfind("}")
         if start_brace >= 0 and end_brace > start_brace:
-            cleaned = cleaned[start_brace:end_brace+1]
+            cleaned = cleaned[start_brace:end_brace + 1]
         try:
             payload = json.loads(cleaned)
         except json.JSONDecodeError as exc:
             raise RuntimeError(f"Judge model returned non-JSON content: {content}") from exc
 
         score = float(payload.get("score", 0))
-        reason = str(payload.get("reason", "LLM 裁判未返回原因"))
-        evidence_list = []
+        reason = str(payload.get("reason", "LLM 文本裁判未返回原因"))
+        evidence_list: list[Evidence] = []
         details_raw = payload.get("details", [])
+        rule_flags = _collect_rule_flags(trace)
         if details_raw:
             for d in details_raw:
                 dturn = d.get("turn")
                 dissue = str(d.get("issue", ""))
                 ddelta = float(d.get("delta", 0) or 0)
-                # Skip no-op detail items like "无问题" to keep report evidence high-signal.
+                if _conflicts_with_rule_flags(dissue, ddelta, rule_flags):
+                    score -= ddelta
+                    continue
                 if ddelta >= 0 and any(token in dissue for token in ["无问题", "没问题", "正常", "良好"]):
                     continue
                 evidence_list.append(
@@ -235,6 +239,7 @@ class TextJudgeScorer:
             )
         return max(0.0, min(20.0, score)), evidence_list
 
+
 def _first_turn_with_any(messages, keywords: list[str]) -> int | None:
     for message in messages:
         if any(keyword in message.content for keyword in keywords):
@@ -246,7 +251,6 @@ def _representative_turn(trace: DialogueTrace) -> int | None:
     agent_msgs = speaker_messages(trace, "agent")
     if not agent_msgs:
         return None
-    # 选回复最长的轮次（信息量最大）
     longest = max(agent_msgs, key=lambda m: len(m.content))
     return longest.turn
 
@@ -257,7 +261,6 @@ def _is_direct_transfer_case(trace: DialogueTrace) -> bool:
 
     agent_text = " ".join(message.content for message in speaker_messages(trace, "agent"))
     user_text = " ".join(message.content for message in speaker_messages(trace, "user"))
-
     user_requests_transfer = any(
         token in user_text for token in ["转人工", "人工客服", "别跟我说了", "不要机器人", "找人工"]
     )
@@ -270,7 +273,6 @@ def _is_direct_transfer_case(trace: DialogueTrace) -> bool:
 def _is_wrong_contact_case(trace: DialogueTrace) -> bool:
     agent_text = " ".join(message.content for message in speaker_messages(trace, "agent"))
     user_text = " ".join(message.content for message in speaker_messages(trace, "user"))
-
     user_denies_identity = any(
         token in user_text for token in ["不是王老板", "不是本人", "打错了", "他员工", "找别人", "人不在"]
     )
@@ -293,3 +295,72 @@ def _is_repeated_rejection_case(trace: DialogueTrace) -> bool:
         for content in agent_messages[-2:]
     )
     return user_rejection_count >= 2 and agent_stop_politely
+
+
+def _is_complaint_ack_case(trace: DialogueTrace) -> bool:
+    user_text = " ".join(message.content for message in speaker_messages(trace, "user"))
+    agent_text = " ".join(message.content for message in speaker_messages(trace, "agent"))
+    user_complains = any(
+        token in user_text for token in ["出问题", "开不出来", "烦死了", "不满", "投诉", "太差", "有问题"]
+    )
+    agent_acks = any(
+        token in agent_text for token in ["抱歉", "不好意思", "给您带来不便", "理解", "非常抱歉"]
+    )
+    return user_complains and agent_acks
+
+
+def _has_availability_check(trace: DialogueTrace) -> bool:
+    agent_text = " ".join(message.content for message in speaker_messages(trace, "agent"))
+    return any(
+        token in agent_text
+        for token in ["方便接听", "方便说两句", "现在方便", "请问现在方便", "方便吗", "有空吗"]
+    )
+
+
+def _collect_rule_flags(trace: DialogueTrace) -> set[str]:
+    flags: set[str] = set()
+    if _has_availability_check(trace):
+        flags.add("availability_checked")
+    if _is_direct_transfer_case(trace):
+        flags.add("direct_transfer")
+    if _is_wrong_contact_case(trace):
+        flags.add("wrong_contact")
+    if _is_repeated_rejection_case(trace):
+        flags.add("repeated_rejection")
+    if _is_complaint_ack_case(trace):
+        flags.add("complaint_acknowledged")
+    return flags
+
+
+def _conflicts_with_rule_flags(issue: str, delta: float, rule_flags: set[str]) -> bool:
+    if delta >= 0:
+        return False
+
+    if "availability_checked" in rule_flags and any(
+        token in issue for token in ["方便接听", "方便说两句", "是否方便", "主动确认用户是否方便", "未确认是否方便", "未询问是否方便"]
+    ):
+        return True
+
+    normalized_issue = issue or ""
+
+    if "direct_transfer" in rule_flags and any(
+        token in normalized_issue for token in ["转人工", "转接", "人工", "帮助中心", "回访", "简要说明更新", "未完成通知"]
+    ):
+        return True
+
+    if "wrong_contact" in rule_flags and any(
+        token in normalized_issue for token in ["非本人", "打错", "留信息", "未完成通知", "未继续说明"]
+    ):
+        return True
+
+    if "repeated_rejection" in rule_flags and any(
+        token in normalized_issue for token in ["预约回访", "帮助中心", "确认用户是否理解", "直接结束", "未继续通知"]
+    ):
+        return True
+
+    if "complaint_acknowledged" in rule_flags and any(
+        token in normalized_issue for token in ["仅道歉", "未安抚", "未解释新功能优势", "未深入了解具体问题"]
+    ):
+        return True
+
+    return False

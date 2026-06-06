@@ -64,7 +64,7 @@ class DeepSeekDialogueGenerator:
         if not tool_calls and scenario.expected_tool_calls:
             tool_calls = [
                 ToolCallTrace(
-                    turn=min(len(transcript) // 2 + 1, len(transcript)),
+                    turn=_suggest_tool_turn(ec.tool_name, transcript),
                     tool_name=ec.tool_name,
                     arguments=dict(ec.arguments),
                     result={"status": "ok"},
@@ -192,12 +192,12 @@ def _parse_tool_calls(raw_calls: list, transcript: list[ChatMessage]) -> list[To
     for raw in raw_calls or []:
         try:
             turn = int(raw.get("turn", 1))
-            if turn not in valid_turns:
-                turn = _nearest_agent_turn(transcript)
+            tool_name = str(raw.get("tool_name", ""))
+            turn = _align_tool_turn(tool_name, turn, transcript, valid_turns)
             calls.append(
                 ToolCallTrace(
                     turn=turn,
-                    tool_name=str(raw.get("tool_name", "")),
+                    tool_name=tool_name,
                     arguments=dict(raw.get("arguments") or {}),
                     result=dict(raw.get("result") or {}),
                     latency_ms=int(raw.get("latency_ms") or 0),
@@ -241,6 +241,38 @@ def _nearest_agent_turn(transcript: list[ChatMessage]) -> int:
         if message.role == "agent":
             return message.turn
     return transcript[-1].turn if transcript else 1
+
+
+def _align_tool_turn(tool_name: str, turn: int, transcript: list[ChatMessage], valid_turns: set[int]) -> int:
+    agent_turns = {message.turn for message in transcript if message.role == "agent"}
+    if turn in valid_turns and turn in agent_turns:
+        return turn
+
+    suggested = _suggest_tool_turn(tool_name, transcript)
+    if suggested in valid_turns:
+        return suggested
+
+    if turn in valid_turns:
+        return turn
+    return _nearest_agent_turn(transcript)
+
+
+def _suggest_tool_turn(tool_name: str, transcript: list[ChatMessage]) -> int:
+    agent_messages = [message for message in transcript if message.role == "agent"]
+    if not agent_messages:
+        return transcript[-1].turn if transcript else 1
+
+    keyword_map = {
+        "transfer_to_human": ["转人工", "转接", "人工客服", "请稍等"],
+        "schedule_callback": ["回访", "回呼", "稍后联系", "已为您预约", "已登记"],
+        "query_faq": ["帮助中心", "我帮您查", "我帮您看", "规则", "说明"],
+        "update_task_status": ["记录一下", "已为您记录", "我会记录", "好的"],
+    }
+    keywords = keyword_map.get(tool_name, [])
+    for message in reversed(agent_messages):
+        if any(keyword in message.content for keyword in keywords):
+            return message.turn
+    return agent_messages[-1].turn
 
 
 def _normalize_transcript_roles(transcript: list[ChatMessage]) -> list[ChatMessage]:

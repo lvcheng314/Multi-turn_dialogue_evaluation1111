@@ -34,6 +34,7 @@ class DialogueRunner:
         scenario: ScenarioSpec,
         max_turns: int = 12,
     ) -> DialogueTrace:
+        """Simulate one dialogue and collect transcript, state, and tool activity."""
         collector = TraceCollector(run_id, dialogue_id, task.task_id, scenario.scenario_id)
         history: list[dict[str, str]] = []
         state = {"task_status": "opened", "identity_confirmed": False}
@@ -68,6 +69,7 @@ class DialogueRunner:
             if response.tool_name:
                 call = self.gateway.call_tool(response.tool_name, response.tool_arguments, turn=turn)
                 collector.add_tool_call(call)
+                # Mocked tool results are the most reliable signal for task status.
                 state.update(self._state_from_tool(call.tool_name, call.arguments, call.result))
                 tool_called = True
             elif user_index == planned_user_turns - 1 and final_expected:
@@ -106,6 +108,7 @@ class DialogueRunner:
         user_index: int,
         planned_user_turns: int,
     ) -> bool:
+        """Delay tool usage until enough context is present, except urgent cases."""
         if not scenario.expected_tool_calls:
             return False
         key = scenario.scenario_id.split("_", 1)[1]
@@ -124,6 +127,7 @@ class DialogueRunner:
         scenario: ScenarioSpec,
         response: object,
     ) -> AgentResponse:
+        """Backfill the expected tool call when the model text omitted the action."""
         content = getattr(response, "content")
         tool_name = getattr(response, "tool_name", None)
         tool_arguments = getattr(response, "tool_arguments", {})
@@ -146,6 +150,7 @@ class DialogueRunner:
 
     @staticmethod
     def _state_from_tool(tool_name: str, arguments: dict, result: dict) -> dict:
+        """Translate tool outcomes into the simplified state machine used in reports."""
         if tool_name == "transfer_to_human" and result.get("status") == "queued":
             return {"task_status": "transferred"}
         if tool_name == "schedule_callback":

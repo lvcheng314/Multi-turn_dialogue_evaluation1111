@@ -1,0 +1,83 @@
+{
+  "run_id": "run_94de35a806cc",
+  "dialogue_id": "dialogue_015",
+  "task_id": "sample_upload_task",
+  "scenario_id": "s15_identity_mismatch",
+  "transcript": [
+    {
+      "turn": 1,
+      "role": "user",
+      "content": "喂，你好。"
+    },
+    {
+      "turn": 2,
+      "role": "agent",
+      "content": "您好，请问是王老板吗？我是电商平台客服，想通知您一个发票功能更新，现在方便说话吗？"
+    },
+    {
+      "turn": 3,
+      "role": "user",
+      "content": "你打错了，我不是王老板，我是他员工。"
+    },
+    {
+      "turn": 4,
+      "role": "agent",
+      "content": "啊，不好意思打扰了。请问王老板在吗？或者您能帮忙转接一下吗？"
+    },
+    {
+      "turn": 5,
+      "role": "user",
+      "content": "他不在，而且我也不知道什么发票的事，你别再说了。"
+    },
+    {
+      "turn": 6,
+      "role": "agent",
+      "content": "好的，非常抱歉打扰您。我这边会记录一下，不再打扰了。祝您生活愉快，再见。"
+    }
+  ],
+  "tool_calls": [
+    {
+      "turn": 6,
+      "tool_name": "update_task_status",
+      "arguments": {
+        "task_id": "sample_upload_task",
+        "status": "identity_mismatch"
+      },
+      "result": {},
+      "latency_ms": 0,
+      "error_code": null
+    }
+  ],
+  "state_trace": [
+    {
+      "turn": 1,
+      "task_status": "in_progress",
+      "identity_confirmed": false
+    },
+    {
+      "turn": 2,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 3,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 4,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 5,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    },
+    {
+      "turn": 6,
+      "task_status": "in_progress",
+      "identity_confirmed": true
+    }
+  ]
+}

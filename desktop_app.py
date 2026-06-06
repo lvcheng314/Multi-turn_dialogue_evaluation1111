@@ -15,12 +15,14 @@ from dialogue_eval.api.app import app
 
 
 def _is_port_open(host: str, port: int) -> bool:
+    """Probe whether the local API server is already accepting connections."""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.settimeout(0.5)
         return sock.connect_ex((host, port)) == 0
 
 
 def main() -> None:
+    """Start the API server and open the browser after the socket becomes reachable."""
     host = os.getenv("DIALOGUE_EVAL_HOST", "127.0.0.1")
     port = int(os.getenv("DIALOGUE_EVAL_PORT", "8000"))
     url = f"http://{host}:{port}"
@@ -32,6 +34,7 @@ def main() -> None:
     thread.start()
 
     for _ in range(100):
+        # Waiting for the port avoids opening the browser before uvicorn is ready.
         if _is_port_open(host, port):
             webbrowser.open(url)
             break

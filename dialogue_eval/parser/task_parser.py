@@ -10,6 +10,7 @@ from dialogue_eval.schemas import FAQItem, FlowStep, TaskConstraints, TaskSpec
 
 
 def load_task(path: str | Path) -> TaskSpec:
+    """Load a task definition from JSON or an Excel sheet maintained by operators."""
     source = Path(path)
     if not source.exists():
         raise FileNotFoundError(f"Task file not found: {source}")
@@ -23,6 +24,7 @@ def load_task(path: str | Path) -> TaskSpec:
 
 
 def _load_excel(path: Path) -> TaskSpec:
+    """Map loosely structured spreadsheet fields into the normalized TaskSpec schema."""
     import pandas as pd
     frame = pd.read_excel(path).fillna("")
     rows = _rows_to_mapping(frame)
@@ -50,6 +52,7 @@ def _load_excel(path: Path) -> TaskSpec:
 
 
 def _rows_to_mapping(frame) -> dict[str, Any]:
+    """Support both key/value sheets and single-row exported tables."""
     if frame.shape[1] >= 2 and set(frame.columns[:2]) != {"Role", "Task"}:
         return {
             str(row.iloc[0]).strip(): row.iloc[1]
@@ -60,6 +63,7 @@ def _rows_to_mapping(frame) -> dict[str, Any]:
 
 
 def _parse_flow_steps(text: str) -> list[FlowStep]:
+    """Split newline-based call flow text and fall back to a minimal default flow."""
     parts = [part.strip(" -\t") for part in text.replace("\r", "\n").split("\n")]
     steps = [part for part in parts if part]
     if not steps:
@@ -71,6 +75,7 @@ def _parse_flow_steps(text: str) -> list[FlowStep]:
 
 
 def _parse_faq(text: str) -> list[FAQItem]:
+    """Parse FAQ entries while tolerating different separators in source sheets."""
     items: list[FAQItem] = []
     for raw in text.replace("\r", "\n").split("\n"):
         line = raw.strip(" -\t")
@@ -87,6 +92,7 @@ def _parse_faq(text: str) -> list[FAQItem]:
 
 
 def _parse_constraints(text: str) -> TaskConstraints:
+    """Infer simple safety constraints from free-form spreadsheet text."""
     forbidden_terms = []
     privacy_fields = ["身份证号", "手机号", "地址"]
     for token in ["保证收益", "一定返钱", "稳赚", "内部政策"]:

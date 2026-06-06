@@ -95,8 +95,9 @@ class TraceScorer:
         ))
 
         # Human transfer ack check (only if transfer_to_human was called)
-        if "transfer_to_human" in actual_set:
-            passed, turn, comment = _check_human_transfer_sequence(trace, trace.tool_calls[0].turn)
+        transfer_turn = _tool_turn(trace, "transfer_to_human")
+        if transfer_turn is not None:
+            passed, turn, comment = _check_human_transfer_sequence(trace, transfer_turn)
             checks.append(_check(
                 "human_transfer:retain_before_tool", passed, turn,
                 "转人工前应先安抚或承接一句。"
@@ -110,6 +111,8 @@ class TraceScorer:
                 score = max(0.0, score - 10.0)
 
         return score, checks, evidence
+
+
 def _check(name: str, passed: bool, turn: int | None, reason: str) -> ToolTraceCheck:
     """构造检查结果。"""
     return ToolTraceCheck(
@@ -119,6 +122,13 @@ def _check(name: str, passed: bool, turn: int | None, reason: str) -> ToolTraceC
         turn=turn,
         reason=reason,
     )
+
+
+def _tool_turn(trace: DialogueTrace, tool_name: str) -> int | None:
+    for tool_call in trace.tool_calls:
+        if tool_call.tool_name == tool_name:
+            return tool_call.turn
+    return None
 
 
 def _check_human_transfer_sequence(trace: DialogueTrace, tool_turn: int) -> tuple[bool, int | None, str]:
