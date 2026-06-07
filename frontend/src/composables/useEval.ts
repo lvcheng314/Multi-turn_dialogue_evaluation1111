@@ -299,7 +299,7 @@ async function runChoose() {
   busy.value = true
   const scenarioLabel = scenarioFile.value ? `场景：${scenarioFile.value.name}` : '上传场景'
   const dialogueLabel = traceFile.value ? `对话：${traceFile.value.name}` : 'LLM 模拟'
-  user(`开始评测（2x2x2）：${selectedTask.value.file_name}\n${scenarioLabel}\n${dialogueLabel}`)
+  user(`开始评测 ：${selectedTask.value.file_name}\n${scenarioLabel}\n${dialogueLabel}`)
   try {
     await streamChooseRun(
       {

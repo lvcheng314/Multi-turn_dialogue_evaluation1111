@@ -37,6 +37,7 @@ dialogue_eval/scorer/outcome.py
 dialogue_eval/scorer/rubrics.py
 dialogue_eval/scorer/safety.py
 dialogue_eval/scorer/skill.py
+dialogue_eval/scorer/speaker.py
 dialogue_eval/scorer/text_judge.py
 dialogue_eval/scorer/trace.py
 dialogue_eval/simulator/__init__.py
@@ -56,6 +57,7 @@ tests/test_course_no_delivery_leak.py
 tests/test_e2e_smoke.py
 tests/test_mcp_gateway.py
 tests/test_model_selection.py
+tests/test_outcome_scorer.py
 tests/test_report_markdown.py
 tests/test_scenario_generator.py
 tests/test_scorer_skill.py

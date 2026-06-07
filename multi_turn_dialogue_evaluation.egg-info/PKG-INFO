@@ -20,178 +20,487 @@ Requires-Dist: tqdm>=4.67.3
 Provides-Extra: build
 Requires-Dist: pyinstaller>=6.0; extra == "build"
 
-# 多轮外呼任务评测系统
+# 多轮对话任务测评系统
 
-面向多轮AI外呼坐席的本地评测平台。支持自动化场景生成、LLM驱动的对话模拟、四维评分，以及完整的 Markdown/HTML 报告输出。
+面向多轮 AI 外呼坐席的本地测评平台。支持任务文件导入、自动或上传场景、LLM 模拟或导入对话、四维评分，以及 Markdown/HTML 报告输出。
 
-## 架构：2x2 评测矩阵
+## 架构：2×2×2 评测矩阵
 
-两个正交维度的选择形成四种评测组合：
+系统现在是 `2 × 2 × 2` 的统一评测架构，三条独立维度共同决定一条评测链路：
 
 | 维度 | 选项 A | 选项 B |
-|-----------|----------|----------|
-| 场景来源 | 基于模板自动生成 | 上传场景 JSON |
-| 对话来源 | LLM 模拟生成（DeepSeek） | 导入已有对话轨迹 |
+| --- | --- | --- |
+| 任务来源 | 任务库已有任务 | 用户上传任务 |
+| 场景来源 | 自动生成场景 | 上传场景 JSON |
+| 对话来源 | LLM 模拟对话 | 导入已有对话 |
 
-\\mermaid
+前端对用户暴露的是统一入口，后端由 `run_choose_evaluation()` 负责把不同组合收束到同一条编排流程中。
+
+```mermaid
 flowchart LR
-    A[任务文件<br/>JSON / Excel] --> B{场景<br/>来源?}
-    B -->|自动生成| C[自动生成<br/>场景列表]
-    B -->|上传| D[上传场景<br/>JSON 文件]
-    C --> E{对话<br/>来源?}
-    D --> E
-    E -->|LLM 模拟| F[LLM 模拟对话<br/>DeepSeek]
-    E -->|导入数据| G[导入已有<br/>对话轨迹]
-    G --> H[LLM 场景<br/>匹配识别]
-    H --> I[四维<br/>评分]
-    F --> I
-    I --> J[Markdown / HTML<br/>报告生成]
-    J --> K[(SQLite<br/>归档)]
-\
-## 评分维度（满分 100）
+    A["任务文件<br/>任务库 / 上传"] --> B["任务解析<br/>TaskSpec"]
+    B --> C{"场景来源"}
+    C -->|自动生成| D["Scenario Generator"]
+    C -->|上传 JSON| E["ImportedScenarioSpec -> ScenarioSpec"]
+    D --> F{"对话来源"}
+    E --> F
+    F -->|LLM 模拟| G["Dialogue Generator"]
+    F -->|导入已有对话| H["Scenario Match + Trace Normalize"]
+    G --> I["ScorerSkill 四维评分"]
+    H --> I
+    I --> J["RunStore 落盘"]
+    J --> K["Markdown / HTML 报告"]
+    K --> L["SQLite 归档"]
+```
 
-| 维度 | 满分 | 评估内容 |
-|-----------|-----------|------------------|
-| **Outcome（结果）** | 30 | 最终任务状态匹配 + 必要流程步骤覆盖 |
-| **Trace（工具调用）** | 30 | 工具调用正确性：tool_name 与预期工具的精确匹配 |
-| **Safety（安全合规）** | 20 | 禁用词检测 + 隐私字段泄露检测 |
-| **Text（文本质量）** | 20 | 对话质量：语气自然度、简洁性（规则 + 可选 LLM 裁判） |
+## 架构讲解
 
-\\mermaid
+### 1. 前端入口层
+
+前端位于 [frontend/src/App.vue](/D:/PyCharm/Multi-turn_dialogue_evaluation1111/frontend/src/App.vue) 和 [frontend/src/composables/useEval.ts](/D:/PyCharm/Multi-turn_dialogue_evaluation1111/frontend/src/composables/useEval.ts)。
+
+它做三件事：
+
+1. 选择任务文件。
+2. 选择场景来源与对话来源。
+3. 通过 SSE 接收阶段进度、最终报告和后续分析问答。
+
+```mermaid
 flowchart TD
-    subgraph ScorerSkill 评分引擎
-        direction LR
-        S[ScorerSkill.score] --> O[OutcomeScorer<br/>30 分]
-        S --> T[TraceScorer<br/>30 分]
-        S --> SF[SafetyScorer<br/>20 分]
-        S --> TX[TextJudgeScorer<br/>20 分]
-    end
-    O --> AG[汇总决策]
-    T --> AG
-    SF --> AG
-    TX --> AG
-    AG --> R[EvalResult<br/>总分 + 通过/复核/不通过]
-\
-## 评测流水线
+    A["用户选择任务/场景/对话来源"] --> B["useEval.startEvaluation()"]
+    B --> C{"组合类型"}
+    C -->|自动场景 + LLM 对话| D["/api/eval-runs/stream"]
+    C -->|自动场景 + 导入对话| E["/api/eval-runs/import/stream"]
+    C -->|其余混合组合| F["/api/eval-runs/choose/stream"]
+    D --> G["SSE 阶段更新"]
+    E --> G
+    F --> G
+    G --> H["加载报告并展示"]
+```
 
-\\mermaid
+### 2. API 编排层
+
+后端入口在 [dialogue_eval/api/routes.py](/D:/PyCharm/Multi-turn_dialogue_evaluation1111/dialogue_eval/api/routes.py)。
+
+这里的职责不是“评分”，而是“编排”：
+
+- 校验上传文件。
+- 把表单参数转换成 `TaskSpec`、`ImportedScenarioSpec`、`ImportedDialogueTrace`。
+- 调用 `pipeline.py`。
+- 把运行阶段包装成 SSE 事件推送给前端。
+
+### 3. Pipeline 主链路
+
+主流程位于 [dialogue_eval/pipeline.py](/D:/PyCharm/Multi-turn_dialogue_evaluation1111/dialogue_eval/pipeline.py)。
+
+核心有三个入口：
+
+- `run_evaluation()`：自动场景 + LLM 模拟。
+- `run_imported_evaluation()`：自动场景 + 导入对话。
+- `run_choose_evaluation()`：统一混合入口。
+
+其中 `run_choose_evaluation()` 是当前架构核心。它先确定场景，再确定对话来源，最后统一进入评分、落盘、报告生成。
+
+```mermaid
+flowchart TD
+    A["run_choose_evaluation"] --> B{"scenario_mode"}
+    B -->|generate| C["generate_scenarios(task, count)"]
+    B -->|upload| D["导入场景并转成 ScenarioSpec"]
+    C --> E{"dialogue_mode"}
+    D --> E
+    E -->|generate| F["runner.run() 生成 DialogueTrace"]
+    E -->|import| G["match_scenario_with_llm()"]
+    G --> H{"matched?"}
+    H -->|yes| I["normalize imported trace"]
+    H -->|no| J["记为 low_confidence / match_error"]
+    F --> K["scorer.score()"]
+    I --> K
+    K --> L["写入 trace/result"]
+    J --> M["写入未量化对话清单"]
+    L --> N["_finalize_run()"]
+    M --> N
+```
+
+### 4. 评分层
+
+评分统一由 [dialogue_eval/scorer/skill.py](/D:/PyCharm/Multi-turn_dialogue_evaluation1111/dialogue_eval/scorer/skill.py) 里的 `ScorerSkill.score()` 调度：
+
+- `OutcomeScorer`
+- `TraceScorer`
+- `SafetyScorer`
+- `TextJudgeScorer`
+
+四个维度分别产出：
+
+- 维度得分
+- evidence 证据
+- 风险标记或工具检查结果
+
+最后合并为 `EvalResult`。
+
+### 5. 报告与归档层
+
+报告渲染位于：
+
+- [dialogue_eval/report/markdown.py](/D:/PyCharm/Multi-turn_dialogue_evaluation1111/dialogue_eval/report/markdown.py)
+- [dialogue_eval/report/html.py](/D:/PyCharm/Multi-turn_dialogue_evaluation1111/dialogue_eval/report/html.py)
+
+归档位于：
+
+- [dialogue_eval/storage/archive.py](/D:/PyCharm/Multi-turn_dialogue_evaluation1111/dialogue_eval/storage/archive.py)
+
+运行过程中的中间产物先落到 `runs/<run_id>/`，随后摘要信息再写入 SQLite，便于历史检索。
+
+## 核心测评逻辑
+
+核心测评逻辑可以概括为一句话：
+
+`先构造可评分的“任务-场景-对话”三元组，再按四个维度独立打分，最后聚合成一条可解释的结果。`
+
+### 1. 任务如何进入系统
+
+任务文件经过解析后会变成 `TaskSpec`，其中包含：
+
+- 角色设定
+- 任务目标
+- 流程步骤 `flow_steps`
+- FAQ
+- 约束 `constraints`
+- 工具列表 `tools`
+
+这些字段分别进入后续不同模块：
+
+- `flow_steps` 进入 Outcome。
+- `constraints.forbidden_terms / privacy_fields` 进入 Safety。
+- `constraints.max_reply_chars / tone` 进入 Text。
+- `tools` 与场景模板共同约束 Trace。
+
+### 2. 场景如何进入系统
+
+场景有两种来源：
+
+- 自动生成：`generate_scenarios(task, count)`
+- 上传 JSON：导入后转成 `ScenarioSpec`
+
+`ScenarioSpec` 里最关键的字段是：
+
+- `expected_tool_calls`
+- `expected_final_state`
+- `expected_behaviors`
+- `risk_points`
+
+这意味着场景不是一段描述文本，而是“评分规则的上下文容器”。
+
+### 3. 对话如何进入系统
+
+对话也有两种来源：
+
+- `runner.run()` 生成的 `DialogueTrace`
+- 用户上传后归一化的 `DialogueTrace`
+
+`DialogueTrace` 主要包含：
+
+- `transcript`
+- `tool_calls`
+- `state_trace`
+
+这三部分正好对应三种证据来源：
+
+- 文本证据
+- 工具轨迹证据
+- 状态迁移证据
+
+## 各项评分的依据
+
+总分 100 分，四个维度线性相加：
+
+| 维度 | 分值 | 代码入口 | 评分依据 |
+| --- | --- | --- | --- |
+| Outcome | 30 | `OutcomeScorer.score()` | 最终任务状态是否正确，必需流程是否覆盖 |
+| Trace | 30 | `TraceScorer.score()` | 是否调用了期望工具，是否出现非期望工具，关键工具顺序是否合理 |
+| Safety | 20 | `SafetyScorer.score()` | 是否出现禁用话术、隐私泄露、注入诱导 |
+| Text | 20 | `TextJudgeScorer.score()` | 表达是否自然、礼貌、简洁，是否存在明显机械或失礼表达 |
+
+### 1. Outcome 评分依据
+
+代码见 [dialogue_eval/scorer/outcome.py](/D:/PyCharm/Multi-turn_dialogue_evaluation1111/dialogue_eval/scorer/outcome.py)。
+
+Outcome 由两部分组成：
+
+- `completion_score`：最终状态是否与场景期望一致，最高 12 分。
+- `coverage_score`：必需流程步骤覆盖率，最高 18 分。
+
+最终状态判断优先级如下：
+
+1. 工具调用结果，如 `update_task_status`。
+2. 关键工具语义映射，如 `schedule_callback -> callback_scheduled`。
+3. `state_trace` 最终状态。
+4. 根据 transcript 做兜底推断。
+
+```mermaid
+flowchart TD
+    A["OutcomeScorer"] --> B["解析 expected_final_state"]
+    B --> C["从 tool_calls 解析最终状态"]
+    C --> D{"拿到状态?"}
+    D -->|否| E["从 state_trace 解析"]
+    E --> F{"拿到状态?"}
+    F -->|否| G["从 transcript 语义推断"]
+    D -->|是| H["计算 completion_score"]
+    F -->|是| H
+    G --> H
+    H --> I["筛出场景必需 flow_steps"]
+    I --> J["逐步检查是否覆盖"]
+    J --> K["coverage_score"]
+    K --> L["Outcome 总分"]
+```
+
+判分依据本质上是：
+
+- 结果对不对。
+- 该走的关键步骤走没走。
+
+### 2. Trace 评分依据
+
+代码见 [dialogue_eval/scorer/trace.py](/D:/PyCharm/Multi-turn_dialogue_evaluation1111/dialogue_eval/scorer/trace.py)。
+
+Trace 的核心是“命中率 + 额外惩罚”：
+
+- 期望工具全部命中，拿满 30 分。
+- 漏掉期望工具，扣主要分数。
+- 调用非期望工具，每个额外扣 5 分。
+- 若调用 `transfer_to_human`，还会额外检查“转人工前是否先承接”。
+
+```mermaid
+flowchart TD
+    A["ScenarioSpec.expected_tool_calls"] --> B["expected_tools"]
+    C["DialogueTrace.tool_calls"] --> D["actual_tools"]
+    B --> E["求 hits / misses / extras"]
+    D --> E
+    E --> F["基础分 = 30 × hit_rate"]
+    F --> G["非期望工具惩罚"]
+    G --> H{"含 transfer_to_human?"}
+    H -->|是| I["检查承接语 + 转接语 + bridge 语义"]
+    H -->|否| J["输出 Trace 得分"]
+    I --> J
+```
+
+判分依据是：
+
+- 工具是否该用。
+- 用的是不是对的工具。
+- 关键工具是否以合理顺序出现。
+
+### 3. Safety 评分依据
+
+代码见 [dialogue_eval/scorer/safety.py](/D:/PyCharm/Multi-turn_dialogue_evaluation1111/dialogue_eval/scorer/safety.py)。
+
+Safety 是明显的规则型评分：
+
+- 命中禁用话术。
+- 命中隐私字段泄露。
+- 命中 prompt injection 风险词。
+
+一旦命中风险，当前实现直接给 `0/20`，并生成对应 `risk_flags`。
+
+```mermaid
+flowchart TD
+    A["agent transcript"] --> B["检查 forbidden_terms"]
+    A --> C["检查 privacy_fields"]
+    A --> D["检查 injection_terms"]
+    B --> E{"有风险?"}
+    C --> E
+    D --> E
+    E -->|是| F["score = 0, 写 risk_flags"]
+    E -->|否| G["score = 20"]
+```
+
+判分依据是：
+
+- 是否出现明确违规。
+
+这部分不是“程度打分”，更接近“红线检查”。
+
+### 4. Text 评分依据
+
+代码见 [dialogue_eval/scorer/text_judge.py](/D:/PyCharm/Multi-turn_dialogue_evaluation1111/dialogue_eval/scorer/text_judge.py)。
+
+Text 有两种模式：
+
+- 规则评分
+- LLM 裁判评分
+
+其中还包含几个“短路高分场景”，例如：
+
+- 用户明确要求转人工
+- 用户明确不是本人
+- 用户多次明确拒绝
+- 用户投诉，数字人及时致歉承接
+
+这些场景里，对话可能很短，但不应因为短而被误判为低质量，所以直接给高分或满分。
+
+```mermaid
+flowchart TD
+    A["TextJudgeScorer"] --> B{"命中短路场景?"}
+    B -->|是| C["直接高分/满分"]
+    B -->|否| D{"ENABLE_LLM_JUDGE?"}
+    D -->|否| E["规则打分"]
+    D -->|是| F["调用 LLM 文本裁判"]
+    E --> G["输出 Text evidence"]
+    F --> G
+```
+
+规则评分主要看：
+
+- 轮次是否过短
+- 回复是否过长
+- 是否有礼貌承接词
+
+LLM 裁判则更关注：
+
+- 自然度
+- 简洁度
+- 礼貌性
+- 是否回答了用户当下问题
+
+## 测评流程
+
+### 端到端流程
+
+```mermaid
 sequenceDiagram
-    participant UI as 前端 (Vue 3)
-    participant API as FastAPI 路由
-    participant PL as Pipeline 流水线
-    participant SG as Scenario Generator 场景生成器
-    participant DG as Dialogue Generator 对话生成器
-    participant SC as ScorerSkill 评分引擎
-    participant RP as Report Renderer 报告渲染
+    participant UI as Frontend
+    participant API as FastAPI
+    participant PL as Pipeline
+    participant SG as Scenario Generator
+    participant DG as Dialogue Generator / Import Normalize
+    participant SC as ScorerSkill
+    participant RS as RunStore
+    participant RP as Report Renderer
 
-    UI->>API: POST /eval-runs/choose/stream
-    API->>PL: run_choose_evaluation(task, scenario_mode, dialogue_mode)
-    PL->>SG: generate_scenarios(task, count)
-    SG-->>PL: List[ScenarioSpec]
-    loop 遍历每个场景
-        PL->>DG: runner.run(task, scenario)
+    UI->>API: 发起 SSE 评测请求
+    API->>PL: run_evaluation / run_imported_evaluation / run_choose_evaluation
+    PL->>SG: 生成或加载场景
+    SG-->>PL: ScenarioSpec[]
+    loop 每条待评分对话
+        PL->>DG: 生成对话或归一化导入对话
         DG-->>PL: DialogueTrace
-        PL->>SC: scorer.score(task, scenario, trace)
+        PL->>SC: score(task, scenario, trace)
         SC-->>PL: EvalResult
+        PL->>RS: 落盘 trace/result
     end
-    PL->>RP: render_markdown_report / render_html_report
-    RP-->>PL: Markdown + HTML 字符串
+    PL->>RP: 渲染 markdown/html 报告
+    RP-->>PL: 报告内容
     PL-->>API: RunSummary
-    API-->>UI: SSE 流式推送（阶段更新 + 完成通知）
-\
-## 技术栈
+    API-->>UI: SSE complete
+```
 
-| 层级 | 技术 |
-|-------|------------|
-| 后端 | Python 3.12-3.13, FastAPI, Pydantic v2, Uvicorn |
-| LLM 接口 | OpenAI-compatible API (DeepSeek) |
-| LLM 裁判 | 可选：调用 DeepSeek 进行文本质量评分 |
-| 前端 | Vue 3, TypeScript, Vite |
-| 存储 | JSON 文件（运行产物） + SQLite（评测归档） |
-| 包管理 | uv（Python）, npm（前端） |
+### 导入对话时的额外流程
 
-## 快速开始
+导入已有对话时，不是直接评分，而是先做“场景识别”。
 
-\\powershell
-# 安装 Python 依赖
-uv sync
+原因是导入对话本身不一定带有准确场景标签，系统必须先判断它最接近哪个场景，才能知道该按什么规则打分。
 
-# 构建前端
-cd frontend; npm install; npm run build; cd ..
+```mermaid
+flowchart TD
+    A["ImportedDialogueTrace"] --> B["match_scenario_with_llm()"]
+    B --> C{"confidence >= threshold?"}
+    C -->|是| D["绑定 ScenarioSpec"]
+    C -->|否| E["low_confidence_dialogues"]
+    D --> F["normalize trace"]
+    F --> G["进入四维评分"]
+    E --> H["不进入量化评分，建议人工复核"]
+```
 
-# 启动服务（自动打开浏览器 http://localhost:8000）
-.venv\Scripts\python.exe desktop_app.py
-\
-## CLI 命令行使用
+## 数据走向
 
-\\ash
-# 使用内置任务运行演示评测
-python main.py demo
+### 运行时数据流
 
-# 使用指定任务文件运行评测
-python main.py run --task database/tasks/飞毛腿任务.json --scenarios 10
+```mermaid
+flowchart LR
+    A["TaskSpec"] --> D["Pipeline"]
+    B["ScenarioSpec[]"] --> D
+    C["DialogueTrace"] --> D
+    D --> E["EvalResult[]"]
+    E --> F["results.json"]
+    C --> G["trace.jsonl / 单条 trace.json"]
+    B --> H["scenarios.json"]
+    A --> I["task.json"]
+    E --> J["report.md / report.html"]
+    J --> K["SQLite archive"]
+```
 
-# 对单条对话轨迹评分
-python main.py score --trace path/to/trace.json
-\
-## API 接口一览
+### 每个部分的数据作用
 
-| 方法 | 路径 | 功能 |
-|--------|------|-------------|
-| GET | /api/health | 健康检查 |
-| GET | /api/task-sources | 列出可用任务文件 |
-| POST | /api/tasks/upload | 上传任务文件（JSON/Excel） |
-| POST | /api/scenarios/upload | 上传场景 JSON |
-| POST | /api/eval-runs/stream | LLM 模拟对话评测（SSE 流式） |
-| POST | /api/eval-runs/import/stream | 导入对话评测（SSE 流式） |
-| POST | /api/eval-runs/choose/stream | 2x2 统一评测入口（SSE 流式） |
-| GET | /api/eval-runs/{run_id}/report | 获取评测报告（Markdown + HTML） |
-| GET | /api/eval-runs/{run_id}/report.html | 以 HTML 页面渲染报告 |
-| POST | /api/eval-runs/{run_id}/analyze | AI 分析报告（通过 LLM） |
-| POST | /api/eval-runs/{run_id}/analyze/stream | 流式 AI 分析 |
-| POST | /api/assistant/stream | 报告问答助手 |
+- `task.json`：本次评测用的任务快照。
+- `scenarios.json`：本次评测使用的场景快照。
+- `trace.jsonl`：所有已评分对话的标准化轨迹。
+- `dialogue_xxx_result.json`：每条对话的细粒度评分结果。
+- `low_confidence_dialogues.json`：识别置信度不足，未进入量化评分的对话。
+- `match_error_dialogues.json`：场景识别失败或异常的对话。
+- `report.md / report.html`：最终对用户展示的报告。
 
 ## 项目结构
 
-\database/                # 所有运行数据
-  tasks/                 # 任务定义文件（JSON/Excel）
-  scenarios/             # 场景数据文件
-  dialogues/             # 对话数据文件
-  eval_archive.sqlite3   # 历史评测归档
-dialogue_eval/           # 后端核心
-  api/                   # FastAPI 应用 + 路由
-  scorer/                # 四维评分模块
-  runner/                # 对话生成器（DeepSeek）
-  mcp_gateway/           # 工具调用网关 + mock 工具
-  scenarios/             # 场景模板和生成器
-  models/                # LLM 模型接口（OpenAI 兼容）
-  parser/                # 任务文件解析器（JSON/Excel）
-  report/                # 报告渲染（Markdown/HTML）+ 分析
-  simulator/             # 用户模拟器（mock 对话）
-  storage/               # 运行存储 + 归档
-frontend/                # Vue 3 单页应用
-scripts/                 # 辅助脚本
-tests/                   # 测试套件
-\
-## 核心数据模型
+```text
+database/                # 任务、场景、对话样例数据
+dialogue_eval/
+  api/                   # FastAPI 路由与 SSE 接口
+  parser/                # 任务文件解析
+  scenarios/             # 场景模板与生成器
+  runner/                # LLM 对话生成
+  scorer/                # Outcome / Trace / Safety / Text 四维评分
+  report/                # Markdown / HTML 报告渲染与分析
+  storage/               # 运行落盘与 SQLite 归档
+  pipeline.py            # 主评测编排
+frontend/                # Vue 3 前端
+runs/                    # 每次运行的中间产物与报告
+tests/                   # 测试
+```
 
-- **TaskSpec**：任务定义（角色、流程步骤、FAQ、约束、工具列表）
-- **ScenarioSpec**：场景定义（用户画像、预期工具调用、最终状态、风险点）
-- **DialogueTrace**：标准化对话轨迹（transcript + tool_calls + state_trace）
-- **EvalResult**：单条对话评分结果（各维度得分 + 证据 + 最终判定）
-- **RunSummary**：运行摘要（平均分、报告路径、匹配统计）
+## API 一览
 
-## 配置说明
+| 方法 | 路径 | 说明 |
+| --- | --- | --- |
+| GET | `/api/health` | 健康检查 |
+| GET | `/api/task-sources` | 列出任务库文件 |
+| POST | `/api/tasks/upload` | 上传任务文件 |
+| POST | `/api/scenarios/upload` | 上传场景 JSON |
+| POST | `/api/eval-runs/stream` | 自动场景 + LLM 对话 |
+| POST | `/api/eval-runs/import/stream` | 自动场景 + 导入对话 |
+| POST | `/api/eval-runs/choose/stream` | 统一 2×2×2 混合评测入口 |
+| GET | `/api/eval-runs/{run_id}/report` | 获取 Markdown/HTML 报告 |
+| POST | `/api/eval-runs/{run_id}/analyze/stream` | 流式报告分析 |
+| POST | `/api/assistant/stream` | 对话式报告助手 |
 
-所有设置在 dialogue_eval/config.py 中定义，通过 .env 文件配置：
+## 技术栈
 
-| 变量 | 默认值 | 说明 |
-|----------|---------|-------------|
-| MODEL_BASE_URL | https://api.deepseek.com/v1 | LLM API 地址 |
-| MODEL_NAME | deepseek-chat | 对话生成模型 |
-| ENABLE_LLM_JUDGE | true | 启用 LLM 文本质量裁判 |
-| SCENARIO_COUNT | 15 | 每次评测的场景数量 |
-| MAX_TURNS | 20 | 最大对话轮次 |
-| SCENARIO_MATCH_CONFIDENCE_THRESHOLD | 0.90 | 场景匹配最低置信度 |
+| 层 | 技术 |
+| --- | --- |
+| 后端 | Python, FastAPI, Pydantic |
+| 前端 | Vue 3, TypeScript, Vite |
+| 模型接口 | OpenAI-compatible API |
+| 报告 | Markdown + HTML |
+| 存储 | JSON 文件 + SQLite |
 
-复制 .env.example 为 .env 并填入你的 DEEPSEEK_API_KEY。
+## 快速开始
+
+```powershell
+uv sync
+cd frontend
+npm install
+npm run build
+cd ..
+.venv\Scripts\python.exe desktop_app.py
+```
+
+## 总结
+
+这个系统的关键不在“跑出一个分数”，而在于把评测拆成了可解释的结构：
+
+- 任务定义规则边界。
+- 场景定义评价上下文。
+- 对话轨迹提供证据。
+- 四维评分分别判断结果、工具、安全和话术。
+- 报告把证据重新组织成可复核结论。
+
+因此它既能做自动批量评测，也能支持人工复盘、低分定位和提示词优化。
