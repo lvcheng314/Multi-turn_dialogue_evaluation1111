@@ -8,7 +8,7 @@ from dialogue_eval.schemas import DialogueTrace, EvalResult, Evidence, ScenarioS
 
 def test_report_markdown_uses_chinese_title_explanations_and_table() -> None:
     """验证 Markdown 报告结构。"""
-    task = load_task("tasks/fengmaotui_delivery_task.json")
+    task = load_task("database/tasks/飞毛腿任务.json")
     scenario = ScenarioSpec(
         scenario_id="scenario_001",
         task_id=task.task_id,
@@ -73,7 +73,7 @@ def test_report_html_wraps_ordered_list_items_in_single_ol() -> None:
 
 def test_build_report_identity_starts_with_0001_in_empty_runs_dir(tmp_path: Path) -> None:
     """验证空目录下报告流水号从 0001 开始。"""
-    task = load_task("tasks/fengmaotui_delivery_task.json")
+    task = load_task("database/tasks/飞毛腿任务.json")
     title, filename = build_report_identity(task, tmp_path)
 
     assert title.endswith("/0001")

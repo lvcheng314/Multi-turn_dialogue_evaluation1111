@@ -51,7 +51,7 @@ def test_e2e_demo_smoke(tmp_path: Path) -> None:
         scenario_count=15,
         max_turns=12,
     )
-    summary = run_evaluation("tasks/fengmaotui_delivery_task.json", model="deepseek", settings=settings)
+    summary = run_evaluation("database/tasks/飞毛腿任务.json", model="deepseek", settings=settings)
     run_dir = tmp_path / summary.run_id
     assert summary.completed_dialogues == 15
     assert summary.scored_dialogues == 15
@@ -97,7 +97,7 @@ def test_imported_trace_smoke(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
             ChatMessage(turn=3, role="agent", content="请按要求完成配送任务。"),
         ],
     )
-    summary = run_imported_evaluation("tasks/fengmaotui_delivery_task.json", trace, settings=settings)
+    summary = run_imported_evaluation("database/tasks/飞毛腿任务.json", trace, settings=settings)
     run_dir = tmp_path / summary.run_id
     assert summary.completed_dialogues == 1
     assert summary.scored_dialogues == 1
@@ -106,7 +106,7 @@ def test_imported_trace_smoke(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
     assert (run_dir / "trace.jsonl").exists()
     report_text = (run_dir / "report.md").read_text(encoding="utf-8")
     assert "dialogue_import_001" in report_text
-    assert "过于复杂不便量化评测的对话" in report_text
+    assert "复杂场景 / 低置信度对话" in report_text
 
 
 def test_imported_trace_low_confidence_not_scored(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -140,7 +140,7 @@ def test_imported_trace_low_confidence_not_scored(tmp_path: Path, monkeypatch: p
             ChatMessage(turn=2, role="agent", content="您可以先说最关心的问题。"),
         ],
     )
-    summary = run_imported_evaluation("tasks/fengmaotui_delivery_task.json", trace, settings=settings)
+    summary = run_imported_evaluation("database/tasks/飞毛腿任务.json", trace, settings=settings)
     run_dir = tmp_path / summary.run_id
     report_text = (run_dir / "report.md").read_text(encoding="utf-8")
     assert summary.completed_dialogues == 0
@@ -181,14 +181,14 @@ def test_imported_trace_match_error_not_scored(tmp_path: Path, monkeypatch: pyte
             ChatMessage(turn=2, role="agent", content="您可以先说第一个问题。"),
         ],
     )
-    summary = run_imported_evaluation("tasks/fengmaotui_delivery_task.json", trace, settings=settings)
+    summary = run_imported_evaluation("database/tasks/飞毛腿任务.json", trace, settings=settings)
     run_dir = tmp_path / summary.run_id
     report_text = (run_dir / "report.md").read_text(encoding="utf-8")
     assert summary.completed_dialogues == 0
     assert summary.scored_dialogues == 0
     assert summary.low_confidence_dialogues == 0
     assert summary.match_error_dialogues == 1
-    assert "场景识别异常的对话" in report_text
+    assert "场景识别异常" in report_text
     assert "non_json_response" in report_text
 
 

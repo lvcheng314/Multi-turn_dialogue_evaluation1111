@@ -632,6 +632,15 @@ def match_scenario_with_llm(
             error_type="invalid_confidence",
         )
 
+    confidence, reason = _calibrate_scenario_match_confidence(
+        trace=trace,
+        scenarios=scenarios,
+        scenario_id=str(scenario_id),
+        confidence=confidence,
+        reason=reason,
+        threshold=settings.scenario_match_confidence_threshold,
+    )
+
     if confidence >= settings.scenario_match_confidence_threshold:
         return ScenarioMatchResult(
             dialogue_id=trace.dialogue_id,
@@ -647,6 +656,107 @@ def match_scenario_with_llm(
         reason=reason or "置信度不足，未进入量化评分",
         status="low_confidence",
     )
+
+
+def _calibrate_scenario_match_confidence(
+    trace: ImportedDialogueTrace,
+    scenarios: list[ScenarioSpec],
+    scenario_id: str,
+    confidence: float,
+    reason: str,
+    threshold: float,
+) -> tuple[float, str]:
+    """Conservatively lower confidence only for genuinely mixed matches."""
+    scenario_map = {scenario.scenario_id: scenario for scenario in scenarios}
+    selected = scenario_map.get(scenario_id)
+    if not selected:
+        return confidence, reason
+
+    calibrated = _confidence_band(confidence)
+    notes: list[str] = []
+    matched_signal_ids = _matched_scenario_signal_ids(trace, scenarios)
+    mixed_signals = len(matched_signal_ids) >= 2
+    tool_conflict = _has_tool_conflict(trace, selected)
+    explicit_uncertainty = _reason_mentions_uncertainty(reason)
+
+    if tool_conflict:
+        calibrated = min(calibrated, _passing_conflict_band(threshold))
+        notes.append("实际工具与建议场景的期望工具不完全一致")
+
+    if mixed_signals:
+        calibrated = min(calibrated, _borderline_band(threshold))
+        notes.append(f"对话同时命中多个场景信号: {', '.join(sorted(matched_signal_ids))}")
+
+    if (mixed_signals or explicit_uncertainty) and tool_conflict:
+        calibrated = min(calibrated, _failing_complex_band(threshold))
+        notes.append("混合意图叠加工工具冲突，按复杂对话处理")
+    elif explicit_uncertainty:
+        calibrated = min(calibrated, _failing_complex_band(threshold))
+        notes.append("模型原因中已标记不确定或混合意图")
+
+    if not notes:
+        return round(calibrated, 4), reason
+    calibrated_reason = (reason + "；" if reason else "") + "；".join(notes)
+    return round(calibrated, 4), calibrated_reason
+
+
+def _confidence_band(confidence: float) -> float:
+    confidence = max(0.0, min(1.0, confidence))
+    if confidence >= 0.93:
+        return 0.95
+    if confidence >= 0.80:
+        return 0.85
+    return 0.75
+
+
+def _passing_conflict_band(threshold: float) -> float:
+    return min(0.85, max(threshold, threshold + 0.05))
+
+
+def _borderline_band(threshold: float) -> float:
+    return max(0.0, threshold - 0.05)
+
+
+def _failing_complex_band(threshold: float) -> float:
+    return max(0.0, threshold - 0.05)
+
+
+def _has_tool_conflict(trace: ImportedDialogueTrace, scenario: ScenarioSpec) -> bool:
+    expected_tools = {call.tool_name for call in scenario.expected_tool_calls}
+    actual_tools = {call.tool_name for call in trace.tool_calls}
+    if not expected_tools or not actual_tools:
+        return False
+    return not bool(expected_tools & actual_tools)
+
+
+def _matched_scenario_signal_ids(trace: ImportedDialogueTrace, scenarios: list[ScenarioSpec]) -> set[str]:
+    text = "\n".join(message.content for message in trace.transcript).lower()
+    matched: set[str] = set()
+    for scenario in scenarios:
+        if any(cue in text for cue in _scenario_signal_cues(scenario)):
+            matched.add(scenario.scenario_id)
+    return matched
+
+
+def _scenario_signal_cues(scenario: ScenarioSpec) -> set[str]:
+    raw_cues = [
+        *scenario.exclusive_signals,
+        *scenario.utterance_variants,
+        scenario.initial_user_input,
+    ]
+    ignored = {"飞毛腿", "合同", "配送", "任务", "你说", "好的", "知道了"}
+    cues: set[str] = set()
+    for raw in raw_cues:
+        cue = str(raw or "").strip().lower()
+        if len(cue) >= 3 and cue not in ignored:
+            cues.add(cue)
+    return cues
+
+
+def _reason_mentions_uncertainty(reason: str) -> bool:
+    lowered = reason.lower()
+    uncertainty_tokens = ["复杂", "混合", "歧义", "不确定", "多个意图", "多意图", "边界", "mixed", "ambiguous"]
+    return any(token in lowered for token in uncertainty_tokens)
 
 
 def _build_scenario_match_prompt(
@@ -682,13 +792,18 @@ def _build_scenario_match_prompt(
 
 要求：
 1. 只能从候选场景中选择一个 scenario_id。
-2. 如果你不够确定，也必须返回你认为最接近的场景，但 confidence 要真实反映把握程度。
-3. 不要评分，不要输出 Markdown。
-4. 只返回 JSON 对象，格式严格为：
+2. 必须按整段对话整体匹配，综合用户首要意图、最终走向、实际工具调用和上下文，不要只看最后一句。
+3. 如果对话同时包含多个场景信号，也要返回最接近的 scenario_id，但 confidence 必须保守，不要高于阈值。
+4. 典型复杂样本包括：先问规则后接受、先拒绝后回呼、先投诉后转人工、工具调用与候选场景期望工具不一致。
+5. 不要因为结尾出现“明白了、正常跑、可以”等接受表达，就覆盖前面的核心问答、拒绝或投诉意图。
+6. 如果语义单一但工具调用错误，不要把它当复杂场景；仍按语义匹配简单场景，并在 reason 说明工具可能错误。
+7. 如果你不够确定，也必须返回你认为最接近的场景，但 confidence 要真实反映把握程度。
+8. 不要评分，不要输出 Markdown。
+9. 只返回 JSON 对象，格式严格为：
 {{"scenario_id":"...", "confidence":0.0, "reason":"..."}}
-5. confidence 取值范围 0 到 1。
-6. 若你判断该对话过于复杂、混合或歧义较大，也不要编造高分置信度。
-7. 系统会用 {threshold:.2f} 作为进入量化评分的阈值。
+10. confidence 取值范围 0 到 1。
+11. 若你判断该对话过于复杂、混合或歧义较大，也不要编造高分置信度。
+12. 系统会用 {threshold:.2f} 作为进入量化评分的阈值。
 
 任务信息：
 - task_id: {task.task_id}

@@ -68,7 +68,7 @@ def render_markdown_report(
         f"- 角色: {task.role}",
         f"- 场景数: {len(scenarios)}",
         f"- 导入对话总数: {total_dialogues}",
-        f"- 成功评测数: {scored_count}",
+        f"- 简单场景量化评测数: {scored_count}",
         f"- 复杂对话数: {low_conf_count}",
         f"- 复杂对话占比: {low_ratio:.2%}",
         f"- 场景识别异常数: {match_error_count}",
@@ -79,7 +79,7 @@ def render_markdown_report(
     if scored_count == 0:
         lines.append("- 本次无有效量化评分样本。")
     if low_ratio > 0.10:
-        lines.append("- 当前复杂对话占比超过 10%，说明场景覆盖不足，建议继续扩展场景库。")
+        lines.append("- 当前复杂对话占比超过 10%，这些样本未纳入普通量化扣分，建议人工复核或扩展复杂场景库。")
     if match_error_count > 0:
         lines.append("- 存在模型识别异常样本，建议检查场景识别链路稳定性。")
 
@@ -102,7 +102,7 @@ def render_markdown_report(
             if value:
                 lines.append(f"- {label}: {value}")
 
-    lines.extend(["", "## 主要扣分原因", ""])
+    lines.extend(["", "## 简单场景主要扣分原因", ""])
     if low_results:
         for result in low_results:
             weakest = min(result.dimension_scores.items(), key=lambda item: item[1])
@@ -113,7 +113,7 @@ def render_markdown_report(
     else:
         lines.append("- 暂无可量化评分结果。")
 
-    lines.extend(["", "## 优化建议", "", *_suggestions(weak_dimensions, scored_count), "", "## 分项汇总", ""])
+    lines.extend(["", "## 优化建议", "", *_suggestions(weak_dimensions, scored_count), "", "## 简单场景分项汇总", ""])
     lines.extend(
         [
             "| 对话ID | 总分 | 结论 | 任务结果 Outcome | 工具轨迹 Trace | 安全合规 Safety | 话术质量 Text |",
@@ -138,7 +138,7 @@ def render_markdown_report(
             )
         )
 
-    lines.extend(["", "## 可追溯证据明细", ""])
+    lines.extend(["", "## 简单场景可追溯证据明细", ""])
     for result in results:
         trace = trace_map.get(result.dialogue_id)
         scenario = scenario_map.get(trace.scenario_id) if trace else None
@@ -199,7 +199,7 @@ def render_markdown_report(
             lines.append(f"- 风险标记: {', '.join(result.risk_flags)}")
         lines.append("")
 
-    lines.extend(["", "## 过于复杂不便量化评测的对话", ""])
+    lines.extend(["", "## 复杂场景 / 低置信度对话", ""])
     lines.extend(
         [
             "| 对话ID | 建议场景 | 置信度 | 原因 | 处理结果 |",
@@ -215,7 +215,7 @@ def render_markdown_report(
     else:
         lines.append("| - | - | - | 无 | 无 |")
 
-    lines.extend(["", "## 场景识别异常的对话", ""])
+    lines.extend(["", "## 场景识别异常", ""])
     lines.extend(
         [
             "| 对话ID | 异常类型 | 异常说明 | 处理结果 |",

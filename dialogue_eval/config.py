@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     scenario_match_model_base_url: str = "https://api.deepseek.com/v1"
     scenario_match_model_api_key: str = Field(default="", repr=False)
     scenario_match_model_name: str = "deepseek-chat"
-    scenario_match_confidence_threshold: float = 0.90
+    scenario_match_confidence_threshold: float = 0.80
 
     runs_dir: str = "./database"
     archive_db_path: str = "./database/eval_archive.sqlite3"
