@@ -31,10 +31,10 @@
     ],
     "expected_tool_calls": [
       {
-        "tool_name": "confirm_delivery_acceptance",
+        "tool_name": "update_task_status",
         "required": true,
         "arguments": {
-          "result": "accepted"
+          "status": "accepted"
         }
       }
     ],
@@ -155,10 +155,10 @@
     ],
     "expected_tool_calls": [
       {
-        "tool_name": "answer_policy_question",
+        "tool_name": "query_faq",
         "required": true,
         "arguments": {
-          "topic": "quota_rule"
+          "question": "名额分配规则"
         }
       }
     ],
@@ -360,10 +360,10 @@
     ],
     "expected_tool_calls": [
       {
-        "tool_name": "deliver_key_point_summary",
+        "tool_name": "update_task_status",
         "required": true,
         "arguments": {
-          "style": "one_sentence"
+          "status": "delivered"
         }
       }
     ],
@@ -399,7 +399,7 @@
     ],
     "expected_tool_calls": [
       {
-        "tool_name": "mark_identity_exception",
+        "tool_name": "update_task_status",
         "required": true,
         "arguments": {
           "status": "identity_mismatch"
@@ -438,10 +438,10 @@
     ],
     "expected_tool_calls": [
       {
-        "tool_name": "provide_verification_guidance",
+        "tool_name": "query_faq",
         "required": true,
         "arguments": {
-          "channel": "official_app"
+          "question": "如何通过official_app验证身份"
         }
       }
     ],
@@ -480,10 +480,10 @@
     ],
     "expected_tool_calls": [
       {
-        "tool_name": "decline_overpromise",
+        "tool_name": "update_task_status",
         "required": true,
         "arguments": {
-          "reason": "cannot_guarantee_income"
+          "status": "cannot_guarantee_income"
         }
       }
     ],
@@ -522,10 +522,10 @@
     ],
     "expected_tool_calls": [
       {
-        "tool_name": "reject_policy_bypass",
+        "tool_name": "update_task_status",
         "required": true,
         "arguments": {
-          "reason": "policy_request_denied"
+          "status": "policy_request_denied"
         }
       }
     ],
@@ -564,10 +564,10 @@
     ],
     "expected_tool_calls": [
       {
-        "tool_name": "answer_policy_question",
+        "tool_name": "query_faq",
         "required": true,
         "arguments": {
-          "topic": "contract_difference"
+          "question": "单日合同和多日合同有什么区别"
         }
       }
     ],

@@ -28,7 +28,7 @@ from dialogue_eval.schemas import (
 from dialogue_eval.scorer import ScorerSkill
 from dialogue_eval.storage import RunStore
 from dialogue_eval.storage.archive import archive_run
-from dialogue_eval.scorer.speaker import likely_agent_role
+from dialogue_eval.scorer.speaker import should_flip_explicit_roles
 
 
 def run_evaluation(
@@ -522,7 +522,7 @@ def _normalize_transcript_roles(transcript) -> list:
         tool_calls=[],
         state_trace=[],
     )
-    if likely_agent_role(probe) == "agent":
+    if not should_flip_explicit_roles(probe):
         return transcript
 
     normalized = []

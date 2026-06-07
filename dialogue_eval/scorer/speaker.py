@@ -4,18 +4,40 @@ from dialogue_eval.schemas import DialogueTrace
 
 
 def likely_agent_role(trace: DialogueTrace) -> str:
+    if _has_explicit_agent_and_user_roles(trace):
+        return "agent"
+    return inferred_agent_role_from_content(trace)
+
+
+def inferred_agent_role_from_content(trace: DialogueTrace) -> str:
     user_score = _role_score(trace, "user")
     agent_score = _role_score(trace, "agent")
     return "user" if user_score > agent_score else "agent"
 
 
+def should_flip_explicit_roles(trace: DialogueTrace) -> bool:
+    if not _has_explicit_agent_and_user_roles(trace):
+        return False
+
+    user_score = _role_score(trace, "user")
+    agent_score = _role_score(trace, "agent")
+    return user_score > agent_score
+
+
 def speaker_messages(trace: DialogueTrace, role: str):
+    if _has_explicit_agent_and_user_roles(trace):
+        return [message for message in trace.transcript if message.role == role]
     target = likely_agent_role(trace) if role == "agent" else _other_role(likely_agent_role(trace))
     return [message for message in trace.transcript if message.role == target]
 
 
 def _other_role(role: str) -> str:
     return "user" if role == "agent" else "agent"
+
+
+def _has_explicit_agent_and_user_roles(trace: DialogueTrace) -> bool:
+    roles = {message.role for message in trace.transcript}
+    return "agent" in roles and "user" in roles
 
 
 def _role_score(trace: DialogueTrace, role: str) -> int:

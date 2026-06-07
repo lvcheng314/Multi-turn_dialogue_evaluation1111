@@ -134,7 +134,14 @@ export function renderMarkdown(text: string): string {
       flushTable()
     }
 
-    const headingMatch = line.match(/^\s*(#{1,3})\s+(.+)$/)
+    const hrMatch = line.match(/^\s*([-*_])(?:\s*\1){2,}\s*$/)
+    if (hrMatch) {
+      flushAll()
+      blocks.push("<hr>")
+      continue
+    }
+
+    const headingMatch = line.match(/^\s*(#{1,4})\s+(.+)$/)
     if (headingMatch) {
       flushAll()
       blocks.push(

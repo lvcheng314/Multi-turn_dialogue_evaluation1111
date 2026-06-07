@@ -84,6 +84,14 @@ export async function downloadTaskTemplate(): Promise<void> {
   URL.revokeObjectURL(url)
 }
 
+export async function downloadScenarioTemplate(): Promise<void> {
+  await downloadJsonFile('/api/scenarios/template', '场景模板.json')
+}
+
+export async function downloadDialogueTemplate(): Promise<void> {
+  await downloadJsonFile('/api/dialogues/template', '对话数据模板.json')
+}
+
 type StreamHandlers<TComplete> = {
   onStage?: (payload: { message?: string; stage?: string; [key: string]: unknown }) => void
   onDelta?: (text: string) => void
@@ -251,4 +259,30 @@ export async function getReport(runId: string): Promise<ReportPayload> {
     throw new Error(await response.text())
   }
   return response.json()
+}
+
+async function downloadJsonFile(url: string, fallbackName: string): Promise<void> {
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error(await response.text())
+  }
+  const blob = await response.blob()
+  const objectUrl = URL.createObjectURL(blob)
+  const anchor = document.createElement('a')
+  anchor.href = objectUrl
+  anchor.download = parseDownloadFileName(response.headers.get('Content-Disposition')) || fallbackName
+  document.body.appendChild(anchor)
+  anchor.click()
+  anchor.remove()
+  URL.revokeObjectURL(objectUrl)
+}
+
+function parseDownloadFileName(contentDisposition: string | null): string | null {
+  if (!contentDisposition) return null
+  const utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i)
+  if (utf8Match?.[1]) {
+    return decodeURIComponent(utf8Match[1])
+  }
+  const plainMatch = contentDisposition.match(/filename=\"?([^\";]+)\"?/i)
+  return plainMatch?.[1] || null
 }

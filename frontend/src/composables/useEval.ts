@@ -1,6 +1,8 @@
 import { computed, nextTick, ref } from "vue"
 import type { ArchiveGroup, RunSummary, TaskSource, UploadTaskResult } from "../api/client"
 import {
+  downloadDialogueTemplate,
+  downloadScenarioTemplate,
   downloadTaskTemplate, getReport, listArchiveGroups, listTaskSources,
   streamAnalyzeRun, streamAssistant, streamChooseRun, streamImportedRun,
   streamRun, uploadTaskFile,
@@ -107,6 +109,24 @@ async function handleDownloadTemplate() {
 
 function openTracePicker() {
   traceInput.value?.click()
+}
+
+async function handleDownloadScenarioTemplate() {
+  try {
+    await downloadScenarioTemplate()
+    bot('已开始下载场景 JSON 示例文件。')
+  } catch (err) {
+    bot(err instanceof Error ? err.message : String(err))
+  }
+}
+
+async function handleDownloadDialogueTemplate() {
+  try {
+    await downloadDialogueTemplate()
+    bot('已开始下载对话数据 JSON 示例文件。')
+  } catch (err) {
+    bot(err instanceof Error ? err.message : String(err))
+  }
 }
 
 async function onTaskPicked(event: Event) {
@@ -387,6 +407,8 @@ async function loadArchives() {
   canRun,
   customText,
   dialogueMode,
+  handleDownloadDialogueTemplate,
+  handleDownloadScenarioTemplate,
   handleDownloadTemplate,
   handleUploadedTask,
   loadArchives,

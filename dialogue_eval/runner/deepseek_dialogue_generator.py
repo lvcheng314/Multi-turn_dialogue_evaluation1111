@@ -6,7 +6,7 @@ from dialogue_eval.config import Settings
 from dialogue_eval.mcp_gateway.tool_specs import default_tool_specs
 from dialogue_eval.models.openai_compatible import OpenAICompatibleAgent
 from dialogue_eval.schemas import ChatMessage, DialogueTrace, ScenarioSpec, TaskSpec, ToolCallTrace
-from dialogue_eval.scorer.speaker import likely_agent_role
+from dialogue_eval.scorer.speaker import should_flip_explicit_roles
 
 
 class DeepSeekDialogueGenerator:
@@ -285,7 +285,7 @@ def _normalize_transcript_roles(transcript: list[ChatMessage]) -> list[ChatMessa
         tool_calls=[],
         state_trace=[],
     )
-    if likely_agent_role(probe) == "agent":
+    if not should_flip_explicit_roles(probe):
         return transcript
 
     normalized: list[ChatMessage] = []

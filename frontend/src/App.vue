@@ -4,17 +4,13 @@ import { useEval } from "./composables/useEval"
 import { renderMarkdown } from "./utils/markdown"
 
 const {
-  activeRunId,
-  askAnalysis,
-  askAssistant,
-  bot,
-  botStreaming,
   busy,
   canRun,
   customText,
   dialogueMode,
+  handleDownloadDialogueTemplate,
+  handleDownloadScenarioTemplate,
   handleDownloadTemplate,
-  handleUploadedTask,
   loadArchives,
   messages,
   messagesContainer,
@@ -25,30 +21,25 @@ const {
   openTaskPicker,
   openTracePicker,
   refreshTasks,
-  runChoose,
-  runGenerated,
   runHint,
-  runImported,
   scenarioFile,
   scenarioInput,
   scenarioMode,
-  scrollToBottom,
   selectedTask,
   selectedTaskId,
   sendCustom,
-  showReport,
   startEvaluation,
   statusText,
   taskInput,
   taskSources,
   traceFile,
   traceInput,
-  user
+  bot,
 } = useEval()
 
 onMounted(async () => {
   await refreshTasks()
-  bot("请选择任务库中的任务文件，并指定对话数据来源。我可以继续负责任务说明、开场提示以及报告分析。")
+  bot("请选择任务文件，并指定场景与对话数据来源。")
 })
 </script>
 
@@ -58,7 +49,7 @@ onMounted(async () => {
       <header class="chat-header">
         <div>
           <h1>Dialogue Eval Bot</h1>
-          <p>任务库驱动的多轮外呼任务评测</p>
+          <p>多轮外呼任务评测工作台</p>
         </div>
         <button class="ghost" @click="loadArchives">归档</button>
       </header>
@@ -67,10 +58,10 @@ onMounted(async () => {
         <div class="workspace-card workspace-card-task">
           <div class="workspace-heading">
             <span class="workspace-kicker">Task Library</span>
-            <h2>任务模块</h2>
-            <p>统一任务库位于项目 `tasks/` 目录。可直接选择已有任务，或上传新的任务文件。</p>
+            <h2>任务文件</h2>
+            <p>可直接选择已有任务文件，或上传新的任务 JSON 文件。</p>
           </div>
-          <div class="task-controls">
+          <div class="task-controls task-controls-3">
             <div class="select-shell">
               <label class="field-label" for="task-select">任务文件</label>
               <select id="task-select" v-model="selectedTaskId" :disabled="busy || !taskSources.length">
@@ -81,7 +72,7 @@ onMounted(async () => {
               </select>
             </div>
             <button class="secondary-action" @click="openTaskPicker" :disabled="busy">上传任务文件</button>
-            <button class="secondary-action" @click="handleDownloadTemplate" :disabled="busy">下载 JSON 模板</button>
+            <button class="secondary-action" @click="handleDownloadTemplate" :disabled="busy">下载任务 JSON</button>
           </div>
           <div v-if="selectedTask" class="task-summary">
             <div class="task-summary-main">
@@ -94,19 +85,20 @@ onMounted(async () => {
                 <span class="summary-value">{{ selectedTask.id }}</span>
               </div>
               <div class="summary-block">
-                <span class="summary-label">任务目录</span>
+                <span class="summary-label">任务路径</span>
                 <span class="summary-value">{{ selectedTask.path }}</span>
               </div>
             </div>
           </div>
         </div>
 
-                <div class="workspace-card workspace-card-scenario">
+        <div class="workspace-card workspace-card-scenario">
           <div class="workspace-heading">
             <span class="workspace-kicker">Simulation Panel</span>
-            <h2>模拟场景板块</h2>
-            <p>按 2x2x2 模式选择：先定任务源，再选场景来源，最后选对话数据来源。</p>
+            <h2>评测输入</h2>
+            <p>先选择场景来源，再选择对话数据来源。</p>
           </div>
+
           <div class="subsection">
             <h3 class="subsection-title">01 场景来源</h3>
             <div class="mode-row">
@@ -114,7 +106,7 @@ onMounted(async () => {
                 <input v-model="scenarioMode" type="radio" value="generate" :disabled="busy" />
                 <div class="mode-card-body">
                   <span class="mode-title">自动生成场景</span>
-                  <small class="mode-copy">从模板自动生成测试场景</small>
+                  <small class="mode-copy">根据任务自动生成测试场景</small>
                 </div>
               </label>
               <label class="mode-card" :class="{ active: scenarioMode === 'upload' }">
@@ -130,9 +122,13 @@ onMounted(async () => {
                 <span class="upload-label">场景文件</span>
                 <span class="hint">{{ scenarioFile ? scenarioFile.name : '未选择场景 JSON' }}</span>
               </div>
-              <button class="secondary-action" @click="openScenarioPicker" :disabled="busy">选择场景文件</button>
+              <div class="upload-actions">
+                <button class="secondary-action" @click="openScenarioPicker" :disabled="busy">选择场景文件</button>
+                <button class="secondary-action" @click="handleDownloadScenarioTemplate" :disabled="busy">下载场景 JSON</button>
+              </div>
             </div>
           </div>
+
           <div class="subsection">
             <h3 class="subsection-title">02 对话数据来源</h3>
             <div class="mode-row">
@@ -140,7 +136,7 @@ onMounted(async () => {
                 <input v-model="dialogueMode" type="radio" value="generate" :disabled="busy" />
                 <div class="mode-card-body">
                   <span class="mode-title">LLM 模拟</span>
-                  <small class="mode-copy">大模型逐次生成模拟对话</small>
+                  <small class="mode-copy">由模型生成模拟对话</small>
                 </div>
               </label>
               <label class="mode-card" :class="{ active: dialogueMode === 'import' }">
@@ -156,9 +152,13 @@ onMounted(async () => {
                 <span class="upload-label">对话数据文件</span>
                 <span class="hint">{{ traceFile ? traceFile.name : '未选择对话数据 JSON' }}</span>
               </div>
-              <button class="secondary-action" @click="openTracePicker" :disabled="busy">选择对话文件</button>
+              <div class="upload-actions">
+                <button class="secondary-action" @click="openTracePicker" :disabled="busy">选择对话文件</button>
+                <button class="secondary-action" @click="handleDownloadDialogueTemplate" :disabled="busy">下载对话 JSON</button>
+              </div>
             </div>
           </div>
+
           <div class="action-bar">
             <button class="primary" @click="startEvaluation" :disabled="busy || !canRun">
               {{ busy ? '处理中...' : '开始评测' }}
@@ -169,23 +169,14 @@ onMounted(async () => {
       </section>
 
       <div ref="messagesContainer" class="messages">
-        <article
-          v-for="message in messages"
-          :key="message.id"
-          class="message"
-          :class="message.role"
-        >
+        <article v-for="message in messages" :key="message.id" class="message" :class="message.role">
           <div class="avatar" :class="`avatar-${message.role}`" aria-hidden="true">
-            {{ message.role === 'bot' ? '评' : '我' }}
+            {{ message.role === 'bot' ? '评' : '你' }}
           </div>
           <div class="bubble">
             <div v-if="message.text" class="message-body markdown-body" v-html="renderMarkdown(message.text)"></div>
             <div v-if="message.actions?.length" class="actions">
-              <button
-                v-for="action in message.actions"
-                :key="action.label"
-                @click="action.run"
-              >
+              <button v-for="action in message.actions" :key="action.label" @click="action.run">
                 {{ action.label }}
               </button>
             </div>
@@ -206,13 +197,14 @@ onMounted(async () => {
       <form class="composer" @submit.prevent="sendCustom">
         <textarea
           v-model="customText"
-          placeholder="和报告助手对话，咨询任务说明、开场提示或报告分析"
+          placeholder="输入问题，继续分析任务、评分或报告"
           rows="3"
           @keydown.enter.exact.prevent="sendCustom"
         />
         <button :disabled="busy">{{ busy ? '处理中' : '发送' }}</button>
       </form>
     </section>
+
     <input ref="taskInput" type="file" accept=".json,.xlsx,.xls" hidden @change="onTaskPicked" />
     <input ref="scenarioInput" type="file" accept=".json" hidden @change="onScenarioPicked" />
     <input ref="traceInput" type="file" accept=".json" hidden @change="onTracePicked" />
@@ -220,5 +212,13 @@ onMounted(async () => {
 </template>
 
 <style>
-/* inherited from global style.css */
+.task-controls-3 {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.upload-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
 </style>

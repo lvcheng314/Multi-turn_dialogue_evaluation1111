@@ -6,7 +6,7 @@ from typing import Any
 from uuid import uuid4
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse, Response, StreamingResponse
 
 from dialogue_eval.config import get_settings
 from dialogue_eval.models.openai_compatible import OpenAICompatibleAgent
@@ -28,6 +28,8 @@ from dialogue_eval.task_sources import (
 )
 
 router = APIRouter()
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+SCENARIO_SAMPLE_PATH = PROJECT_ROOT / "database" / "scenarios" / "飞毛腿场景.json"
 
 
 def _sse(event: str, data: dict | str) -> str:
@@ -118,6 +120,34 @@ def download_task_template():
     if not template_path.exists():
         raise HTTPException(status_code=404, detail="task template not found")
     return FileResponse(template_path, media_type="application/json", filename=template_path.name)
+
+
+@router.get("/scenarios/template")
+def download_scenario_template():
+    if not SCENARIO_SAMPLE_PATH.exists():
+        raise HTTPException(status_code=404, detail="scenario template not found")
+    return FileResponse(SCENARIO_SAMPLE_PATH, media_type="application/json", filename=SCENARIO_SAMPLE_PATH.name)
+
+
+@router.get("/dialogues/template")
+def download_dialogue_template():
+    sample_trace = {
+        "dialogue_id": "sample_dialogue_001",
+        "task_id": "sample_task",
+        "scenario_id": "sample_scenario_001",
+        "transcript": [
+            {"turn": 1, "role": "agent", "content": "您好，这边通知您一项任务更新，请您留意。"},
+            {"turn": 2, "role": "user", "content": "你说。"},
+            {"turn": 3, "role": "agent", "content": "本次更新已经生效，后续按新规则执行即可。"},
+            {"turn": 4, "role": "user", "content": "好，我知道了。"},
+            {"turn": 5, "role": "agent", "content": "好的，辛苦您了，再见。"},
+        ],
+        "tool_calls": [],
+        "state_trace": [],
+    }
+    content = json.dumps(sample_trace, ensure_ascii=False, indent=2)
+    headers = {"Content-Disposition": 'attachment; filename="对话数据模板.json"'}
+    return Response(content=content, media_type="application/json", headers=headers)
 
 
 @router.post("/tasks/{task_id}/scenarios")
