@@ -1,9 +1,0 @@
-{
-  "report_title": "商家新版发票开具入口测评报告2026/06/03/0001",
-  "report_markdown_name": "商家新版发票开具入口测评报告2026-06-03-0001.md",
-  "report_html_name": "商家新版发票开具入口测评报告2026-06-03-0001.html",
-  "data_source": "上传对话数据",
-  "scenario_source": "自动匹配",
-  "matched_scenario_id": "s15_status_update",
-  "matched_scenario_score": "1.00"
-}
